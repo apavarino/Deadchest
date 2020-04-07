@@ -1,0 +1,33 @@
+#
+# PLEASE RELOAD OR RESTART SERVER AFTER A CHANGE IN THIS FILE. YOU CAN ALSO USE /dc reload
+#
+
+# true  : Only the owner of the inventory can open the deadchest
+# false : Everybody can open dead chest of everybody
+OnlyOwnerCanOpenDeadChest: true
+
+# Duration of deadchest in seconds before it disappears ( 0 = infiny chest)
+DeadChestDuration: 300
+
+# true  : Nothing can destroy a dead chest until a player get back inventory or DeadChestDuration is over.
+# false : Dead chest can be destroyable by players or explosions
+IndestuctibleChest: true
+
+# Maximum number of deadchest per player (0 = infiny)
+maxDeadChestPerPlayer: 5
+
+# Log a message in the console when a player die with the coordinate of the deadchest
+logDeadChestOnConsole: false
+
+# Players need permission deadchest.generate to generate deadchest on death ?
+# false : no permission needed
+# true : permission needed
+RequirePermissionToGenerate: false
+
+# Players need permission deadchest.list.own to use /dc list (list all deadchests of the player) ?
+# false : no permission needed
+# true : permission needed
+RequirePermissionToListOwn: false
+
+# Remove all existing deadchests on startup
+AutoCleanupOnStart: false

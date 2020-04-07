@@ -1,0 +1,38 @@
+name: DeadChest
+main: me.crylonz.DeadChest
+version: "3.1"
+softdepend: [Multiverse-Core]
+author: Crylonz
+description: Keep your inventory in a chest when you die
+api-version: "1.13"
+permissions:
+  deadchest.generate:
+    description: Allows a player to keep inventory in a chest when he dies
+    default: false
+  deadchest.chestPass:
+    description: Player can open all deadChest
+    default: false
+  deadchest.infinyChest:
+    description: Player dead chest never disappaear
+    default: false
+  deadchest.admin:
+    description: Player dead chest never disappaear
+    default: op
+  deadchest.remove.own:
+    description: Allow a player to remove his deadchest
+    default: op
+  deadchest.remove.other:
+    description: Allow a player to remove others players deadchest
+    default: op
+  deadchest.list.own:
+    description: Allow a player to list his deadchests
+    default: op
+  deadchest.list.other:
+    description: Allow a player to list other deadchests
+    default: op
+
+
+commands:
+  dc:
+    usage: /dc reload | repair | remove [PlayerName] | removeinfinate | removeall | list [PlayerName] | list all
+    description: List of commands
