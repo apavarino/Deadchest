@@ -1,8 +1,8 @@
 name: DeadChest
 main: me.crylonz.DeadChest
-version: "3.1"
 softdepend: [Multiverse-Core]
 author: Crylonz
+version: "3.1"
 description: Keep your inventory in a chest when you die
 api-version: "1.13"
 permissions:
@@ -30,8 +30,6 @@ permissions:
   deadchest.list.other:
     description: Allow a player to list other deadchests
     default: op
-
-
 commands:
   dc:
     usage: /dc reload | repair | remove [PlayerName] | removeinfinate | removeall | list [PlayerName] | list all

@@ -22,6 +22,6 @@ jobs:
           path: target/surefire-reports
 
       - store_artifacts:
-          path: /home/circleci/deadchest/target/*.jar
+          path: /home/circleci/deadchest/target/DeadChest-3.1.jar
 
       - run: mvn checkstyle:check
