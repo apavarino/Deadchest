@@ -30,7 +30,7 @@ jobs: # a collection of steps
 
       - store_artifacts: # store the uberjar as an artifact
           # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: target/Deadchest-3.1.jar
+          path: /home/circleci/deadchest/target/DeadChest-3.1.jar
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
 
 
