@@ -23,5 +23,3 @@ jobs:
 
       - store_artifacts:
           path: /home/circleci/deadchest/target/DeadChest-3.1.jar
-
-      - run: mvn checkstyle:check

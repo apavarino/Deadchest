@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 @SerializableAs("ChestData")
-public class ChestData implements ConfigurationSerializable {
+public final class ChestData implements ConfigurationSerializable {
 
     private List<ItemStack> inventory;
     private Location chestLocation;
@@ -22,11 +22,11 @@ public class ChestData implements ConfigurationSerializable {
     private Date chestDate;
     private boolean isInfiny;
     private Location holographicTimer;
-    private UUID holographic_timer_id;
-    private UUID holographic_owner_id;
+    private UUID holographicTimerId;
+    private UUID holographicOwnerId;
     private String worldName;
 
-    ChestData(Inventory inv, Location chestLocation, Player p, boolean isInfiny, ArmorStand as_timer, ArmorStand owner) {
+    ChestData(final Inventory inv, final Location chestLocation, final Player p, final boolean isInfiny, final ArmorStand asTimer, final ArmorStand owner) {
 
         if (p != null) {
             this.inventory = Arrays.asList(inv.getContents());
@@ -35,18 +35,21 @@ public class ChestData implements ConfigurationSerializable {
             this.playerUUID = String.valueOf(p.getUniqueId());
             this.chestDate = new Date();
             this.isInfiny = isInfiny;
-            this.holographicTimer = as_timer.getLocation().clone();
-            this.holographic_timer_id = as_timer.getUniqueId();
-            this.holographic_owner_id = owner.getUniqueId();
-            this.worldName = chestLocation.getWorld().getName();
+            this.holographicTimer = asTimer.getLocation().clone();
+            this.holographicTimerId = asTimer.getUniqueId();
+            this.holographicOwnerId = owner.getUniqueId();
+            if (chestLocation.getWorld() != null)
+                this.worldName = chestLocation.getWorld().getName();
         }
 
 
     }
 
-    public ChestData(List<ItemStack> inventory, Location chestLocation, String playerName, String playerUUID,
-                     Date chestDate, boolean isInfiny, Location holographicTimer, UUID as_timer_id, UUID as_owner_id
-            , String worldName) {
+    public ChestData(final List<ItemStack> inventory, final Location chestLocation,
+                     final String playerName, final String playerUUID,
+                     final Date chestDate, final boolean isInfiny,
+                     final Location holographicTimer, final UUID asTimerId,
+                     final UUID asOwnerId, final String worldName) {
         this.inventory = inventory;
         this.chestLocation = chestLocation;
         this.playerName = playerName;
@@ -54,10 +57,41 @@ public class ChestData implements ConfigurationSerializable {
         this.chestDate = chestDate;
         this.isInfiny = isInfiny;
         this.holographicTimer = holographicTimer;
-        this.holographic_timer_id = as_timer_id;
-        this.holographic_owner_id = as_owner_id;
+        this.holographicTimerId = asTimerId;
+        this.holographicOwnerId = asOwnerId;
         this.worldName = worldName;
 
+    }
+
+    public static ChestData deserialize(final Map<String, Object> map) {
+        final int worldNameIndex = 0;
+        final int locXIndex = 1;
+        final int locYIndex = 2;
+        final int locZIndex = 3;
+
+        String[] loc = ((String) map.get("chestLocation")).split(";");
+        String[] locHolo = ((String) map.get("holographicTimer")).split(";");
+
+        Location myloc = new Location(Bukkit.getWorld(loc[worldNameIndex]),
+                Double.parseDouble(loc[locXIndex]), Double.parseDouble(loc[locYIndex]),
+                Double.parseDouble(loc[locZIndex]));
+
+        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[worldNameIndex]),
+                Double.parseDouble(locHolo[locXIndex]), Double.parseDouble(locHolo[locYIndex]),
+                Double.parseDouble(locHolo[locZIndex]));
+
+        return new ChestData(
+                (List<ItemStack>) map.get("inventory"),
+                myloc,
+                (String) map.get("playerName"),
+                (String) map.get("playerUUID"),
+                (Date) map.get("chestDate"),
+                (boolean) map.get("isInfiny"),
+                mylocHolo,
+                UUID.fromString((String) map.get("as_timer_id")),
+                UUID.fromString((String) map.get("as_owner_id")),
+                (String) map.get("worldName")
+        );
     }
 
     public List<ItemStack> getInventory() {
@@ -88,25 +122,21 @@ public class ChestData implements ConfigurationSerializable {
         return holographicTimer;
     }
 
-    public UUID getHolographic_owner_id() {
-        return holographic_owner_id;
-    }
-
-    public UUID getHolographic_timer_id() {
-        return holographic_timer_id;
-    }
-
     public void removeArmorStand() {
 
-        if (chestLocation.getWorld() == null)
-            return;
+        final int radius = 1;
+        final int armorStandShiftY = 1;
 
-        Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
-                new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() - 1, chestLocation.getZ()), 1, 1, 1);
+        if (chestLocation.getWorld() != null) {
 
-        for (Entity entity : entities) {
-            if (entity.getUniqueId().equals(holographic_owner_id) || entity.getUniqueId().equals(holographic_timer_id)) {
-                entity.remove();
+            Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
+                    new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() - armorStandShiftY,
+                            chestLocation.getZ()), radius, radius, radius);
+
+            for (Entity entity : entities) {
+                if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
+                    entity.remove();
+                }
             }
         }
     }
@@ -115,34 +145,17 @@ public class ChestData implements ConfigurationSerializable {
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("inventory", inventory);
-        map.put("chestLocation", worldName + ";" + chestLocation.getX() + ";" + chestLocation.getY() + ";" + chestLocation.getZ());
+        map.put("chestLocation", worldName + ";" + chestLocation.getX() + ";" + chestLocation.getY() + ";"
+                + chestLocation.getZ());
         map.put("playerName", playerName);
         map.put("playerUUID", playerUUID);
         map.put("chestDate", chestDate);
         map.put("isInfiny", isInfiny);
-        map.put("holographicTimer", worldName + ";" + holographicTimer.getX() + ";" + holographicTimer.getY() + ";" + holographicTimer.getZ());
+        map.put("holographicTimer", worldName + ";" + holographicTimer.getX() + ";" + holographicTimer.getY()
+                + ";" + holographicTimer.getZ());
         map.put("worldName", worldName);
-        map.put("as_timer_id", holographic_timer_id.toString());
-        map.put("as_owner_id", holographic_owner_id.toString());
+        map.put("as_timer_id", holographicTimerId.toString());
+        map.put("as_owner_id", holographicOwnerId.toString());
         return map;
-    }
-
-    public static ChestData deserialize(Map<String, Object> map) {
-        String loc[] = ((String) map.get("chestLocation")).split(";");
-        String locHolo[] = ((String) map.get("holographicTimer")).split(";");
-        Location myloc = new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
-        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[0]), Double.parseDouble(locHolo[1]), Double.parseDouble(locHolo[2]), Double.parseDouble(locHolo[3]));
-        return new ChestData(
-                (List<ItemStack>) map.get("inventory"),
-                myloc,
-                (String) map.get("playerName"),
-                (String) map.get("playerUUID"),
-                (Date) map.get("chestDate"),
-                (boolean) map.get("isInfiny"),
-                mylocHolo,
-                UUID.fromString((String) map.get("as_timer_id")),
-                UUID.fromString((String) map.get("as_owner_id")),
-                (String) map.get("worldName")
-        );
     }
 }

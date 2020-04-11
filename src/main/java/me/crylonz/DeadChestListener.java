@@ -3,7 +3,6 @@ package me.crylonz;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,25 +59,14 @@ public class DeadChestListener implements Listener {
                 if (!isInventoryEmpty(p.getInventory())) {
                     b.setType(Material.CHEST);
 
-                    Location ownerLoc = new Location(world, b.getX() + 0.5f, b.getY() - 0.95f, b.getZ() + 0.5f);
-                    ArmorStand ownerTag = (ArmorStand) world.spawnEntity(ownerLoc, EntityType.ARMOR_STAND);
-                    ownerTag.setInvulnerable(true);
-                    ownerTag.setGravity(false);
-                    ownerTag.setCanPickupItems(false);
-                    ownerTag.setVisible(false);
-                    ownerTag.setCustomName("× " + loc_owner + ": " + e.getEntity().getDisplayName() + " ×");
-                    ownerTag.setCustomNameVisible(true);
+                    String firstLine = loc_owner + ": " + e.getEntity().getDisplayName();
+                    ArmorStand holoName = DeadChest.generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f);
 
-                    Location remainingLoc = new Location(world, b.getX() + 0.5f, b.getY() - 1.2f, b.getZ() + 0.5f);
-                    ArmorStand remainingTag = (ArmorStand) world.spawnEntity(remainingLoc, EntityType.ARMOR_STAND);
-                    remainingTag.setInvulnerable(true);
-                    remainingTag.setGravity(false);
-                    remainingTag.setCanPickupItems(false);
-                    remainingTag.setVisible(false);
-                    remainingTag.setCustomName("× " + loc_loading + " ×");
-                    remainingTag.setCustomNameVisible(true);
+                    String secondLine = loc_loading;
+                    ArmorStand holoTime = DeadChest.generateHologram(b.getLocation(), secondLine, 0.5f, -1.2f, 0.5f);
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.InfinyChest"), remainingTag, ownerTag));
+
+                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.InfinyChest"), holoTime, holoName));
 
                     fileManager.saveModification();
 

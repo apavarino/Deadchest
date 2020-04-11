@@ -4,14 +4,18 @@ import me.crylonz.commands.DCCommandExecutor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -49,6 +53,14 @@ public class DeadChest extends JavaPlugin {
 
 
     public final static Logger log = Logger.getLogger("Minecraft");
+
+    public DeadChest() {
+        super();
+    }
+
+    protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
 
     public void onEnable() {
         chestData = new ArrayList<>();
@@ -237,5 +249,26 @@ public class DeadChest extends JavaPlugin {
             fileManager.saveModification();
         }
         return cpt;
+    }
+
+    public static ArmorStand generateHologram(Location location, String text, float shiftX, float shiftY, float shiftZ) {
+        if (location != null && location.getWorld() != null) {
+            Location holoLoc = new Location(location.getWorld(),
+                    location.getX() + shiftX,
+                    location.getY() + shiftY,
+                    location.getZ() + shiftZ);
+
+            ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(holoLoc, EntityType.ARMOR_STAND);
+            armorStand.setInvulnerable(true);
+            armorStand.setGravity(false);
+            armorStand.setCanPickupItems(false);
+            armorStand.setVisible(false);
+            armorStand.setCustomName("× " + text + " ×");
+            armorStand.setCustomNameVisible(true);
+
+            return armorStand;
+        }
+
+        return null;
     }
 }
