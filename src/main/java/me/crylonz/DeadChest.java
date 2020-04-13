@@ -10,12 +10,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -38,35 +35,39 @@ public class DeadChest extends JavaPlugin {
     public static boolean requirePermissionToGenerate = false;
     public static boolean permissionRequiredToListOwn = false;
     public static boolean autocleanupOnStart = false;
+    public static boolean generateDeadChestInCreative = true;
+    public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
 
-    public static String loc_owner = "Owner";
-    public static String loc_loading = "Loading...";
-    public static String loc_not_owner = "This is not your dead chest !";
-    public static String loc_infinyChest = "Infiny chest";
-    public static String loc_endtimer = "left";
-    public static String loc_reload = "Reload successfull..";
-    public static String loc_noperm = "You need permission";
-    public static String loc_nodc = "You don't have any deadchest";
-    public static String loc_dclistall = "List of all dead chests";
-    public static String loc_dclistown = "List of your dead chests";
-
+    public static Map<String, Object> local = new HashMap<>();
 
     public final static Logger log = Logger.getLogger("Minecraft");
 
-    public DeadChest() {
-        super();
-    }
-
-    protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
-    }
-
     public void onEnable() {
-        chestData = new ArrayList<>();
+
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new DeadChestListener(), this);
+
+        chestData = new ArrayList<>();
         fileManager = new FileManager(this);
+
+        local.put("loc_owner", "Owner");
+        local.put("loc_loading", "Loading...");
+        local.put("loc_not_owner", "This is not your Deadchest !");
+        local.put("loc_infinityChest", "Infinity chest");
+        local.put("loc_endtimer", "left");
+        local.put("loc_reload", "Reload successfull..");
+        local.put("loc_noperm", "You need permission");
+        local.put("loc_nodc", "You don't have any deadchest");
+        local.put("loc_nodcs", "There is currently no deadchest");
+        local.put("loc_dclistall", "List of all dead chests");
+        local.put("loc_dclistown", "List of your dead chests");
+        local.put("loc_doubleDC", "You can't put a chest next to a Deadchest");
+        local.put("loc_maxHeight", "You are dead above the maximum height.");
+        local.put("loc_noDCG", "No deadchest generated.");
+        local.put("loc_givebackInfo", "This player is offline or don't have any active deadchest");
+        local.put("loc_dcgbsuccess", "The oldest deadchest content of this player returned to him");
+        local.put("loc_gbplayer", "You have retrieved the content of your deadchest");
 
         Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
                 .setExecutor(new DCCommandExecutor(this));
@@ -111,6 +112,8 @@ public class DeadChest extends JavaPlugin {
             requirePermissionToGenerate = (boolean) getConfig().get("RequirePermissionToGenerate");
             permissionRequiredToListOwn = (boolean) getConfig().get("RequirePermissionToListOwn");
             autocleanupOnStart = (boolean) getConfig().get("AutoCleanupOnStart");
+            generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
+            dropMode = (int) getConfig().get("DropMode");
         }
 
         // database (chestData.yml
@@ -122,28 +125,10 @@ public class DeadChest extends JavaPlugin {
         if (!fileManager.getConfig3File().exists()) {
             fileManager.saveConfig3();
             fileManager.getConfig3().options().header("PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE");
-            fileManager.getConfig3().set("HolographicPrefixName", loc_owner);
-            fileManager.getConfig3().set("HolographicLoading", loc_loading);
-            fileManager.getConfig3().set("HolographicInfinyChest", loc_infinyChest);
-            fileManager.getConfig3().set("HolographicSuffixTimer", loc_endtimer);
-            fileManager.getConfig3().set("CommandNotOwner", loc_not_owner);
-            fileManager.getConfig3().set("CommandReloading", loc_reload);
-            fileManager.getConfig3().set("CommandNoPermission", loc_noperm);
-            fileManager.getConfig3().set("CommandNoDeadChest", loc_nodc);
-            fileManager.getConfig3().set("CommandListAll", loc_dclistall);
-            fileManager.getConfig3().set("CommandListOwn", loc_dclistown);
+            fileManager.getConfig3().createSection("localisation", local);
             fileManager.saveConfig3();
         } else {
-            loc_owner = (String) fileManager.getConfig3().get("HolographicPrefixName");
-            loc_loading = (String) fileManager.getConfig3().get("HolographicLoading");
-            loc_infinyChest = (String) fileManager.getConfig3().get("HolographicInfinyChest");
-            loc_endtimer = (String) fileManager.getConfig3().get("HolographicSuffixTimer");
-            loc_not_owner = (String) fileManager.getConfig3().get("CommandNotOwner");
-            loc_reload = (String) fileManager.getConfig3().get("CommandReloading");
-            loc_noperm = (String) fileManager.getConfig3().get("CommandNoPermission");
-            loc_nodc = (String) fileManager.getConfig3().get("CommandNoDeadChest");
-            loc_dclistall = (String) fileManager.getConfig3().get("CommandListAll");
-            loc_dclistown = (String) fileManager.getConfig3().get("CommandListOwn");
+            local = (Map<String, Object>) fileManager.getConfig3().getConfigurationSection("localisation").getValues(true);
         }
     }
 
@@ -164,21 +149,21 @@ public class DeadChest extends JavaPlugin {
                             ArrayList<Entity> entityList = (ArrayList<Entity>) as.getWorld().getNearbyEntities(as, 1.0, 1.0, 1.0);
                             for (Entity entity : entityList) {
                                 if (entity.getType().equals(EntityType.ARMOR_STAND)) {
-                                    if (entity.getCustomName() != null && !entity.getCustomName().contains(loc_owner)) {
+                                    if (entity.getCustomName() != null && !entity.getCustomName().contains((CharSequence) local.get("loc_owner"))) {
                                         long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                         long diffSeconds = Math.abs(diff / 1000 % 60);
                                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
 
-                                        if (!cd.isInfiny() && chestDuration != 0)
-                                            entity.setCustomName("× " + diffHours + "h " + diffMinutes + "m " + diffSeconds + "s " + loc_endtimer + " ×");
+                                        if (!cd.isInfinity() && chestDuration != 0)
+                                            entity.setCustomName("× " + diffHours + "h " + diffMinutes + "m " + diffSeconds + "s " + local.get("loc_endtimer") + " ×");
                                         else
-                                            entity.setCustomName("× " + loc_infinyChest + " ×");
+                                            entity.setCustomName("× " + local.get("loc_infinityChest") + " ×");
                                     }
                                 }
                             }
 
-                            if (cd.getChestDate().getTime() + chestDuration * 1000 < now.getTime() && !cd.isInfiny()
+                            if (cd.getChestDate().getTime() + chestDuration * 1000 < now.getTime() && !cd.isInfinity()
                                     && chestDuration != 0) {
 
                                 Location loc = cd.getChestLocation();

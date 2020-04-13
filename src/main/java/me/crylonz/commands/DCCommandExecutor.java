@@ -1,6 +1,7 @@
 package me.crylonz.commands;
 
 import me.crylonz.ChestData;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,6 +12,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -39,10 +41,10 @@ public class DCCommandExecutor implements CommandExecutor {
 
                         if (p.hasPermission("deadchest.admin")) {
                             reloadPlugin();
-                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + loc_reload);
+                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + local.get("loc_reload"));
                             log.info("[DeadChest] Plugin is reloading");
                         } else
-                            p.sendMessage(ChatColor.RED + "[DeadChest] " + loc_noperm + " deadchest.admin");
+                            p.sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_noperm") + " deadchest.admin");
 
                     } else {
                         reloadPlugin();
@@ -65,7 +67,7 @@ public class DCCommandExecutor implements CommandExecutor {
                             }
                             p.sendMessage(ChatColor.GOLD + "[DeadChest] Operation complete");
                         } else {
-                            p.sendMessage(ChatColor.RED + "[DeadChest] " + loc_noperm + " deadchest.admin");
+                            p.sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_noperm") + " deadchest.admin");
                         }
                     }
                 } else if (args[0].equalsIgnoreCase("removeinfinate")) {
@@ -84,7 +86,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
                                     if (cd.getChestLocation().getWorld() != null) {
 
-                                        if (cd.isInfiny() || chestDuration == 0) {
+                                        if (cd.isInfinity() || chestDuration == 0) {
                                             // remove chest
                                             Location loc = cd.getChestLocation();
                                             loc.getWorld().getBlockAt(loc).setType(Material.AIR);
@@ -168,17 +170,17 @@ public class DCCommandExecutor implements CommandExecutor {
                             if (args.length == 1) {
                                 Date now = new Date();
                                 if (!chestData.isEmpty()) {
-                                    p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + loc_dclistown + " :");
+                                    p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + local.get("loc_dclistown") + " :");
                                     for (ChestData cd : chestData) {
                                         if (cd.getPlayerUUID().equalsIgnoreCase(p.getUniqueId().toString())) {
 
-                                            if (cd.isInfiny() || chestDuration == 0) {
+                                            if (cd.isInfinity() || chestDuration == 0) {
                                                 p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " |"
                                                         + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                         + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                         + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                         + " | "
-                                                        + "∞ " + loc_endtimer);
+                                                        + "∞ " + local.get("loc_endtimer"));
                                             } else {
                                                 long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                                 long diffSeconds = Math.abs(diff / 1000 % 60);
@@ -190,14 +192,14 @@ public class DCCommandExecutor implements CommandExecutor {
                                                         + " | " +
                                                         +diffHours + "h "
                                                         + diffMinutes + "m "
-                                                        + diffSeconds + "s " + loc_endtimer);
+                                                        + diffSeconds + "s " + local.get("loc_endtimer"));
                                             }
 
 
                                         }
                                     }
                                 } else {
-                                    p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + loc_nodc);
+                                    p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + local.get("loc_nodc"));
                                 }
 
                             } else if (args.length == 2) {
@@ -205,17 +207,17 @@ public class DCCommandExecutor implements CommandExecutor {
                                     if (args[1].equalsIgnoreCase("all")) {
                                         Date now = new Date();
                                         if (!chestData.isEmpty()) {
-                                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + loc_dclistall + ":");
+                                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + local.get("loc_dclistall") + ":");
                                             for (ChestData cd : chestData) {
 
 
-                                                if (cd.isInfiny() || chestDuration == 0) {
+                                                if (cd.isInfinity() || chestDuration == 0) {
                                                     p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " | "
                                                             + ChatColor.GOLD + cd.getPlayerName() + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                             + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                             + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                             + " | "
-                                                            + "∞ " + loc_endtimer);
+                                                            + "∞ " + local.get("loc_endtimer"));
                                                 } else {
                                                     long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                                     long diffSeconds = Math.abs(diff / 1000 % 60);
@@ -228,9 +230,11 @@ public class DCCommandExecutor implements CommandExecutor {
                                                             + " | " +
                                                             +diffHours + "h "
                                                             + diffMinutes + "m "
-                                                            + diffSeconds + "s " + loc_endtimer);
+                                                            + diffSeconds + "s " + local.get("loc_endtimer"));
                                                 }
                                             }
+                                        } else {
+                                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + local.get("loc_nodcs"));
                                         }
 
                                     } else {
@@ -240,13 +244,13 @@ public class DCCommandExecutor implements CommandExecutor {
                                             for (ChestData cd : chestData) {
                                                 if (cd.getPlayerName().equalsIgnoreCase(args[1])) {
 
-                                                    if (cd.isInfiny() || chestDuration == 0) {
+                                                    if (cd.isInfinity() || chestDuration == 0) {
                                                         p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " |"
                                                                 + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                                 + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                                 + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                                 + " | "
-                                                                + "∞ " + loc_endtimer);
+                                                                + "∞ " + local.get("loc_endtimer"));
                                                     } else {
                                                         long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                                         long diffSeconds = Math.abs(diff / 1000 % 60);
@@ -259,18 +263,60 @@ public class DCCommandExecutor implements CommandExecutor {
                                                                 + " | "
                                                                 + +diffHours + "h "
                                                                 + diffMinutes + "m "
-                                                                + diffSeconds + "s " + loc_endtimer);
+                                                                + diffSeconds + "s " + local.get("loc_endtimer"));
                                                     }
                                                 }
                                             }
+                                        } else {
+                                            p.sendMessage(ChatColor.GOLD + "[DeadChest] " + ChatColor.GREEN + local.get("loc_nodcs"));
                                         }
                                     }
                                 } // deadchest.list.other
-
                             }
 
                         } else
-                            p.sendMessage(ChatColor.RED + "[DeadChest] " + loc_noperm + " deadchest.list.own");
+                            p.sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_noperm") + " deadchest.list.own");
+                    }
+                } else if (args[0].equalsIgnoreCase("giveback") || args[0].equalsIgnoreCase("gb")) {
+                    if (sender instanceof Player) {
+
+                        Player p = (Player) sender;
+                        Player targetP = null;
+
+                        if (p.hasPermission("deadchest.giveBack")) {
+                            if (args.length == 2) {
+
+                                for (ChestData cd : chestData) {
+                                    if (cd.getPlayerName().equalsIgnoreCase(args[1])) {
+
+                                        targetP = Bukkit.getPlayer(UUID.fromString(cd.getPlayerUUID()));
+
+                                        if (targetP != null && p.isOnline()) {
+                                            p.sendMessage(ChatColor.WHITE + "[DeadChest] ok");
+                                            for (ItemStack i : cd.getInventory()) {
+                                                if (i != null) {
+                                                    targetP.getWorld().dropItemNaturally(targetP.getLocation(), i);
+                                                }
+                                            }
+
+                                            // Remove chest and hologram
+                                            targetP.getWorld().getBlockAt(cd.getChestLocation()).setType(Material.AIR);
+                                            cd.removeArmorStand();
+                                            chestData.remove(cd);
+                                        }
+                                        break;
+                                    }
+                                }
+                                if (targetP != null) {
+                                    p.sendMessage(ChatColor.GREEN + "[DeadChest] " + local.get("loc_dcgbsuccess"));
+                                    targetP.sendMessage(ChatColor.GREEN + "[DeadChest] " + local.get("loc_gbplayer"));
+                                } else {
+                                    p.sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_givebackInfo"));
+                                }
+                            } else {
+                                p.sendMessage(ChatColor.WHITE + "[DeadChest] Usage : /dc giveback <PlayerName>");
+                            }
+                        }
                     }
                 } else {
                     if (sender instanceof Player) {
@@ -286,14 +332,15 @@ public class DCCommandExecutor implements CommandExecutor {
                 }
             }
 
+
         }
         return true;
     }
 
-
     public void reloadPlugin() {
 
         fileManager.reloadConfig2();
+        fileManager.reloadConfig3();
         p.reloadConfig();
         ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
         ArrayList<String> tmpExludedWorld = (ArrayList<String>) p.getConfig().get("ExcludedWorld");
@@ -312,5 +359,9 @@ public class DCCommandExecutor implements CommandExecutor {
         requirePermissionToGenerate = (boolean) p.getConfig().get("RequirePermissionToGenerate");
         permissionRequiredToListOwn = (boolean) p.getConfig().get("RequirePermissionToListOwn");
         autocleanupOnStart = (boolean) p.getConfig().get("AutoCleanupOnStart");
+        generateDeadChestInCreative = (boolean) p.getConfig().get("GenerateDeadChestInCreative");
+        dropMode = (int) p.getConfig().get("DropMode");
+
+        local = (Map<String, Object>) fileManager.getConfig3().getConfigurationSection("localisation").getValues(true);
     }
 }

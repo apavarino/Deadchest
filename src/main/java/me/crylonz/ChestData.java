@@ -20,13 +20,13 @@ public final class ChestData implements ConfigurationSerializable {
     private String playerName;
     private String playerUUID;
     private Date chestDate;
-    private boolean isInfiny;
+    private boolean isInfinity;
     private Location holographicTimer;
     private UUID holographicTimerId;
     private UUID holographicOwnerId;
     private String worldName;
 
-    ChestData(final Inventory inv, final Location chestLocation, final Player p, final boolean isInfiny, final ArmorStand asTimer, final ArmorStand owner) {
+    ChestData(final Inventory inv, final Location chestLocation, final Player p, final boolean isInfinity, final ArmorStand asTimer, final ArmorStand owner) {
 
         if (p != null) {
             this.inventory = Arrays.asList(inv.getContents());
@@ -34,20 +34,18 @@ public final class ChestData implements ConfigurationSerializable {
             this.playerName = p.getName();
             this.playerUUID = String.valueOf(p.getUniqueId());
             this.chestDate = new Date();
-            this.isInfiny = isInfiny;
+            this.isInfinity = isInfinity;
             this.holographicTimer = asTimer.getLocation().clone();
             this.holographicTimerId = asTimer.getUniqueId();
             this.holographicOwnerId = owner.getUniqueId();
             if (chestLocation.getWorld() != null)
                 this.worldName = chestLocation.getWorld().getName();
         }
-
-
     }
 
     public ChestData(final List<ItemStack> inventory, final Location chestLocation,
                      final String playerName, final String playerUUID,
-                     final Date chestDate, final boolean isInfiny,
+                     final Date chestDate, final boolean isInfinity,
                      final Location holographicTimer, final UUID asTimerId,
                      final UUID asOwnerId, final String worldName) {
         this.inventory = inventory;
@@ -55,7 +53,7 @@ public final class ChestData implements ConfigurationSerializable {
         this.playerName = playerName;
         this.playerUUID = playerUUID;
         this.chestDate = chestDate;
-        this.isInfiny = isInfiny;
+        this.isInfinity = isInfinity;
         this.holographicTimer = holographicTimer;
         this.holographicTimerId = asTimerId;
         this.holographicOwnerId = asOwnerId;
@@ -86,7 +84,7 @@ public final class ChestData implements ConfigurationSerializable {
                 (String) map.get("playerName"),
                 (String) map.get("playerUUID"),
                 (Date) map.get("chestDate"),
-                (boolean) map.get("isInfiny"),
+                (boolean) map.get("isInfinity"),
                 mylocHolo,
                 UUID.fromString((String) map.get("as_timer_id")),
                 UUID.fromString((String) map.get("as_owner_id")),
@@ -114,8 +112,8 @@ public final class ChestData implements ConfigurationSerializable {
         return chestDate;
     }
 
-    public boolean isInfiny() {
-        return isInfiny;
+    public boolean isInfinity() {
+        return isInfinity;
     }
 
     public Location getHolographicTimer() {
@@ -150,7 +148,7 @@ public final class ChestData implements ConfigurationSerializable {
         map.put("playerName", playerName);
         map.put("playerUUID", playerUUID);
         map.put("chestDate", chestDate);
-        map.put("isInfiny", isInfiny);
+        map.put("isInfinity", isInfinity);
         map.put("holographicTimer", worldName + ";" + holographicTimer.getX() + ";" + holographicTimer.getY()
                 + ";" + holographicTimer.getZ());
         map.put("worldName", worldName);

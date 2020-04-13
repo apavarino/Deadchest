@@ -2,6 +2,8 @@ package me.crylonz;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -23,25 +26,33 @@ public class DeadChestListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
-
         Player p = e.getEntity().getPlayer();
 
-        if (p == null)
-            return;
-
-        if (excludedWorlds.contains(p.getWorld().getName()))
+        if (p == null
+                || excludedWorlds.contains(p.getWorld().getName())
+                || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE))
             return;
 
         if (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate) {
             if ((DeadChest.deadChestPlayerCount(p) < maxDeadChestPerPlayer || maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
-                World world = e.getEntity().getWorld();
-                Location loc = e.getEntity().getLocation();
+                World world = p.getWorld();
+                Location loc = p.getLocation();
 
+                // Handle case bottom of the world
                 if (loc.getY() < 1) {
                     loc.setY(world.getHighestBlockYAt((int) loc.getX(), (int) loc.getZ()));
                     if (loc.getY() < 1)
                         loc.setY(1);
+                }
+
+                // Handle case top of the world
+                if (loc.getBlockY() >= world.getMaxHeight()) {
+                    p.sendMessage(ChatColor.GOLD + "==========[DeadChest]==========");
+                    p.sendMessage(ChatColor.GOLD + (String) local.get("loc_maxHeight"));
+                    p.sendMessage(ChatColor.GOLD + (String) local.get("loc_noDCG"));
+                    p.sendMessage(ChatColor.GOLD + "===============================");
+                    return;
                 }
 
 
@@ -59,20 +70,30 @@ public class DeadChestListener implements Listener {
                 if (!isInventoryEmpty(p.getInventory())) {
                     b.setType(Material.CHEST);
 
-                    String firstLine = loc_owner + ": " + e.getEntity().getDisplayName();
+                    String firstLine = local.get("loc_owner") + ": " + e.getEntity().getDisplayName();
                     ArmorStand holoName = DeadChest.generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f);
 
-                    String secondLine = loc_loading;
+                    String secondLine = (String) local.get("loc_loading");
                     ArmorStand holoTime = DeadChest.generateHologram(b.getLocation(), secondLine, 0.5f, -1.2f, 0.5f);
 
+                    // Remove items with curse of vanishing
+                    for (ItemStack is : p.getInventory().getContents()) {
+                        if (is != null && is.getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                            p.getInventory().remove(is);
+                        }
+                    }
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.InfinyChest"), holoTime, holoName));
+                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.infinityChest"), holoTime, holoName));
 
                     fileManager.saveModification();
 
                     e.getDrops().clear();
                     e.getEntity().getInventory().clear();
                 }
+                p.sendMessage(ChatColor.GOLD + "Your deadchest is at X: " +
+                        ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
+                        ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
+                        ChatColor.WHITE + b.getZ());
                 if (logDeadChestOnConsole)
                     log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
             }
@@ -95,48 +116,58 @@ public class DeadChestListener implements Listener {
                                 || e.getPlayer().hasPermission("deadChest.chestPass")) {
 
 
-                            // put all item on the ground
-                            for (ItemStack i : cd.getInventory()) {
-                                if (i != null) {
+                            // put all item on the inventory
+                            if (dropMode == 1) {
+                                for (ItemStack i : cd.getInventory()) {
+                                    if (i != null) {
 
-                                    if ((i.getType() == Material.IRON_HELMET ||
-                                            i.getType() == Material.GOLDEN_HELMET ||
-                                            i.getType() == Material.LEATHER_HELMET ||
-                                            i.getType() == Material.DIAMOND_HELMET ||
-                                            i.getType() == Material.CHAINMAIL_HELMET) &&
-                                            e.getPlayer().getInventory().getHelmet() == null)
-                                        e.getPlayer().getInventory().setHelmet(i);
+                                        if ((i.getType() == Material.IRON_HELMET ||
+                                                i.getType() == Material.GOLDEN_HELMET ||
+                                                i.getType() == Material.LEATHER_HELMET ||
+                                                i.getType() == Material.DIAMOND_HELMET ||
+                                                i.getType() == Material.CHAINMAIL_HELMET) &&
+                                                e.getPlayer().getInventory().getHelmet() == null)
+                                            e.getPlayer().getInventory().setHelmet(i);
 
-                                    else if ((i.getType() == Material.IRON_BOOTS ||
-                                            i.getType() == Material.GOLDEN_BOOTS ||
-                                            i.getType() == Material.LEATHER_BOOTS ||
-                                            i.getType() == Material.DIAMOND_BOOTS ||
-                                            i.getType() == Material.CHAINMAIL_BOOTS) &&
-                                            e.getPlayer().getInventory().getBoots() == null)
-                                        e.getPlayer().getInventory().setBoots(i);
+                                        else if ((i.getType() == Material.IRON_BOOTS ||
+                                                i.getType() == Material.GOLDEN_BOOTS ||
+                                                i.getType() == Material.LEATHER_BOOTS ||
+                                                i.getType() == Material.DIAMOND_BOOTS ||
+                                                i.getType() == Material.CHAINMAIL_BOOTS) &&
+                                                e.getPlayer().getInventory().getBoots() == null)
+                                            e.getPlayer().getInventory().setBoots(i);
 
-                                    else if ((i.getType() == Material.IRON_CHESTPLATE ||
-                                            i.getType() == Material.GOLDEN_CHESTPLATE ||
-                                            i.getType() == Material.LEATHER_CHESTPLATE ||
-                                            i.getType() == Material.DIAMOND_CHESTPLATE ||
-                                            i.getType() == Material.CHAINMAIL_CHESTPLATE ||
-                                            i.getType() == Material.ELYTRA) &&
-                                            e.getPlayer().getInventory().getChestplate() == null)
-                                        e.getPlayer().getInventory().setChestplate(i);
+                                        else if ((i.getType() == Material.IRON_CHESTPLATE ||
+                                                i.getType() == Material.GOLDEN_CHESTPLATE ||
+                                                i.getType() == Material.LEATHER_CHESTPLATE ||
+                                                i.getType() == Material.DIAMOND_CHESTPLATE ||
+                                                i.getType() == Material.CHAINMAIL_CHESTPLATE ||
+                                                i.getType() == Material.ELYTRA) &&
+                                                e.getPlayer().getInventory().getChestplate() == null)
+                                            e.getPlayer().getInventory().setChestplate(i);
 
-                                    else if ((i.getType() == Material.IRON_LEGGINGS ||
-                                            i.getType() == Material.GOLDEN_LEGGINGS ||
-                                            i.getType() == Material.LEATHER_LEGGINGS ||
-                                            i.getType() == Material.DIAMOND_LEGGINGS ||
-                                            i.getType() == Material.CHAINMAIL_LEGGINGS) &&
-                                            e.getPlayer().getInventory().getLeggings() == null)
-                                        e.getPlayer().getInventory().setLeggings(i);
+                                        else if ((i.getType() == Material.IRON_LEGGINGS ||
+                                                i.getType() == Material.GOLDEN_LEGGINGS ||
+                                                i.getType() == Material.LEATHER_LEGGINGS ||
+                                                i.getType() == Material.DIAMOND_LEGGINGS ||
+                                                i.getType() == Material.CHAINMAIL_LEGGINGS) &&
+                                                e.getPlayer().getInventory().getLeggings() == null)
+                                            e.getPlayer().getInventory().setLeggings(i);
 
-                                    else if (e.getPlayer().getInventory().firstEmpty() != -1)
-                                        e.getPlayer().getInventory().addItem(i);
-                                    else
-                                        e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                        else if (e.getPlayer().getInventory().firstEmpty() != -1)
+                                            e.getPlayer().getInventory().addItem(i);
+                                        else
+                                            e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                    }
                                 }
+                                // pushed item on the ground
+                            } else {
+                                for (ItemStack i : cd.getInventory()) {
+                                    if (i != null) {
+                                        e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                    }
+                                }
+
                             }
 
                             block.setType(Material.AIR);
@@ -148,7 +179,7 @@ public class DeadChestListener implements Listener {
                             break;
                         } else {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + loc_not_owner);
+                            e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_not_owner"));
                         }
                     }
                 }
@@ -165,7 +196,7 @@ public class DeadChestListener implements Listener {
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation() == e.getBlock().getLocation()) {
                         e.setCancelled(true);
-                        e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + loc_not_owner);
+                        e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + local.get("loc_not_owner"));
                         break;
                     }
                 }
@@ -221,6 +252,25 @@ public class DeadChestListener implements Listener {
 
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void blockPlace(BlockPlaceEvent e) {
+        if (e.getBlock().getType() == Material.CHEST) {
+            for (BlockFace face : BlockFace.values()) {
+                Block block = e.getBlock().getRelative(face);
+                if (block.getType() == Material.CHEST) {
+                    for (ChestData cd : chestData) {
+                        if (cd.getChestLocation().equals(block.getLocation())) {
+                            e.setCancelled(true);
+                            e.getPlayer().sendMessage(ChatColor.RED + "[Deadchest] " + local.get("loc_doubleDC"));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 

@@ -1,5 +1,7 @@
 #
 # PLEASE RELOAD OR RESTART SERVER AFTER A CHANGE IN THIS FILE. YOU CAN ALSO USE /dc reload
+# More information on plugin page : https://dev.bukkit.org/projects/dead-chest
+# Any trouble to use this file ? Ask help on Discord : https://discordapp.com/invite/jCsvJxS
 #
 
 # true  : Only the owner of the inventory can open the deadchest
@@ -31,3 +33,16 @@ RequirePermissionToListOwn: false
 
 # Remove all existing deadchests on startup
 AutoCleanupOnStart: false
+
+# Player in creative mode generate deadchest
+GenerateDeadChestInCreative: true
+
+# How a deadchest returns items to players
+# 1 : Items are pushed directly to inventory. If inventory is full, items are dropped on the ground.
+# 2 : Items are dropped on the ground
+DropMode: 1
+
+# List of excluded worlds
+ExcludedWorld:
+  - MyWorldWithoutDeadChest
+  - AnotherExampleOfWorldWithoutDeadChest
