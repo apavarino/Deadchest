@@ -3,6 +3,8 @@ package me.crylonz;
 import me.crylonz.commands.DCCommandExecutor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -18,14 +20,8 @@ import java.util.logging.Logger;
 
 public class DeadChest extends JavaPlugin {
 
-    static {
-        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
-    }
-
-    private boolean isChanged = false;
-
+    public final static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
-
     public static List<ChestData> chestData;
     public static boolean isIndestructible = true;
     public static boolean OnlyOwnerCanOpenDeadChest = true;
@@ -38,154 +34,13 @@ public class DeadChest extends JavaPlugin {
     public static boolean generateDeadChestInCreative = true;
     public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
-
     public static Map<String, Object> local = new HashMap<>();
 
-    public final static Logger log = Logger.getLogger("Minecraft");
-
-    public void onEnable() {
-
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(), this);
-
-        chestData = new ArrayList<>();
-        fileManager = new FileManager(this);
-
-        local.put("loc_owner", "Owner");
-        local.put("loc_loading", "Loading...");
-        local.put("loc_not_owner", "This is not your Deadchest !");
-        local.put("loc_infinityChest", "Infinity chest");
-        local.put("loc_endtimer", "left");
-        local.put("loc_reload", "Reload successfull..");
-        local.put("loc_noperm", "You need permission");
-        local.put("loc_nodc", "You don't have any deadchest");
-        local.put("loc_nodcs", "There is currently no deadchest");
-        local.put("loc_dclistall", "List of all dead chests");
-        local.put("loc_dclistown", "List of your dead chests");
-        local.put("loc_doubleDC", "You can't put a chest next to a Deadchest");
-        local.put("loc_maxHeight", "You are dead above the maximum height.");
-        local.put("loc_noDCG", "No deadchest generated.");
-        local.put("loc_givebackInfo", "This player is offline or don't have any active deadchest");
-        local.put("loc_dcgbsuccess", "The oldest deadchest content of this player returned to him");
-        local.put("loc_gbplayer", "You have retrieved the content of your deadchest");
-
-        Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
-                .setExecutor(new DCCommandExecutor(this));
-
-        initializeConfig();
-
-        if (autocleanupOnStart) {
-            cleanAllDeadChests();
-        }
-
-        launchRepeatingTask();
+    static {
+        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
     }
 
-    public void onDisable() {
-
-        if (fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
-        }
-    }
-
-    private void initializeConfig() {
-
-        // plugin config file
-        if (!fileManager.getConfigFile().exists()) {
-            saveDefaultConfig();
-
-        } else {
-            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
-            ArrayList<String> tmpExludedWorld = (ArrayList<String>) getConfig().get("ExcludedWorld");
-
-            if (tmp != null)
-                chestData = tmp;
-
-            if (tmpExludedWorld != null)
-                excludedWorlds = tmpExludedWorld;
-
-            isIndestructible = getConfig().getBoolean("IndestuctibleChest");
-            OnlyOwnerCanOpenDeadChest = getConfig().getBoolean("OnlyOwnerCanOpenDeadChest");
-            chestDuration = getConfig().getInt("DeadChestDuration");
-            maxDeadChestPerPlayer = (int) getConfig().get("maxDeadChestPerPlayer");
-            logDeadChestOnConsole = (boolean) getConfig().get("logDeadChestOnConsole");
-            requirePermissionToGenerate = (boolean) getConfig().get("RequirePermissionToGenerate");
-            permissionRequiredToListOwn = (boolean) getConfig().get("RequirePermissionToListOwn");
-            autocleanupOnStart = (boolean) getConfig().get("AutoCleanupOnStart");
-            generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
-            dropMode = (int) getConfig().get("DropMode");
-        }
-
-        // database (chestData.yml
-        if (!fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
-        }
-
-        // locale file for translation
-        if (!fileManager.getConfig3File().exists()) {
-            fileManager.saveConfig3();
-            fileManager.getConfig3().options().header("PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE");
-            fileManager.getConfig3().createSection("localisation", local);
-            fileManager.saveConfig3();
-        } else {
-            local = (Map<String, Object>) fileManager.getConfig3().getConfigurationSection("localisation").getValues(true);
-        }
-    }
-
-    private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            public void run() {
-
-                if (chestData != null && !chestData.isEmpty()) {
-                    Date now = new Date();
-
-                    Iterator<ChestData> chestDataIt = chestData.iterator();
-                    while (chestDataIt.hasNext()) {
-                        ChestData cd = chestDataIt.next();
-                        Location as = cd.getHolographicTimer();
-
-                        if (as.getWorld() != null) {
-
-                            ArrayList<Entity> entityList = (ArrayList<Entity>) as.getWorld().getNearbyEntities(as, 1.0, 1.0, 1.0);
-                            for (Entity entity : entityList) {
-                                if (entity.getType().equals(EntityType.ARMOR_STAND)) {
-                                    if (entity.getCustomName() != null && !entity.getCustomName().contains((CharSequence) local.get("loc_owner"))) {
-                                        long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
-                                        long diffSeconds = Math.abs(diff / 1000 % 60);
-                                        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
-                                        long diffHours = Math.abs(diff / (60 * 60 * 1000));
-
-                                        if (!cd.isInfinity() && chestDuration != 0)
-                                            entity.setCustomName("× " + diffHours + "h " + diffMinutes + "m " + diffSeconds + "s " + local.get("loc_endtimer") + " ×");
-                                        else
-                                            entity.setCustomName("× " + local.get("loc_infinityChest") + " ×");
-                                    }
-                                }
-                            }
-
-                            if (cd.getChestDate().getTime() + chestDuration * 1000 < now.getTime() && !cd.isInfinity()
-                                    && chestDuration != 0) {
-
-                                Location loc = cd.getChestLocation();
-                                loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-
-                                cd.removeArmorStand();
-
-                                chestDataIt.remove();
-                                isChanged = true;
-                            }
-                        }
-                    }
-
-                    if (isChanged) {
-                        fileManager.saveModification();
-                        isChanged = false;
-                    }
-                }
-            }
-        }, 20, 20);
-    }
-
+    private boolean isChanged = false;
 
     static int deadChestPlayerCount(Player p) {
 
@@ -255,5 +110,181 @@ public class DeadChest extends JavaPlugin {
         }
 
         return null;
+    }
+
+    public void onEnable() {
+
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new DeadChestListener(), this);
+
+        chestData = new ArrayList<>();
+        fileManager = new FileManager(this);
+
+        local.put("loc_owner", "Owner");
+        local.put("loc_loading", "Loading...");
+        local.put("loc_not_owner", "This is not your Deadchest !");
+        local.put("loc_infinityChest", "Infinity chest");
+        local.put("loc_endtimer", "left");
+        local.put("loc_reload", "Reload successfull..");
+        local.put("loc_noperm", "You need permission");
+        local.put("loc_nodc", "You don't have any deadchest");
+        local.put("loc_nodcs", "There is currently no deadchest");
+        local.put("loc_dclistall", "List of all dead chests");
+        local.put("loc_dclistown", "List of your dead chests");
+        local.put("loc_doubleDC", "You can't put a chest next to a Deadchest");
+        local.put("loc_maxHeight", "You are dead above the maximum height.");
+        local.put("loc_noDCG", "No deadchest generated.");
+        local.put("loc_givebackInfo", "This player is offline or don't have any active deadchest");
+        local.put("loc_dcgbsuccess", "The oldest deadchest content of this player returned to him");
+        local.put("loc_gbplayer", "You have retrieved the content of your deadchest");
+        local.put("loc_chestPos", "Your deadchest is at");
+
+        Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
+                .setExecutor(new DCCommandExecutor(this));
+
+        initializeConfig();
+
+        if (autocleanupOnStart) {
+            cleanAllDeadChests();
+        }
+
+        launchRepeatingTask();
+    }
+
+    public void onDisable() {
+
+        if (fileManager.getConfig2File().exists()) {
+            fileManager.saveConfig2();
+        }
+    }
+
+    private void initializeConfig() {
+
+        // plugin config file
+        if (!fileManager.getConfigFile().exists()) {
+            saveDefaultConfig();
+
+        } else {
+            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
+            ArrayList<String> tmpExludedWorld = (ArrayList<String>) getConfig().get("ExcludedWorld");
+
+            if (tmp != null)
+                chestData = tmp;
+
+            if (tmpExludedWorld != null)
+                excludedWorlds = tmpExludedWorld;
+
+            isIndestructible = getConfig().getBoolean("IndestuctibleChest");
+            OnlyOwnerCanOpenDeadChest = getConfig().getBoolean("OnlyOwnerCanOpenDeadChest");
+            chestDuration = getConfig().getInt("DeadChestDuration");
+            maxDeadChestPerPlayer = (int) getConfig().get("maxDeadChestPerPlayer");
+            logDeadChestOnConsole = (boolean) getConfig().get("logDeadChestOnConsole");
+            requirePermissionToGenerate = (boolean) getConfig().get("RequirePermissionToGenerate");
+            permissionRequiredToListOwn = (boolean) getConfig().get("RequirePermissionToListOwn");
+            autocleanupOnStart = (boolean) getConfig().get("AutoCleanupOnStart");
+            generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
+            dropMode = (int) getConfig().get("DropMode");
+        }
+
+        // database (chestData.yml)
+        if (!fileManager.getConfig2File().exists()) {
+            fileManager.saveConfig2();
+        }
+
+        // locale file for translation
+        if (!fileManager.getConfig3File().exists()) {
+            fileManager.saveConfig3();
+            fileManager.getConfig3().options().header("PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE");
+            fileManager.getConfig3().createSection("localisation", local);
+            fileManager.saveConfig3();
+        } else {
+            // if file exist
+            // we verify if the file have all traduction
+            // and add missing if needed
+            Map<String, Object> localTmp = new HashMap<>();
+            localTmp = fileManager.getConfig3().getConfigurationSection("localisation").getValues(true);
+
+            for (Map.Entry<String, Object> entry : local.entrySet()) {
+                if (localTmp.get(entry.getKey()) == null) {
+                    localTmp.put(entry.getKey(), entry.getValue());
+                }
+            }
+            local = localTmp;
+            fileManager.getConfig3().createSection("localisation", local);
+            fileManager.saveConfig3();
+        }
+    }
+
+    private void launchRepeatingTask() {
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+
+                if (chestData != null && !chestData.isEmpty()) {
+                    Date now = new Date();
+
+                    Iterator<ChestData> chestDataIt = chestData.iterator();
+                    while (chestDataIt.hasNext()) {
+                        ChestData cd = chestDataIt.next();
+                        Location as = cd.getHolographicTimer();
+                        World w = cd.getChestLocation().getWorld();
+
+                        // test if deadchest is always here
+                        if (w != null) {
+                            Block b = w.getBlockAt(cd.getChestLocation());
+
+                            if (b.getType() != Material.CHEST) {
+
+                                for (ItemStack is : cd.getInventory()) {
+                                    if (is != null) {
+                                        w.dropItemNaturally(cd.getChestLocation(), is);
+                                    }
+                                }
+                                cd.removeArmorStand();
+                                chestDataIt.remove();
+                                isChanged = true;
+                            }
+                        }
+                        // end test
+
+                        if (as.getWorld() != null) {
+
+                            ArrayList<Entity> entityList = (ArrayList<Entity>) as.getWorld().getNearbyEntities(as, 1.0, 1.0, 1.0);
+                            for (Entity entity : entityList) {
+                                if (entity.getType().equals(EntityType.ARMOR_STAND)) {
+                                    if (entity.getCustomName() != null && !entity.getCustomName().contains((CharSequence) local.get("loc_owner"))) {
+                                        long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
+                                        long diffSeconds = Math.abs(diff / 1000 % 60);
+                                        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
+                                        long diffHours = Math.abs(diff / (60 * 60 * 1000));
+
+                                        if (!cd.isInfinity() && chestDuration != 0)
+                                            entity.setCustomName("× " + diffHours + "h " + diffMinutes + "m " + diffSeconds + "s " + local.get("loc_endtimer") + " ×");
+                                        else
+                                            entity.setCustomName("× " + local.get("loc_infinityChest") + " ×");
+                                    }
+                                }
+                            }
+
+                            if (cd.getChestDate().getTime() + chestDuration * 1000 < now.getTime() && !cd.isInfinity()
+                                    && chestDuration != 0) {
+
+                                Location loc = cd.getChestLocation();
+                                loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+
+                                cd.removeArmorStand();
+
+                                chestDataIt.remove();
+                                isChanged = true;
+                            }
+                        }
+                    }
+
+                    if (isChanged) {
+                        fileManager.saveModification();
+                        isChanged = false;
+                    }
+                }
+            }
+        }, 20, 20);
     }
 }

@@ -194,8 +194,6 @@ public class DCCommandExecutor implements CommandExecutor {
                                                         + diffMinutes + "m "
                                                         + diffSeconds + "s " + local.get("loc_endtimer"));
                                             }
-
-
                                         }
                                     }
                                 } else {

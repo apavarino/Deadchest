@@ -41,31 +41,44 @@ public class DeadChestListener implements Listener {
 
                 // Handle case bottom of the world
                 if (loc.getY() < 1) {
-                    loc.setY(world.getHighestBlockYAt((int) loc.getX(), (int) loc.getZ()));
+                    loc.setY(world.getHighestBlockYAt((int) loc.getX(), (int) loc.getZ()) + 1);
                     if (loc.getY() < 1)
                         loc.setY(1);
                 }
 
                 // Handle case top of the world
-                if (loc.getBlockY() >= world.getMaxHeight()) {
-                    p.sendMessage(ChatColor.GOLD + "==========[DeadChest]==========");
-                    p.sendMessage(ChatColor.GOLD + (String) local.get("loc_maxHeight"));
-                    p.sendMessage(ChatColor.GOLD + (String) local.get("loc_noDCG"));
-                    p.sendMessage(ChatColor.GOLD + "===============================");
-                    return;
-                }
+                else if (loc.getBlockY() >= world.getMaxHeight()) {
 
+                    int y = world.getMaxHeight() - 1;
+                    loc.setY(y);
 
-                Block b = world.getBlockAt(loc);
-
-                if (b.getType() != Material.AIR && b.getType() != Material.CAVE_AIR && b.getType() != Material.VOID_AIR && b.getType() != Material.WATER && b.getType() != Material.LAVA) {
-
-                    while (world.getBlockAt(loc).getType() != Material.AIR && loc.getY() < world.getMaxHeight()) {
-                        loc.setY(loc.getY() + 1);
+                    while (world.getBlockAt(loc).getType() != Material.AIR && y > 0) {
+                        y--;
+                        loc.setY(y);
                     }
 
-                    b = world.getBlockAt(loc);
+                    if (y < 1) {
+                        p.sendMessage(ChatColor.RED + "==========[DeadChest]==========");
+                        p.sendMessage(ChatColor.RED + (String) local.get("loc_noDCG"));
+                        p.sendMessage(ChatColor.RED + "===============================");
+                        return;
+                    }
                 }
+                // Handle standard case
+                else {
+                    if (world.getBlockAt(loc).getType() != Material.AIR
+                            && world.getBlockAt(loc).getType() != Material.CAVE_AIR
+                            && world.getBlockAt(loc).getType() != Material.VOID_AIR
+                            && world.getBlockAt(loc).getType() != Material.WATER
+                            && world.getBlockAt(loc).getType() != Material.LAVA) {
+
+                        while (world.getBlockAt(loc).getType() != Material.AIR && loc.getY() < world.getMaxHeight()) {
+                            loc.setY(loc.getY() + 1);
+                        }
+                    }
+                }
+
+                Block b = world.getBlockAt(loc);
 
                 if (!isInventoryEmpty(p.getInventory())) {
                     b.setType(Material.CHEST);
@@ -83,6 +96,30 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
+                    if (p.getInventory().getHelmet() != null
+                            && p.getInventory().getHelmet().getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                        p.getInventory().setHelmet(null);
+                    }
+
+                    if (p.getInventory().getChestplate() != null
+                            && p.getInventory().getChestplate().getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                        p.getInventory().setChestplate(null);
+                    }
+
+                    if (p.getInventory().getLeggings() != null
+                            && p.getInventory().getLeggings().getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                        p.getInventory().setLeggings(null);
+                    }
+
+                    if (p.getInventory().getBoots() != null
+                            && p.getInventory().getBoots().getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                        p.getInventory().setBoots(null);
+                    }
+
+                    if (p.getInventory().getItemInOffHand().getEnchantments().containsKey(Enchantment.VANISHING_CURSE)) {
+                        p.getInventory().setItemInOffHand(null);
+                    }
+
                     chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.infinityChest"), holoTime, holoName));
 
                     fileManager.saveModification();
@@ -90,7 +127,7 @@ public class DeadChestListener implements Listener {
                     e.getDrops().clear();
                     e.getEntity().getInventory().clear();
                 }
-                p.sendMessage(ChatColor.GOLD + "Your deadchest is at X: " +
+                p.sendMessage(ChatColor.GOLD + "" + local.get("loc_chestPos") + " X: " +
                         ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
                         ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
                         ChatColor.WHITE + b.getZ());
@@ -126,6 +163,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_HELMET ||
                                                 i.getType() == Material.DIAMOND_HELMET ||
                                                 i.getType() == Material.CHAINMAIL_HELMET) &&
+                                                !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getHelmet() == null)
                                             e.getPlayer().getInventory().setHelmet(i);
 
@@ -134,6 +172,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_BOOTS ||
                                                 i.getType() == Material.DIAMOND_BOOTS ||
                                                 i.getType() == Material.CHAINMAIL_BOOTS) &&
+                                                !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getBoots() == null)
                                             e.getPlayer().getInventory().setBoots(i);
 
@@ -143,6 +182,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.DIAMOND_CHESTPLATE ||
                                                 i.getType() == Material.CHAINMAIL_CHESTPLATE ||
                                                 i.getType() == Material.ELYTRA) &&
+                                                !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getChestplate() == null)
                                             e.getPlayer().getInventory().setChestplate(i);
 
@@ -151,6 +191,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_LEGGINGS ||
                                                 i.getType() == Material.DIAMOND_LEGGINGS ||
                                                 i.getType() == Material.CHAINMAIL_LEGGINGS) &&
+                                                !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getLeggings() == null)
                                             e.getPlayer().getInventory().setLeggings(i);
 
@@ -270,8 +311,5 @@ public class DeadChestListener implements Listener {
                 }
             }
         }
-
     }
-
-
 }
