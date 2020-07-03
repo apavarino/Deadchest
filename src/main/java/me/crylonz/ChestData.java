@@ -15,6 +15,8 @@ import java.util.*;
 @SerializableAs("ChestData")
 public final class ChestData implements ConfigurationSerializable {
 
+    enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
+
     private List<ItemStack> inventory;
     private Location chestLocation;
     private String playerName;
@@ -58,25 +60,21 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicTimerId = asTimerId;
         this.holographicOwnerId = asOwnerId;
         this.worldName = worldName;
-
     }
 
+    @SuppressWarnings({"unchecked", "unused"})
     public static ChestData deserialize(final Map<String, Object> map) {
-        final int worldNameIndex = 0;
-        final int locXIndex = 1;
-        final int locYIndex = 2;
-        final int locZIndex = 3;
 
         String[] loc = ((String) map.get("chestLocation")).split(";");
         String[] locHolo = ((String) map.get("holographicTimer")).split(";");
 
-        Location myloc = new Location(Bukkit.getWorld(loc[worldNameIndex]),
-                Double.parseDouble(loc[locXIndex]), Double.parseDouble(loc[locYIndex]),
-                Double.parseDouble(loc[locZIndex]));
+        Location myloc = new Location(Bukkit.getWorld(loc[Indexes.WORLD_NAME.ordinal()]),
+                Double.parseDouble(loc[Indexes.LOC_X.ordinal()]), Double.parseDouble(loc[Indexes.LOC_Y.ordinal()]),
+                Double.parseDouble(loc[Indexes.LOC_Z.ordinal()]));
 
-        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[worldNameIndex]),
-                Double.parseDouble(locHolo[locXIndex]), Double.parseDouble(locHolo[locYIndex]),
-                Double.parseDouble(locHolo[locZIndex]));
+        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[Indexes.WORLD_NAME.ordinal()]),
+                Double.parseDouble(locHolo[Indexes.LOC_X.ordinal()]), Double.parseDouble(locHolo[Indexes.LOC_Y.ordinal()]),
+                Double.parseDouble(locHolo[Indexes.LOC_Z.ordinal()]));
 
         return new ChestData(
                 (List<ItemStack>) map.get("inventory"),
@@ -91,6 +89,7 @@ public final class ChestData implements ConfigurationSerializable {
                 (String) map.get("worldName")
         );
     }
+
 
     public List<ItemStack> getInventory() {
         return inventory;

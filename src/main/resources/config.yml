@@ -37,6 +37,9 @@ AutoCleanupOnStart: false
 # Player in creative mode generate deadchest
 GenerateDeadChestInCreative: true
 
+# Display deadchest position for the player on death in the chat
+DisplayDeadChestPositionOnDeath: true
+
 # How a deadchest returns items to players
 # 1 : Items are pushed directly to inventory. If inventory is full, items are dropped on the ground.
 # 2 : Items are dropped on the ground
