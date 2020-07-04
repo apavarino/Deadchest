@@ -3,13 +3,16 @@ package me.crylonz;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
-import static me.crylonz.DeadChest.chestData;
-import static me.crylonz.DeadChest.fileManager;
+import static me.crylonz.DeadChest.*;
 
 public class DeadChestManager {
 
@@ -50,7 +53,7 @@ public class DeadChestManager {
      * @param shiftZ   z shifting
      * @return the generated armorstand
      */
-    public static ArmorStand generateHologram(Location location, String text, float shiftX, float shiftY, float shiftZ) {
+    public static ArmorStand generateHologram(Location location, String text, float shiftX, float shiftY, float shiftZ, boolean isTimer) {
         if (location != null && location.getWorld() != null) {
             Location holoLoc = new Location(location.getWorld(),
                     location.getX() + shiftX,
@@ -62,7 +65,8 @@ public class DeadChestManager {
             armorStand.setGravity(false);
             armorStand.setCanPickupItems(false);
             armorStand.setVisible(false);
-            armorStand.setCustomName("× " + text + " ×");
+            armorStand.setMetadata("deadchest", new FixedMetadataValue(plugin, isTimer));
+            armorStand.setCustomName(text);
             armorStand.setCustomNameVisible(true);
 
             return armorStand;
@@ -85,5 +89,25 @@ public class DeadChestManager {
             }
         }
         return count;
+    }
+
+    /**
+     * Regeneration of metaData for holos
+     */
+    static void reloadMetaData() {
+
+        for (ChestData cdata : chestData) {
+            Collection<Entity> nearbyEntities = Objects.requireNonNull(
+                    cdata.getChestLocation().getWorld()).getNearbyEntities(cdata.getHolographicTimer(), 1, 1, 1);
+
+            for (Entity ne : nearbyEntities) {
+                if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
+                    ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, false));
+                } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
+                    ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, true));
+                }
+            }
+        }
+
     }
 }

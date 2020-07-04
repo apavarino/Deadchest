@@ -21,7 +21,6 @@ public class FileManager {
     private static File config3File = null;
     private static String config3FileName = "locale.yml";
 
-
     private Plugin p;
 
     // Constructor

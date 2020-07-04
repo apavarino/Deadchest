@@ -90,6 +90,17 @@ public final class ChestData implements ConfigurationSerializable {
         );
     }
 
+    public UUID getHolographicTimerId() {
+        return holographicTimerId;
+    }
+
+    public UUID getHolographicOwnerId() {
+        return holographicOwnerId;
+    }
+
+    public void setHolographicOwnerId(UUID holographicOwnerId) {
+        this.holographicOwnerId = holographicOwnerId;
+    }
 
     public List<ItemStack> getInventory() {
         return inventory;

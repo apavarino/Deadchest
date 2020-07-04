@@ -22,10 +22,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
+import static me.crylonz.Localization.PREFIX;
+import static me.crylonz.Utils.generateLog;
 import static me.crylonz.Utils.isInventoryEmpty;
 
 public class DeadChestListener implements Listener {
@@ -65,9 +68,7 @@ public class DeadChestListener implements Listener {
                     }
 
                     if (y < 1) {
-                        p.sendMessage(ChatColor.RED + "==========[DeadChest]==========");
-                        p.sendMessage(ChatColor.RED + "" + localization.get().get("loc_noDCG"));
-                        p.sendMessage(ChatColor.RED + "===============================");
+                        p.sendMessage(PREFIX + local.get("loc_noDCG"));
                         return;
                     }
                 }
@@ -90,11 +91,11 @@ public class DeadChestListener implements Listener {
                 if (!isInventoryEmpty(p.getInventory())) {
                     b.setType(Material.CHEST);
 
-                    String firstLine = localization.get().get("loc_owner") + ": " + e.getEntity().getDisplayName();
-                    ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f);
+                    String firstLine = local.replacePlayer(local.get("holo_owner"), e.getEntity().getDisplayName());
+                    ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
 
-                    String secondLine = (String) localization.get().get("loc_loading");
-                    ArmorStand holoTime = generateHologram(b.getLocation(), secondLine, 0.5f, -1.2f, 0.5f);
+                    String secondLine = local.get("holo_loading");
+                    ArmorStand holoTime = generateHologram(b.getLocation(), secondLine, 0.5f, -1.2f, 0.5f, true);
 
                     // Remove items with curse of vanishing
                     for (ItemStack is : p.getInventory().getContents()) {
@@ -133,17 +134,22 @@ public class DeadChestListener implements Listener {
 
                     e.getDrops().clear();
                     e.getEntity().getInventory().clear();
+
+                    if (displayDeadChestPositionOnDeath) {
+                        p.sendMessage(PREFIX + local.get("loc_chestPos") + " X: " +
+                                ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
+                                ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
+                                ChatColor.WHITE + b.getZ());
+                    }
+
+                    generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+
+                    if (logDeadChestOnConsole)
+                        log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+                } else {
+                    generateLog("Player [" + p.getName() + "] died without inventory : No Deadchest generated");
                 }
 
-                if (displayDeadChestPositionOnDeath) {
-                    p.sendMessage(ChatColor.GOLD + "" + localization.get().get("loc_chestPos") + " X: " +
-                            ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
-                            ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
-                            ChatColor.WHITE + b.getZ());
-                }
-
-                if (logDeadChestOnConsole)
-                    log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
             }
         }
     }
@@ -163,6 +169,7 @@ public class DeadChestListener implements Listener {
                         if (!OnlyOwnerCanOpenDeadChest || e.getPlayer().getUniqueId().toString().equals(cd.getPlayerUUID())
                                 || e.getPlayer().hasPermission("deadChest.chestPass")) {
 
+                            generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + e.getPlayer().getName() + "] in " + e.getPlayer().getWorld().getName());
 
                             // put all item on the inventory
                             if (dropMode == 1) {
@@ -231,7 +238,7 @@ public class DeadChestListener implements Listener {
                             break;
                         } else {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + localization.get().get("loc_not_owner"));
+                            e.getPlayer().sendMessage(PREFIX + local.get("loc_not_owner"));
                         }
                     }
                 }
@@ -247,7 +254,7 @@ public class DeadChestListener implements Listener {
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation() == e.getBlock().getLocation()) {
                         e.setCancelled(true);
-                        e.getPlayer().sendMessage(ChatColor.RED + "[DeadChest] " + localization.get().get("loc_not_owner"));
+                        e.getPlayer().sendMessage(PREFIX + local.get("loc_not_owner"));
                         break;
                     }
                 }
@@ -278,11 +285,13 @@ public class DeadChestListener implements Listener {
                 Block block = blocklist.get(i);
                 for (ChestData cd : chestData) {
                     if (block.getType() == Material.CHEST && cd.getChestLocation().equals(block.getLocation())) {
-                        if (isIndestructible)
+                        if (isIndestructible) {
                             blocklist.remove(block);
-                        else {
+                            generateLog("Deadchest of [" + cd.getPlayerName() + "] was protected from explosion in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
+                        } else {
                             cd.removeArmorStand();
                             chestData.remove(cd);
+                            generateLog("Deadchest of [" + cd.getPlayerName() + "] was blown up in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
                         }
                         break;
                     }
@@ -307,7 +316,7 @@ public class DeadChestListener implements Listener {
                     for (ChestData cd : chestData) {
                         if (cd.getChestLocation().equals(block.getLocation())) {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(ChatColor.RED + "[Deadchest] " + localization.get().get("loc_doubleDC"));
+                            e.getPlayer().sendMessage(PREFIX + local.get("loc_doubleDC"));
                             return;
                         }
                     }

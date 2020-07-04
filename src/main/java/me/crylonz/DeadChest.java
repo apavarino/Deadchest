@@ -9,6 +9,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +17,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static me.crylonz.DeadChestManager.cleanAllDeadChests;
+import static me.crylonz.DeadChestManager.reloadMetaData;
+import static me.crylonz.Utils.generateLog;
 
 public class DeadChest extends JavaPlugin {
 
@@ -34,7 +37,8 @@ public class DeadChest extends JavaPlugin {
     public static boolean displayDeadChestPositionOnDeath = true;
     public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
-    public static Localization localization;
+    public static Localization local;
+    public static Plugin plugin;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -44,12 +48,13 @@ public class DeadChest extends JavaPlugin {
 
     public void onEnable() {
 
+        plugin = this;
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new DeadChestListener(), this);
 
         chestData = new ArrayList<>();
         fileManager = new FileManager(this);
-        localization = new Localization();
+        local = new Localization();
 
         Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
                 .setExecutor(new DCCommandExecutor(this));
@@ -111,7 +116,40 @@ public class DeadChest extends JavaPlugin {
         // locale file for translation
         if (!fileManager.getConfig3File().exists()) {
             fileManager.saveConfig3();
-            fileManager.getConfig3().options().header("PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE");
+            fileManager.getConfig3().options().header(
+                    "+--------------------------------------------------------------+\n" +
+                            "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
+                            "+--------------------------------------------------------------+\n" +
+                            "You can add colors on texts :\n" +
+                            "Example '§cHello' will print Hello in red\n" +
+                            "§4 : DARK_RED\n" +
+                            "§c : RED\n" +
+                            "§6 : GOLD\n" +
+                            "§e : YELLOW\n" +
+                            "§2 : DARK_GREEN\n" +
+                            "§a : GREEN\n" +
+                            "§b : AQUA\n" +
+                            "§3 : DARK_AQUA\n" +
+                            "§1 : DARK_BLUE\n" +
+                            "§9 : BLUE\n" +
+                            "§d : LIGHT_PURPLE\n" +
+                            "§5 : DARK_PURPLE\n" +
+                            "§f : WHITE\n" +
+                            "§7 : GRAY\n" +
+                            "§8 : DARK_GRAY\n" +
+                            "§0 : BLACK\n" +
+                            "+---------------------------------------------------------------+\n" +
+                            "You can also add some styling options :\n" +
+                            "§l : Text in bold\n" +
+                            "§o : Text in italic\n" +
+                            "§n : Underline text\n" +
+                            "§m : Strike text\n" +
+                            "§k : Magic \n" +
+                            "+---------------------------------------------------------------+\n" +
+                            "Need help ? Join the discord support :\n" +
+                            "https://discord.com/invite/jCsvJxS\n" +
+                            "+---------------------------------------------------------------+\n"
+            );
         } else {
             // if file exist
             // we verify if the file have all traduction
@@ -121,15 +159,15 @@ public class DeadChest extends JavaPlugin {
                     Objects.requireNonNull(fileManager.getConfig3().
                             getConfigurationSection("localisation")).getValues(true);
 
-            for (Map.Entry<String, Object> entry : localization.get().entrySet()) {
+            for (Map.Entry<String, Object> entry : local.get().entrySet()) {
                 if (localTmp.get(entry.getKey()) == null) {
                     localTmp.put(entry.getKey(), entry.getValue());
                 }
             }
-            localization.set(localTmp);
+            local.set(localTmp);
         }
 
-        fileManager.getConfig3().createSection("localisation", localization.get());
+        fileManager.getConfig3().createSection("localisation", local.get());
         fileManager.saveConfig3();
     }
 
@@ -172,18 +210,20 @@ public class DeadChest extends JavaPlugin {
                                     ArrayList<Entity> entityList = (ArrayList<Entity>) as.getWorld().getNearbyEntities(as, 1.0, 1.0, 1.0);
                                     for (Entity entity : entityList) {
                                         if (entity.getType().equals(EntityType.ARMOR_STAND)) {
-                                            if (entity.getCustomName() != null && !entity.getCustomName().contains((CharSequence) localization.get().get("loc_owner"))) {
+                                            if (!entity.hasMetadata("deadchest")) {
+                                                reloadMetaData();
+                                            }
+                                            if (entity.getMetadata("deadchest").get(0).asBoolean()) {
                                                 long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                                 long diffSeconds = Math.abs(diff / 1000 % 60);
                                                 long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                 long diffHours = Math.abs(diff / (60 * 60 * 1000));
 
-                                                if (!cd.isInfinity() && chestDuration != 0)
-                                                    entity.setCustomName("× " + diffHours + "h " +
-                                                            diffMinutes + "m " + diffSeconds + "s " +
-                                                            localization.get().get("loc_endtimer") + " ×");
-                                                else
-                                                    entity.setCustomName("× " + localization.get().get("loc_infinityChest") + " ×");
+                                                if (!cd.isInfinity() && chestDuration != 0) {
+                                                    entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
+                                                } else {
+                                                    entity.setCustomName(local.get("loc_infinityChest"));
+                                                }
                                             }
                                         }
                                     }
@@ -196,6 +236,7 @@ public class DeadChest extends JavaPlugin {
                                         cd.removeArmorStand();
                                         chestDataIt.remove();
                                         isChanged = true;
+                                        generateLog("Deadchest of [" + cd.getPlayerName() + "] has expired in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
                                     }
                                 }
                             }
