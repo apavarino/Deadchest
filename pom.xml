@@ -40,6 +40,14 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -53,6 +61,18 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

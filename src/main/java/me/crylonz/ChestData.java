@@ -138,7 +138,7 @@ public final class ChestData implements ConfigurationSerializable {
         if (chestLocation.getWorld() != null) {
 
             Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
-                    new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() - armorStandShiftY,
+                    new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() + armorStandShiftY,
                             chestLocation.getZ()), radius, radius, radius);
 
             for (Entity entity : entities) {

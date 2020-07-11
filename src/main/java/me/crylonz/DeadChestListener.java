@@ -36,6 +36,7 @@ public class DeadChestListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
+
         Player p = e.getEntity().getPlayer();
 
         if (p == null
@@ -43,7 +44,7 @@ public class DeadChestListener implements Listener {
                 || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE))
             return;
 
-        if (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate) {
+        if (Utils.worldGuardChecker(p) && (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate)) {
             if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer || maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
                 World world = p.getWorld();
@@ -80,10 +81,18 @@ public class DeadChestListener implements Listener {
                             && world.getBlockAt(loc).getType() != Material.WATER
                             && world.getBlockAt(loc).getType() != Material.LAVA) {
 
-                        while (world.getBlockAt(loc).getType() != Material.AIR && loc.getY() < world.getMaxHeight()) {
+                        while (world.getBlockAt(loc).getType() != Material.AIR &&
+                                loc.getY() < world.getMaxHeight()) {
                             loc.setY(loc.getY() + 1);
                         }
                     }
+                }
+
+                Location groundLocation = loc.clone();
+                groundLocation.setY(groundLocation.getY() - 1);
+                if (world.getBlockAt(groundLocation).getType() == Material.GRASS_PATH || world.getBlockAt(groundLocation).getType() == Material.FARMLAND) {
+                    log.info("caca");
+                    loc.setY(loc.getY() + 1);
                 }
 
                 Block b = world.getBlockAt(loc);

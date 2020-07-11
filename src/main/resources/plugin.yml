@@ -1,6 +1,6 @@
 name: DeadChest
 main: me.crylonz.DeadChest
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, WorldGuard]
 author: Crylonz
 version: "3.5"
 description: Keep your inventory in a chest when you die

@@ -57,16 +57,20 @@ public class DeadChestManager {
         if (location != null && location.getWorld() != null) {
             Location holoLoc = new Location(location.getWorld(),
                     location.getX() + shiftX,
-                    location.getY() + shiftY,
+                    location.getY() + shiftY + 2,
                     location.getZ() + shiftZ);
 
             ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(holoLoc, EntityType.ARMOR_STAND);
             armorStand.setInvulnerable(true);
+            armorStand.setSmall(true);
             armorStand.setGravity(false);
             armorStand.setCanPickupItems(false);
             armorStand.setVisible(false);
+            armorStand.setCollidable(false);
             armorStand.setMetadata("deadchest", new FixedMetadataValue(plugin, isTimer));
             armorStand.setCustomName(text);
+            armorStand.setSilent(true);
+            armorStand.setMarker(true);
             armorStand.setCustomNameVisible(true);
 
             return armorStand;
