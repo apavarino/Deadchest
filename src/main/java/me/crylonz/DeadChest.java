@@ -1,6 +1,7 @@
 package me.crylonz;
 
 import me.crylonz.commands.DCCommandExecutor;
+import me.crylonz.commands.TabCompletion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -47,6 +48,8 @@ public class DeadChest extends JavaPlugin {
     private boolean isChanged = false;
 
     public void onEnable() {
+
+        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new TabCompletion());
 
         plugin = this;
         PluginManager pm = getServer().getPluginManager();
