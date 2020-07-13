@@ -38,6 +38,7 @@ public class DeadChest extends JavaPlugin {
     public static boolean displayDeadChestPositionOnDeath = true;
     public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
+    public static boolean itemsDroppedAfterTimeOut = false;
     public static Localization local;
     public static Plugin plugin;
 
@@ -108,6 +109,7 @@ public class DeadChest extends JavaPlugin {
             autoCleanUpOnStart = (boolean) getConfig().get("AutoCleanupOnStart");
             generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
             displayDeadChestPositionOnDeath = (boolean) getConfig().get("DisplayDeadChestPositionOnDeath");
+            itemsDroppedAfterTimeOut = (boolean) getConfig().get("ItemsDroppedAfterTimeOut");
             dropMode = (int) getConfig().get("DropMode");
         }
 
@@ -236,6 +238,15 @@ public class DeadChest extends JavaPlugin {
 
                                         Location loc = cd.getChestLocation();
                                         loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+
+                                        if (itemsDroppedAfterTimeOut) {
+                                            for (ItemStack i : cd.getInventory()) {
+                                                if (i != null) {
+                                                    loc.getWorld().dropItemNaturally(loc, i);
+                                                }
+                                            }
+                                        }
+
                                         cd.removeArmorStand();
                                         chestDataIt.remove();
                                         isChanged = true;

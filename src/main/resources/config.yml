@@ -45,6 +45,11 @@ DisplayDeadChestPositionOnDeath: true
 # 2 : Items are dropped on the ground
 DropMode: 1
 
+# Items drop after timeout
+# false : Items are removed when timer is over
+# true : Items are dropped when timer is over
+ItemsDroppedAfterTimeOut: false
+
 # List of excluded worlds
 ExcludedWorld:
   - MyWorldWithoutDeadChest

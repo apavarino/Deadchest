@@ -5,17 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>my.crylonz</groupId>
     <artifactId>DeadChest</artifactId>
-    <version>3.5</version>
+    <version>4.0.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-
     <build>
-
         <directory>C:\Users\arthu\Desktop\Server TEST MC 1.16\plugins</directory>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

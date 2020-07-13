@@ -82,7 +82,7 @@ public class DCCommandExecutor implements CommandExecutor {
                             p.sendMessage(PREFIX + local.get("loc_noperm") + " deadchest.admin");
                         }
                     }
-                } else if (args[0].equalsIgnoreCase("removeinfinate")) {
+                } else if (args[0].equalsIgnoreCase("removeinfinite")) {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
 
@@ -377,6 +377,7 @@ public class DCCommandExecutor implements CommandExecutor {
         autoCleanUpOnStart = (boolean) p.getConfig().get("AutoCleanupOnStart");
         generateDeadChestInCreative = (boolean) p.getConfig().get("GenerateDeadChestInCreative");
         displayDeadChestPositionOnDeath = (boolean) p.getConfig().get("DisplayDeadChestPositionOnDeath");
+        itemsDroppedAfterTimeOut = (boolean) p.getConfig().get("ItemsDroppedAfterTimeOut");
         dropMode = (int) p.getConfig().get("DropMode");
 
         local.set(fileManager.getConfig3().getConfigurationSection("localisation").getValues(true));

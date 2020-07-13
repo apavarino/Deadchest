@@ -91,7 +91,6 @@ public class DeadChestListener implements Listener {
                 Location groundLocation = loc.clone();
                 groundLocation.setY(groundLocation.getY() - 1);
                 if (world.getBlockAt(groundLocation).getType() == Material.GRASS_PATH || world.getBlockAt(groundLocation).getType() == Material.FARMLAND) {
-                    log.info("caca");
                     loc.setY(loc.getY() + 1);
                 }
 
@@ -158,7 +157,6 @@ public class DeadChestListener implements Listener {
                 } else {
                     generateLog("Player [" + p.getName() + "] died without inventory : No Deadchest generated");
                 }
-
             }
         }
     }

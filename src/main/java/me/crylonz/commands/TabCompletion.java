@@ -24,7 +24,7 @@ public class TabCompletion implements TabCompleter {
                 if (args.length == 1) {
                     if (player.hasPermission("deadchest.admin")) {
                         list.add("reload");
-                        list.add("removeinfinate");
+                        list.add("removeinfinite");
                         list.add("removeall");
                         list.add("repair");
                     }
