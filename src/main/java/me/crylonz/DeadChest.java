@@ -39,6 +39,8 @@ public class DeadChest extends JavaPlugin {
     public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
+    public static boolean enableWorldGuardDetection = false;
+
     public static Localization local;
     public static Plugin plugin;
 
@@ -110,6 +112,7 @@ public class DeadChest extends JavaPlugin {
             generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
             displayDeadChestPositionOnDeath = (boolean) getConfig().get("DisplayDeadChestPositionOnDeath");
             itemsDroppedAfterTimeOut = (boolean) getConfig().get("ItemsDroppedAfterTimeOut");
+            enableWorldGuardDetection = (boolean) getConfig().get("EnableWorldGuardDetection");
             dropMode = (int) getConfig().get("DropMode");
         }
 

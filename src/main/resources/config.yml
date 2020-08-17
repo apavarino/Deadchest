@@ -50,6 +50,11 @@ DropMode: 1
 # true : Items are dropped when timer is over
 ItemsDroppedAfterTimeOut: false
 
+# Worldguard securities to allow/denied deadchest spawning in regions
+# false : No worldguard detection
+# true : Deadchest will check if the player can generate deadchest where he dies
+EnableWorldGuardDetection: false
+
 # List of excluded worlds
 ExcludedWorld:
   - MyWorldWithoutDeadChest

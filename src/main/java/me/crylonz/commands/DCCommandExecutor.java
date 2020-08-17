@@ -378,6 +378,7 @@ public class DCCommandExecutor implements CommandExecutor {
         generateDeadChestInCreative = (boolean) p.getConfig().get("GenerateDeadChestInCreative");
         displayDeadChestPositionOnDeath = (boolean) p.getConfig().get("DisplayDeadChestPositionOnDeath");
         itemsDroppedAfterTimeOut = (boolean) p.getConfig().get("ItemsDroppedAfterTimeOut");
+        enableWorldGuardDetection = (boolean) p.getConfig().get("EnableWorldGuardDetection");
         dropMode = (int) p.getConfig().get("DropMode");
 
         local.set(fileManager.getConfig3().getConfigurationSection("localisation").getValues(true));

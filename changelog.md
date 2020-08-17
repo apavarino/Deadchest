@@ -1,3 +1,13 @@
+## Deadchest 4.1.0
+
+**FEATURES**
++ Option to enable/disable Worldguard check for generate Deadchest
+
+**BUGFIX**
++ **Fix Deadchest dupe with books**
++ Sound of getting chest was heard by everyone
+
+
 ## Deadchest 4.0.0
 
 **FEATURES**

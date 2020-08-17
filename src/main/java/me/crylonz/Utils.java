@@ -20,6 +20,8 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static me.crylonz.DeadChest.enableWorldGuardDetection;
+
 public class Utils {
 
     static boolean isInventoryEmpty(Inventory inv) {
@@ -43,6 +45,10 @@ public class Utils {
     }
 
     public static boolean worldGuardChecker(Player p) {
+
+        if (!enableWorldGuardDetection) {
+            return true;
+        }
 
         try {
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();

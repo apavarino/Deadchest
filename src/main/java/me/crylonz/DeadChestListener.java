@@ -36,8 +36,8 @@ public class DeadChestListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
-
         Player p = e.getEntity().getPlayer();
+
 
         if (p == null
                 || excludedWorlds.contains(p.getWorld().getName())
@@ -138,8 +138,6 @@ public class DeadChestListener implements Listener {
 
                     chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.infinityChest"), holoTime, holoName));
 
-                    fileManager.saveModification();
-
                     e.getDrops().clear();
                     e.getEntity().getInventory().clear();
 
@@ -150,6 +148,7 @@ public class DeadChestListener implements Listener {
                                 ChatColor.WHITE + b.getZ());
                     }
 
+                    fileManager.saveModification();
                     generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
 
                     if (logDeadChestOnConsole)
@@ -187,7 +186,9 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.GOLDEN_HELMET ||
                                                 i.getType() == Material.LEATHER_HELMET ||
                                                 i.getType() == Material.DIAMOND_HELMET ||
-                                                i.getType() == Material.CHAINMAIL_HELMET) &&
+                                                i.getType() == Material.CHAINMAIL_HELMET ||
+                                                i.getType() == Material.TURTLE_HELMET ||
+                                                i.getType() == Material.NETHERITE_HELMET) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getHelmet() == null)
                                             e.getPlayer().getInventory().setHelmet(i);
@@ -240,7 +241,7 @@ public class DeadChestListener implements Listener {
                             chestData.remove(cd);
                             fileManager.saveModification();
                             block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
-                            block.getWorld().playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+                            e.getPlayer().playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
                             cd.removeArmorStand();
                             break;
                         } else {
