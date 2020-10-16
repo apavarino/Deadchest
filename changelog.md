@@ -1,12 +1,22 @@
 ## Deadchest 4.1.0
 
 **FEATURES**
-+ Option to enable/disable Worldguard check for generate Deadchest
++ Option to enable/disable Worldguard check for deadchest generation
++ Add Turtle Helmet on auto-equip
++ Add Netherite stuff on auto-equip
+
+**CHANGE**
++ Remove previous Worldguard support system
++ New WorldGuard support : Works now with flags :
+    + **dc-owner** :  Only owner of the region can generate deadchest (true/false)
+    + **dc-member** : Only member of the region can generate deadchest (true/false)
+    + **dc-nobody** : Nobody can generate deadchest in the region
++ When a player dies on ladder, inside a door or in vines, deadchest now try to place the deadchest next to it instead of placing it at the top
+
 
 **BUGFIX**
 + **Fix Deadchest dupe with books**
 + Sound of getting chest was heard by everyone
-
 
 ## Deadchest 4.0.0
 

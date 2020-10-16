@@ -40,6 +40,7 @@ public class DeadChest extends JavaPlugin {
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
     public static boolean enableWorldGuardDetection = false;
+    public static WorldGuardSoftDependenciesChecker wgsdc = null;
 
     public static Localization local;
     public static Plugin plugin;
@@ -71,7 +72,22 @@ public class DeadChest extends JavaPlugin {
             cleanAllDeadChests();
         }
 
+
         launchRepeatingTask();
+    }
+
+    @Override
+    public void onLoad() {
+        if (!enableWorldGuardDetection) {
+
+            try {
+                wgsdc = new WorldGuardSoftDependenciesChecker();
+                wgsdc.load();
+
+            } catch (NoClassDefFoundError e) {
+                log.info("[DeadChest] Worldguard not detected : Support is disabled");
+            }
+        }
     }
 
     public void onDisable() {

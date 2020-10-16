@@ -28,8 +28,7 @@ import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.Localization.PREFIX;
-import static me.crylonz.Utils.generateLog;
-import static me.crylonz.Utils.isInventoryEmpty;
+import static me.crylonz.Utils.*;
 
 public class DeadChestListener implements Listener {
 
@@ -44,7 +43,7 @@ public class DeadChestListener implements Listener {
                 || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE))
             return;
 
-        if (Utils.worldGuardChecker(p) && (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate)) {
+        if (worldGuardCheck(p) && (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate)) {
             if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer || maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
                 World world = p.getWorld();
@@ -75,6 +74,25 @@ public class DeadChestListener implements Listener {
                 }
                 // Handle standard case
                 else {
+                    if (world.getBlockAt(loc).getType() == Material.DARK_OAK_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.ACACIA_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.BIRCH_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.CRIMSON_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.IRON_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.JUNGLE_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.OAK_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.SPRUCE_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.WARPED_DOOR ||
+                            world.getBlockAt(loc).getType() == Material.VINE ||
+                            world.getBlockAt(loc).getType() == Material.LADDER) {
+                        Location tmpLoc = getFreeBlockAroundThisPlace(world, loc);
+
+                        if (tmpLoc != null) {
+                            loc = tmpLoc;
+                        }
+                    }
+
+
                     if (world.getBlockAt(loc).getType() != Material.AIR
                             && world.getBlockAt(loc).getType() != Material.CAVE_AIR
                             && world.getBlockAt(loc).getType() != Material.VOID_AIR
@@ -98,6 +116,7 @@ public class DeadChestListener implements Listener {
 
                 if (!isInventoryEmpty(p.getInventory())) {
                     b.setType(Material.CHEST);
+
 
                     String firstLine = local.replacePlayer(local.get("holo_owner"), e.getEntity().getDisplayName());
                     ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
@@ -197,7 +216,8 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.GOLDEN_BOOTS ||
                                                 i.getType() == Material.LEATHER_BOOTS ||
                                                 i.getType() == Material.DIAMOND_BOOTS ||
-                                                i.getType() == Material.CHAINMAIL_BOOTS) &&
+                                                i.getType() == Material.CHAINMAIL_BOOTS ||
+                                                i.getType() == Material.NETHERITE_BOOTS) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getBoots() == null)
                                             e.getPlayer().getInventory().setBoots(i);
@@ -207,6 +227,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_CHESTPLATE ||
                                                 i.getType() == Material.DIAMOND_CHESTPLATE ||
                                                 i.getType() == Material.CHAINMAIL_CHESTPLATE ||
+                                                i.getType() == Material.NETHERITE_CHESTPLATE ||
                                                 i.getType() == Material.ELYTRA) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getChestplate() == null)
@@ -216,7 +237,8 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.GOLDEN_LEGGINGS ||
                                                 i.getType() == Material.LEATHER_LEGGINGS ||
                                                 i.getType() == Material.DIAMOND_LEGGINGS ||
-                                                i.getType() == Material.CHAINMAIL_LEGGINGS) &&
+                                                i.getType() == Material.CHAINMAIL_LEGGINGS ||
+                                                i.getType() == Material.NETHERITE_LEGGINGS) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getLeggings() == null)
                                             e.getPlayer().getInventory().setLeggings(i);
@@ -227,8 +249,8 @@ public class DeadChestListener implements Listener {
                                             e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
                                     }
                                 }
-                                // pushed item on the ground
                             } else {
+                                // pushed item on the ground
                                 for (ItemStack i : cd.getInventory()) {
                                     if (i != null) {
                                         e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);

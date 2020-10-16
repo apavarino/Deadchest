@@ -2,6 +2,7 @@ package me.crylonz;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -10,7 +11,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 
 import static me.crylonz.DeadChest.*;
 
@@ -101,14 +101,18 @@ public class DeadChestManager {
     static void reloadMetaData() {
 
         for (ChestData cdata : chestData) {
-            Collection<Entity> nearbyEntities = Objects.requireNonNull(
-                    cdata.getChestLocation().getWorld()).getNearbyEntities(cdata.getHolographicTimer(), 1, 1, 1);
+            World world = cdata.getChestLocation().getWorld();
 
-            for (Entity ne : nearbyEntities) {
-                if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
-                    ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, false));
-                } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
-                    ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, true));
+            if (world != null) {
+                Collection<Entity> nearbyEntities =
+                        world.getNearbyEntities(cdata.getHolographicTimer(), 1, 1, 1);
+
+                for (Entity ne : nearbyEntities) {
+                    if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
+                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, false));
+                    } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
+                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, true));
+                    }
                 }
             }
         }

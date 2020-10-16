@@ -1,13 +1,9 @@
 package me.crylonz;
 
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,9 +16,14 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static me.crylonz.DeadChest.enableWorldGuardDetection;
+import static me.crylonz.DeadChest.wgsdc;
 
 public class Utils {
+
+
+    public static BooleanFlag DEADCHEST_NOBODY_FLAG;
+    public static BooleanFlag DEADCHEST_OWNER_FLAG;
+    public static BooleanFlag DEADCHEST_MEMBER_FLAG;
 
     static boolean isInventoryEmpty(Inventory inv) {
         for (ItemStack it : inv.getContents()) {
@@ -44,40 +45,38 @@ public class Utils {
         }
     }
 
-    public static boolean worldGuardChecker(Player p) {
-
-        if (!enableWorldGuardDetection) {
-            return true;
+    public static Location getFreeBlockAroundThisPlace(World world, Location loc) {
+        Location newLoc = loc.clone();
+        if (world.getBlockAt(loc).isEmpty()) {
+            return newLoc;
         }
 
-        try {
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            RegionManager regions = container.get(BukkitAdapter.adapt(p.getLocation().getWorld()));
-
-            if (regions != null) {
-                BlockVector3 position = BlockVector3.at(p.getLocation().getX(),
-                        p.getLocation().getY(), p.getLocation().getZ());
-                ApplicableRegionSet set = regions.getApplicableRegions(position);
-
-                if (set.size() != 0) {
-                    for (ProtectedRegion pr : set.getRegions()) {
-                        if (pr.getMembers().contains(p.getUniqueId())
-                                || pr.getOwners().contains(p.getUniqueId())
-                                || p.isOp()) {
-                            return true;
-                        }
-                    }
-
-                    generateLog("Player [" + p.getName() + "] died without [ Worldguard] region permission : No Deadchest generated");
-                    return false;
-                }
-            }
-            return true;
-        } catch (NoClassDefFoundError e) {
-            return true;
+        if (world.getBlockAt(newLoc.clone().add(1, 0, 0)).isEmpty()) {
+            return newLoc.add(1, 0, 0);
         }
 
+        if (world.getBlockAt(newLoc.clone().add(-1, 0, 0)).isEmpty()) {
+            return newLoc.add(-1, 0, 0);
+        }
+
+        if (world.getBlockAt(newLoc.clone().add(0, 1, 0)).isEmpty()) {
+            return newLoc.add(0, 1, 0);
+        }
+
+        if (world.getBlockAt(newLoc.clone().add(0, -1, 0)).isEmpty()) {
+            return newLoc.add(0, -1, 0);
+        }
+
+        return null;
 
     }
 
+    public static boolean worldGuardCheck(Player p) {
+        if (wgsdc != null) {
+            return wgsdc.worldGuardChecker(p);
+        }
+        return true;
+    }
+
 }
+
