@@ -1,3 +1,12 @@
+## Deadchest 4.2.0
+
+**FEATURES**
++ Added option to exclude items from Deadchest in config.yml
+
+**BUGFIX**
++ Fix issue with CRIMSON_DOOR on 1.15 and lower
++ Fix exception with reload metadata
+
 ## Deadchest 4.1.0
 
 **FEATURES**

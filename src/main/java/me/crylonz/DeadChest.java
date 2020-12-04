@@ -38,6 +38,7 @@ public class DeadChest extends JavaPlugin {
     public static boolean displayDeadChestPositionOnDeath = true;
     public static int dropMode = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
+    public static ArrayList<String> excludedItems = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
     public static boolean enableWorldGuardDetection = false;
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
@@ -110,12 +111,16 @@ public class DeadChest extends JavaPlugin {
 
             @SuppressWarnings("unchecked")
             ArrayList<String> tmpExludedWorld = (ArrayList<String>) getConfig().get("ExcludedWorld");
+            ArrayList<String> tmpExcludedItems = (ArrayList<String>) getConfig().get("ExcludedItems");
 
             if (tmp != null)
                 chestData = tmp;
 
             if (tmpExludedWorld != null)
                 excludedWorlds = tmpExludedWorld;
+
+            if (tmpExcludedItems != null)
+                excludedItems = tmpExcludedItems;
 
             isIndestructible = getConfig().getBoolean("IndestuctibleChest");
             OnlyOwnerCanOpenDeadChest = getConfig().getBoolean("OnlyOwnerCanOpenDeadChest");

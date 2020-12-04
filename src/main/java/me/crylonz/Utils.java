@@ -2,6 +2,7 @@ package me.crylonz;
 
 
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -76,6 +77,13 @@ public class Utils {
             return wgsdc.worldGuardChecker(p);
         }
         return true;
+    }
+
+    public static boolean isBefore1_16() {
+        return (Bukkit.getVersion().contains("1.15")
+                || Bukkit.getVersion().contains("1.14")
+                || Bukkit.getVersion().contains("1.13")
+                || Bukkit.getVersion().contains("1.12"));
     }
 
 }

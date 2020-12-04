@@ -74,15 +74,16 @@ public class DeadChestListener implements Listener {
                 }
                 // Handle standard case
                 else {
+
                     if (world.getBlockAt(loc).getType() == Material.DARK_OAK_DOOR ||
                             world.getBlockAt(loc).getType() == Material.ACACIA_DOOR ||
                             world.getBlockAt(loc).getType() == Material.BIRCH_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.CRIMSON_DOOR ||
+                            (!Utils.isBefore1_16() && world.getBlockAt(loc).getType() == Material.CRIMSON_DOOR) ||
                             world.getBlockAt(loc).getType() == Material.IRON_DOOR ||
                             world.getBlockAt(loc).getType() == Material.JUNGLE_DOOR ||
                             world.getBlockAt(loc).getType() == Material.OAK_DOOR ||
                             world.getBlockAt(loc).getType() == Material.SPRUCE_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.WARPED_DOOR ||
+                            (!Utils.isBefore1_16() && world.getBlockAt(loc).getType() == Material.WARPED_DOOR) ||
                             world.getBlockAt(loc).getType() == Material.VINE ||
                             world.getBlockAt(loc).getType() == Material.LADDER) {
                         Location tmpLoc = getFreeBlockAroundThisPlace(world, loc);
@@ -155,10 +156,16 @@ public class DeadChestListener implements Listener {
                         p.getInventory().setItemInOffHand(null);
                     }
 
+                    for (String item : excludedItems) {
+                        if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
+                            p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
+                        }
+                    }
+
                     chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.infinityChest"), holoTime, holoName));
 
                     e.getDrops().clear();
-                    e.getEntity().getInventory().clear();
+                    p.getInventory().clear();
 
                     if (displayDeadChestPositionOnDeath) {
                         p.sendMessage(PREFIX + local.get("loc_chestPos") + " X: " +

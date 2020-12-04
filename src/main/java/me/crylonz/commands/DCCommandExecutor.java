@@ -357,15 +357,18 @@ public class DCCommandExecutor implements CommandExecutor {
 
         @SuppressWarnings("unchecked")
         ArrayList<String> tmpExludedWorld = (ArrayList<String>) p.getConfig().get("ExcludedWorld");
+        ArrayList<String> tmpExludedItems = (ArrayList<String>) p.getConfig().get("ExcludedItems");
 
 
         if (tmp != null) {
             chestData = (List<ChestData>) fileManager.getConfig2().get("chestData");
         }
 
-
         if (tmpExludedWorld != null)
             excludedWorlds = tmpExludedWorld;
+
+        if (tmpExludedItems != null)
+            excludedItems = tmpExludedItems;
 
         isIndestructible = p.getConfig().getBoolean("IndestuctibleChest");
         OnlyOwnerCanOpenDeadChest = p.getConfig().getBoolean("OnlyOwnerCanOpenDeadChest");

@@ -59,3 +59,9 @@ EnableWorldGuardDetection: false
 ExcludedWorld:
   - MyWorldWithoutDeadChest
   - AnotherExampleOfWorldWithoutDeadChest
+
+# List of excluded items
+# Be sure to put here the ItemStack name of the entity you want to exclude
+ExcludedItems:
+  - ITEM_TO_EXCLUDE_EXAMPLE
+  - HEROBRINE
