@@ -8,7 +8,7 @@
     + add dc_guest flag
     
 **BUGFIX**
-+ Invisible armostand was not usable with Deadchest
++ Invisible armorstand was not usable with Deadchest
 + Activation of worldguard detection was not working correctly
 
 ## Deadchest 4.2.0

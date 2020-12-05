@@ -13,7 +13,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.entity.Player;
 
 import static me.crylonz.DeadChest.enableWorldGuardDetection;
-import static me.crylonz.DeadChest.log;
 import static me.crylonz.Utils.*;
 
 public class WorldGuardSoftDependenciesChecker {
@@ -64,8 +63,6 @@ public class WorldGuardSoftDependenciesChecker {
                         }
                     }
 
-                    log.warning(String.valueOf(pr.getPriority()));
-
                     Boolean ownerFlag = pr.getFlag(DEADCHEST_OWNER_FLAG);
                     Boolean memberFlag = pr.getFlag(DEADCHEST_MEMBER_FLAG);
                     Boolean guestFlag = pr.getFlag(DEADCHEST_GUEST_FLAG);
@@ -80,7 +77,7 @@ public class WorldGuardSoftDependenciesChecker {
                     } else if (guestFlag != null && guestFlag) {
                         return true;
                     } else {
-                        return false;
+                        return p.isOp();
                     }
 
                     generateLog("Player [" + p.getName() + "] died without [ Worldguard] region permission : No Deadchest generated");
