@@ -1,3 +1,16 @@
+## Deadchest 4.3.0
+
+**FEATURES**
++ Update for Minecraft 1.16.4
++ Upgrade Worldguard support
+    + Deadchest now handle region priority
+    + remove dc_nobody flag
+    + add dc_guest flag
+    
+**BUGFIX**
++ Invisible armostand was not usable with Deadchest
++ Activation of worldguard detection was not working correctly
+
 ## Deadchest 4.2.0
 
 **FEATURES**

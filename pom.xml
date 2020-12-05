@@ -5,14 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>my.crylonz</groupId>
     <artifactId>DeadChest</artifactId>
-    <version>4.2.0</version>
+    <version>4.3.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
-        <directory>C:\Users\arthu\Desktop\Server TEST MC 1.16\plugins</directory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +43,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.2-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

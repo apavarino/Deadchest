@@ -79,15 +79,23 @@ public class DeadChest extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        if (!enableWorldGuardDetection) {
+
+        // to be sure that data is loaded when call onLoad()
+        enableWorldGuardDetection = (boolean) getConfig().get("EnableWorldGuardDetection");
+
+
+        if (enableWorldGuardDetection) {
 
             try {
                 wgsdc = new WorldGuardSoftDependenciesChecker();
                 wgsdc.load();
+                log.info("[DeadChest] Worldguard detected : Support is enabled");
 
             } catch (NoClassDefFoundError e) {
                 log.info("[DeadChest] Worldguard not detected : Support is disabled");
             }
+        } else {
+            log.info("[DeadChest] Worldguard support disabled by user");
         }
     }
 

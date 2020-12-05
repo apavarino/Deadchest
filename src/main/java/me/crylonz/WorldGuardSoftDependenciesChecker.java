@@ -13,6 +13,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.entity.Player;
 
 import static me.crylonz.DeadChest.enableWorldGuardDetection;
+import static me.crylonz.DeadChest.log;
 import static me.crylonz.Utils.*;
 
 public class WorldGuardSoftDependenciesChecker {
@@ -24,9 +25,9 @@ public class WorldGuardSoftDependenciesChecker {
             registry.register(owner_flag);
             DEADCHEST_OWNER_FLAG = owner_flag;
 
-            BooleanFlag nobody_flag = new BooleanFlag("dc-nobody");
+            BooleanFlag nobody_flag = new BooleanFlag("dc-guest");
             registry.register(nobody_flag);
-            DEADCHEST_NOBODY_FLAG = nobody_flag;
+            DEADCHEST_GUEST_FLAG = nobody_flag;
 
             BooleanFlag member_flag = new BooleanFlag("dc-member");
             registry.register(member_flag);
@@ -54,25 +55,34 @@ public class WorldGuardSoftDependenciesChecker {
                 ApplicableRegionSet set = regions.getApplicableRegions(position);
 
                 if (set.size() != 0) {
-                    for (ProtectedRegion pr : set.getRegions()) {
 
-                        Boolean ownerFlag = pr.getFlag(DEADCHEST_OWNER_FLAG);
-                        Boolean memberFlag = pr.getFlag(DEADCHEST_MEMBER_FLAG);
-                        Boolean nobodyFlag = pr.getFlag(DEADCHEST_NOBODY_FLAG);
-                        if (ownerFlag != null && ownerFlag) {
-                            if (pr.getOwners().contains(p.getUniqueId()) || p.isOp()) {
-                                return true;
-                            }
-                        } else if (memberFlag != null && memberFlag) {
-                            if (pr.getMembers().contains(p.getUniqueId()) || p.isOp()) {
-                                return true;
-                            }
-                        } else if (nobodyFlag != null && nobodyFlag) {
-                            return false;
-                        } else {
-                            return true;
+                    // retrieve the highest priority
+                    ProtectedRegion pr = set.getRegions().iterator().next();
+                    for (ProtectedRegion pRegion : set.getRegions()) {
+                        if (pRegion.getPriority() > pr.getPriority()) {
+                            pr = pRegion;
                         }
                     }
+
+                    log.warning(String.valueOf(pr.getPriority()));
+
+                    Boolean ownerFlag = pr.getFlag(DEADCHEST_OWNER_FLAG);
+                    Boolean memberFlag = pr.getFlag(DEADCHEST_MEMBER_FLAG);
+                    Boolean guestFlag = pr.getFlag(DEADCHEST_GUEST_FLAG);
+                    if (ownerFlag != null && ownerFlag) {
+                        if (pr.getOwners().contains(p.getUniqueId()) || p.isOp()) {
+                            return true;
+                        }
+                    } else if (memberFlag != null && memberFlag) {
+                        if (pr.getMembers().contains(p.getUniqueId()) || p.isOp()) {
+                            return true;
+                        }
+                    } else if (guestFlag != null && guestFlag) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+
                     generateLog("Player [" + p.getName() + "] died without [ Worldguard] region permission : No Deadchest generated");
                     return false;
                 }

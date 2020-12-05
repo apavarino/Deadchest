@@ -11,17 +11,17 @@ import static me.crylonz.DeadChest.chestData;
 
 public class FileManager {
 
-    private File configFile;
+    private final File configFile;
 
     private static FileConfiguration config2 = null;
     private static File config2File = null;
-    private static String config2FileName = "chestData.yml";
+    private static final String config2FileName = "chestData.yml";
 
     private static FileConfiguration config3 = null;
     private static File config3File = null;
     private static String config3FileName = "locale.yml";
 
-    private Plugin p;
+    private final Plugin p;
 
     // Constructor
     public FileManager(Plugin p) {

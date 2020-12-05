@@ -339,7 +339,7 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onPlayerArmorStandManipulateEvent(PlayerArmorStandManipulateEvent e) {
-        if (!e.getRightClicked().isVisible()) {
+        if (!e.getRightClicked().isVisible() && e.getRightClicked().getMetadata("deadchest").size() != 0) {
             e.setCancelled(true);
         }
     }
