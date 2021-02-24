@@ -248,7 +248,7 @@ public class DeadChest extends JavaPlugin {
                                             if (!entity.hasMetadata("deadchest")) {
                                                 reloadMetaData();
                                             }
-                                            if (entity.getMetadata("deadchest").get(0).asBoolean()) {
+                                            if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
                                                 long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
                                                 long diffSeconds = Math.abs(diff / 1000 % 60);
                                                 long diffMinutes = Math.abs(diff / (60 * 1000) % 60);

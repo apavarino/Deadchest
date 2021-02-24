@@ -1,5 +1,10 @@
 ## Deadchest 4.4.0
+**FEATURES**
 + Add possibility to change [Deadchest] prefix by something else on command feedback
+
+**BUGFIX**
+
++ Fix Task exception spamming on console in certain cases
 
 ## Deadchest 4.3.0
 
