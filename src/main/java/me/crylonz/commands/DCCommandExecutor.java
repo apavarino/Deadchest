@@ -19,11 +19,10 @@ import java.util.*;
 
 import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.cleanAllDeadChests;
-import static me.crylonz.Localization.PREFIX;
 
 public class DCCommandExecutor implements CommandExecutor {
 
-    private Plugin p;
+    private final Plugin p;
 
     public DCCommandExecutor(Plugin p) {
         this.p = p;
@@ -42,14 +41,14 @@ public class DCCommandExecutor implements CommandExecutor {
 
                         if (p.hasPermission("deadchest.admin")) {
                             reloadPlugin();
-                            p.sendMessage(PREFIX + local.get("loc_reload"));
-                            log.info(PREFIX + " Plugin is reloading");
+                            p.sendMessage(local.get("loc_prefix") + local.get("loc_reload"));
+                            log.info(local.get("loc_prefix") + " Plugin is reloading");
                         } else
-                            p.sendMessage(PREFIX + local.get("loc_noperm") + " deadchest.admin");
+                            p.sendMessage(local.get("loc_prefix") + local.get("loc_noperm") + " deadchest.admin");
 
                     } else {
                         reloadPlugin();
-                        log.info(PREFIX + "Plugin is reloading");
+                        log.info(local.get("loc_prefix") + "Plugin is reloading");
                     }
                 } else if (args[0].equalsIgnoreCase("repair")) {
                     if (sender instanceof Player) {
@@ -77,9 +76,9 @@ public class DCCommandExecutor implements CommandExecutor {
 
                                 }
                             }
-                            p.sendMessage(PREFIX + ChatColor.GOLD + "Operation complete. [" + holoRemoved + "] hologram(s) removed");
+                            p.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" + holoRemoved + "] hologram(s) removed");
                         } else {
-                            p.sendMessage(PREFIX + local.get("loc_noperm") + " deadchest.admin");
+                            p.sendMessage(local.get("loc_prefix") + local.get("loc_noperm") + " deadchest.admin");
                         }
                     }
                 } else if (args[0].equalsIgnoreCase("removeinfinite")) {
@@ -115,7 +114,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                 }
                                 fileManager.saveModification();
                             }
-                            p.sendMessage(PREFIX + ChatColor.GOLD + "Operation complete. [" +
+                            p.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
                                     ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
                         }
                     }
@@ -125,7 +124,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
                         if (p.hasPermission("deadchest.admin")) {
                             int cpt = cleanAllDeadChests();
-                            p.sendMessage(PREFIX + ChatColor.GOLD + "Operation complete. [" +
+                            p.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
                                     ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
                         }
                     }
@@ -165,10 +164,10 @@ public class DCCommandExecutor implements CommandExecutor {
                                 }
                                 fileManager.saveModification();
                             }
-                            p.sendMessage(PREFIX + ChatColor.GOLD + "Operation complete. [" +
+                            p.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
                                     ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
                         } else {
-                            p.sendMessage(PREFIX + ChatColor.RED + "Usage : /dc remove <PlayerName>");
+                            p.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Usage : /dc remove <PlayerName>");
                         }
 
 
@@ -182,7 +181,7 @@ public class DCCommandExecutor implements CommandExecutor {
                             if (args.length == 1) {
                                 Date now = new Date();
                                 if (!chestData.isEmpty()) {
-                                    p.sendMessage(PREFIX + local.get("loc_dclistown") + " :");
+                                    p.sendMessage(local.get("loc_prefix") + local.get("loc_dclistown") + " :");
                                     for (ChestData cd : chestData) {
                                         if (cd.getPlayerUUID().equalsIgnoreCase(p.getUniqueId().toString())) {
 
@@ -209,7 +208,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                         }
                                     }
                                 } else {
-                                    p.sendMessage(PREFIX + local.get("loc_nodc"));
+                                    p.sendMessage(local.get("loc_prefix") + local.get("loc_nodc"));
                                 }
 
                             } else if (args.length == 2) {
@@ -217,7 +216,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                     if (args[1].equalsIgnoreCase("all")) {
                                         Date now = new Date();
                                         if (!chestData.isEmpty()) {
-                                            p.sendMessage(PREFIX + local.get("loc_dclistall") + ":");
+                                            p.sendMessage(local.get("loc_prefix") + local.get("loc_dclistall") + ":");
                                             for (ChestData cd : chestData) {
 
 
@@ -244,13 +243,13 @@ public class DCCommandExecutor implements CommandExecutor {
                                                 }
                                             }
                                         } else {
-                                            p.sendMessage(PREFIX + local.get("loc_nodcs"));
+                                            p.sendMessage(local.get("loc_prefix") + local.get("loc_nodcs"));
                                         }
 
                                     } else {
                                         Date now = new Date();
                                         if (!chestData.isEmpty()) {
-                                            p.sendMessage(PREFIX + ChatColor.GREEN + args[1] + " deadchests :");
+                                            p.sendMessage(local.get("loc_prefix") + ChatColor.GREEN + args[1] + " deadchests :");
                                             for (ChestData cd : chestData) {
                                                 if (cd.getPlayerName().equalsIgnoreCase(args[1])) {
 
@@ -278,14 +277,14 @@ public class DCCommandExecutor implements CommandExecutor {
                                                 }
                                             }
                                         } else {
-                                            p.sendMessage(PREFIX + local.get("loc_nodcs"));
+                                            p.sendMessage(local.get("loc_prefix") + local.get("loc_nodcs"));
                                         }
                                     }
                                 } // deadchest.list.other
                             }
 
                         } else
-                            p.sendMessage(PREFIX + local.get("loc_noperm") + " deadchest.list.own");
+                            p.sendMessage(local.get("loc_prefix") + local.get("loc_noperm") + " deadchest.list.own");
                     }
                 } else if (args[0].equalsIgnoreCase("giveback") || args[0].equalsIgnoreCase("gb")) {
                     if (sender instanceof Player) {
@@ -318,27 +317,27 @@ public class DCCommandExecutor implements CommandExecutor {
                                     }
                                 }
                                 if (targetP != null) {
-                                    p.sendMessage(PREFIX + local.get("loc_dcgbsuccess"));
-                                    targetP.sendMessage(PREFIX + local.get("loc_gbplayer"));
+                                    p.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess"));
+                                    targetP.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
                                 } else {
-                                    p.sendMessage(PREFIX + local.get("loc_givebackInfo"));
+                                    p.sendMessage(local.get("loc_prefix") + local.get("loc_givebackInfo"));
                                 }
                             } else {
-                                p.sendMessage(PREFIX + ChatColor.WHITE + "Usage : /dc giveback <PlayerName>");
+                                p.sendMessage(local.get("loc_prefix") + ChatColor.WHITE + "Usage : /dc giveback <PlayerName>");
                             }
                         }
                     }
                 } else {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
-                        p.sendMessage(PREFIX + ChatColor.WHITE + "Type " + ChatColor.GREEN + "/help dc" + ChatColor.WHITE + " for help");
+                        p.sendMessage(local.get("loc_prefix") + ChatColor.WHITE + "Type " + ChatColor.GREEN + "/help dc" + ChatColor.WHITE + " for help");
                     }
                 }
 
             } else {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    p.sendMessage(PREFIX + ChatColor.WHITE + "Type " + ChatColor.GREEN + "/help dc" + ChatColor.WHITE + " for help");
+                    p.sendMessage(local.get("loc_prefix") + ChatColor.WHITE + "Type " + ChatColor.GREEN + "/help dc" + ChatColor.WHITE + " for help");
                 }
             }
 

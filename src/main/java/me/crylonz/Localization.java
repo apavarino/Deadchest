@@ -3,12 +3,13 @@ package me.crylonz;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Localization {
 
-    public final static String PREFIX = "[DeadChest] ";
     public static Map<String, Object> local = new HashMap<>();
 
     public Localization() {
+        local.put("loc_prefix", "[DeadChest]");
         local.put("holo_owner", "Deadchest of §6%player%");
         local.put("holo_timer", "§f%hours%§7h §f%min%§7m §f%sec%§7s left");
         local.put("holo_loading", "Loading...");

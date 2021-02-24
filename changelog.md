@@ -1,3 +1,6 @@
+## Deadchest 4.4.0
++ Add possibility to change [Deadchest] prefix by something else on command feedback
+
 ## Deadchest 4.3.0
 
 **FEATURES**

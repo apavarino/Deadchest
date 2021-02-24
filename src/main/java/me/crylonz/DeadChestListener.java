@@ -27,7 +27,6 @@ import java.util.Objects;
 import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
-import static me.crylonz.Localization.PREFIX;
 import static me.crylonz.Utils.*;
 
 public class DeadChestListener implements Listener {
@@ -68,7 +67,7 @@ public class DeadChestListener implements Listener {
                     }
 
                     if (y < 1) {
-                        p.sendMessage(PREFIX + local.get("loc_noDCG"));
+                        p.sendMessage(local.get("loc_prefix") + local.get("loc_noDCG"));
                         return;
                     }
                 }
@@ -168,7 +167,7 @@ public class DeadChestListener implements Listener {
                     p.getInventory().clear();
 
                     if (displayDeadChestPositionOnDeath) {
-                        p.sendMessage(PREFIX + local.get("loc_chestPos") + " X: " +
+                        p.sendMessage(local.get("loc_prefix") + local.get("loc_chestPos") + " X: " +
                                 ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
                                 ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
                                 ChatColor.WHITE + b.getZ());
@@ -275,7 +274,7 @@ public class DeadChestListener implements Listener {
                             break;
                         } else {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(PREFIX + local.get("loc_not_owner"));
+                            e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
                         }
                     }
                 }
@@ -291,7 +290,7 @@ public class DeadChestListener implements Listener {
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation() == e.getBlock().getLocation()) {
                         e.setCancelled(true);
-                        e.getPlayer().sendMessage(PREFIX + local.get("loc_not_owner"));
+                        e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
                         break;
                     }
                 }
@@ -353,7 +352,7 @@ public class DeadChestListener implements Listener {
                     for (ChestData cd : chestData) {
                         if (cd.getChestLocation().equals(block.getLocation())) {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(PREFIX + local.get("loc_doubleDC"));
+                            e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_doubleDC"));
                             return;
                         }
                     }

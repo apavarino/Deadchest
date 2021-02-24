@@ -197,9 +197,7 @@ public class DeadChest extends JavaPlugin {
                             getConfigurationSection("localisation")).getValues(true);
 
             for (Map.Entry<String, Object> entry : local.get().entrySet()) {
-                if (localTmp.get(entry.getKey()) == null) {
-                    localTmp.put(entry.getKey(), entry.getValue());
-                }
+                localTmp.computeIfAbsent(entry.getKey(), k -> entry.getValue());
             }
             local.set(localTmp);
         }
