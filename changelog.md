@@ -1,6 +1,8 @@
 ## Deadchest 4.4.0
 **FEATURES**
-+ Add possibility to change [Deadchest] prefix by something else on command feedback
++ **Added player head as deadchest** ! (configurable in config.yml)
++ Added possibility to change [Deadchest] prefix by something else on command feedback
++ Added auto update configuration file system when updating the plugin
 
 **BUGFIX**
 
