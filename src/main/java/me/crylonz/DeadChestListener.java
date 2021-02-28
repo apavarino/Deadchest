@@ -3,6 +3,8 @@ package me.crylonz;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -115,7 +117,16 @@ public class DeadChestListener implements Listener {
                 Block b = world.getBlockAt(loc);
 
                 if (!isInventoryEmpty(p.getInventory())) {
-                    b.setType(Material.CHEST);
+
+                    if (dropBlock == 1) {
+                        b.setType(Material.CHEST);
+                    } else {
+                        b.setType(Material.PLAYER_HEAD);
+                        BlockState state = b.getState();
+                        Skull skull = (Skull) state;
+                        skull.setOwningPlayer(p);
+                        skull.update();
+                    }
 
 
                     String firstLine = local.replacePlayer(local.get("holo_owner"), e.getEntity().getDisplayName());
@@ -190,7 +201,7 @@ public class DeadChestListener implements Listener {
 
         Block block = e.getClickedBlock();
 
-        if (block != null && block.getType() == Material.CHEST) {
+        if (block != null && isGraveBlock(block.getType())) {
             // if block is a dead chest
             if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
@@ -284,7 +295,7 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onBlockBreakEvent(BlockBreakEvent e) {
-        if (e.getBlock().getType() == Material.CHEST) {
+        if (isGraveBlock(e.getBlock().getType())) {
             if (isIndestructible) {
 
                 for (ChestData cd : chestData) {
@@ -320,7 +331,7 @@ public class DeadChestListener implements Listener {
             for (int i = 0; i < blocklist.size(); ++i) {
                 Block block = blocklist.get(i);
                 for (ChestData cd : chestData) {
-                    if (block.getType() == Material.CHEST && cd.getChestLocation().equals(block.getLocation())) {
+                    if (isGraveBlock(block.getType()) && cd.getChestLocation().equals(block.getLocation())) {
                         if (isIndestructible) {
                             blocklist.remove(block);
                             generateLog("Deadchest of [" + cd.getPlayerName() + "] was protected from explosion in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
@@ -345,6 +356,7 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onBlockPlaceEvent(BlockPlaceEvent e) {
+        // Disable double chest for grave chest
         if (e.getBlock().getType() == Material.CHEST) {
             for (BlockFace face : BlockFace.values()) {
                 Block block = e.getBlock().getRelative(face);

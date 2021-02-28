@@ -382,6 +382,7 @@ public class DCCommandExecutor implements CommandExecutor {
         itemsDroppedAfterTimeOut = (boolean) p.getConfig().get("ItemsDroppedAfterTimeOut");
         enableWorldGuardDetection = (boolean) p.getConfig().get("EnableWorldGuardDetection");
         dropMode = (int) p.getConfig().get("DropMode");
+        dropBlock = (int) p.getConfig().get("DropBlock");
 
         local.set(fileManager.getConfig3().getConfigurationSection("localisation").getValues(true));
     }

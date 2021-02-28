@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import static me.crylonz.DeadChestManager.cleanAllDeadChests;
 import static me.crylonz.DeadChestManager.reloadMetaData;
 import static me.crylonz.Utils.generateLog;
+import static me.crylonz.Utils.isGraveBlock;
 
 public class DeadChest extends JavaPlugin {
 
@@ -37,11 +38,15 @@ public class DeadChest extends JavaPlugin {
     public static boolean generateDeadChestInCreative = true;
     public static boolean displayDeadChestPositionOnDeath = true;
     public static int dropMode = 1;
+    public static int dropBlock = 1;
     public static ArrayList<String> excludedWorlds = new ArrayList<>();
     public static ArrayList<String> excludedItems = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
     public static boolean enableWorldGuardDetection = false;
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
+
+    public static ArrayList<Material> graveBlocks = new ArrayList<>();
+
 
     public static Localization local;
     public static Plugin plugin;
@@ -53,6 +58,10 @@ public class DeadChest extends JavaPlugin {
     private boolean isChanged = false;
 
     public void onEnable() {
+
+        // Wich block can be used as grave ?
+        graveBlocks.add(Material.CHEST);
+        graveBlocks.add(Material.PLAYER_HEAD);
 
         Objects.requireNonNull(getCommand("dc")).setTabCompleter(new TabCompletion());
 
@@ -143,6 +152,7 @@ public class DeadChest extends JavaPlugin {
             itemsDroppedAfterTimeOut = (boolean) getConfig().get("ItemsDroppedAfterTimeOut");
             enableWorldGuardDetection = (boolean) getConfig().get("EnableWorldGuardDetection");
             dropMode = (int) getConfig().get("DropMode");
+            dropMode = (int) getConfig().get("DropBlock");
         }
 
         // database (chestData.yml)
@@ -227,7 +237,7 @@ public class DeadChest extends JavaPlugin {
                                 // test if deadchest is always here
                                 Block b = w.getBlockAt(cd.getChestLocation());
 
-                                if (b.getType() != Material.CHEST) {
+                                if (!isGraveBlock(b.getType())) {
 
                                     for (ItemStack is : cd.getInventory()) {
                                         if (is != null) {

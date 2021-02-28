@@ -4,6 +4,7 @@ package me.crylonz;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -17,6 +18,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static me.crylonz.DeadChest.graveBlocks;
 import static me.crylonz.DeadChest.wgsdc;
 
 public class Utils {
@@ -84,6 +86,10 @@ public class Utils {
                 || Bukkit.getVersion().contains("1.14")
                 || Bukkit.getVersion().contains("1.13")
                 || Bukkit.getVersion().contains("1.12"));
+    }
+
+    public static boolean isGraveBlock(Material material) {
+        return graveBlocks.contains(material);
     }
 
 }
