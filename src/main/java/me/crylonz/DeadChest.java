@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -14,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -27,6 +30,12 @@ public class DeadChest extends JavaPlugin {
     public final static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
     public static List<ChestData> chestData;
+    public static WorldGuardSoftDependenciesChecker wgsdc = null;
+    public static ArrayList<Material> graveBlocks = new ArrayList<>();
+    public static Localization local;
+    public static Plugin plugin;
+
+    // Config
     public static boolean isIndestructible = true;
     public static boolean OnlyOwnerCanOpenDeadChest = true;
     public static int chestDuration = 600;
@@ -43,13 +52,6 @@ public class DeadChest extends JavaPlugin {
     public static ArrayList<String> excludedItems = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
     public static boolean enableWorldGuardDetection = false;
-    public static WorldGuardSoftDependenciesChecker wgsdc = null;
-
-    public static ArrayList<Material> graveBlocks = new ArrayList<>();
-
-
-    public static Localization local;
-    public static Plugin plugin;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -123,6 +125,9 @@ public class DeadChest extends JavaPlugin {
             saveDefaultConfig();
 
         } else {
+
+            autoUpdateConfigFile();
+
             @SuppressWarnings("unchecked")
             ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
 
@@ -152,7 +157,7 @@ public class DeadChest extends JavaPlugin {
             itemsDroppedAfterTimeOut = (boolean) getConfig().get("ItemsDroppedAfterTimeOut");
             enableWorldGuardDetection = (boolean) getConfig().get("EnableWorldGuardDetection");
             dropMode = (int) getConfig().get("DropMode");
-            dropMode = (int) getConfig().get("DropBlock");
+            dropBlock = (int) getConfig().get("DropBlock");
         }
 
         // database (chestData.yml)
@@ -304,5 +309,39 @@ public class DeadChest extends JavaPlugin {
                 }
             }
         }, 20, 20);
+    }
+
+    // Add missing parameters on config.yml
+    public void autoUpdateConfigFile() {
+        reloadConfig();
+        ArrayList<String> allConfigPath = new ArrayList<>();
+        allConfigPath.add("IndestuctibleChest");
+        allConfigPath.add("OnlyOwnerCanOpenDeadChest");
+        allConfigPath.add("DeadChestDuration");
+        allConfigPath.add("maxDeadChestPerPlayer");
+        allConfigPath.add("logDeadChestOnConsole");
+        allConfigPath.add("RequirePermissionToGenerate");
+        allConfigPath.add("RequirePermissionToListOwn");
+        allConfigPath.add("AutoCleanupOnStart");
+        allConfigPath.add("GenerateDeadChestInCreative");
+        allConfigPath.add("DisplayDeadChestPositionOnDeath");
+        allConfigPath.add("DropMode");
+        allConfigPath.add("DropBlock");
+        allConfigPath.add("ExcludedWorld");
+        allConfigPath.add("ExcludedItems");
+        allConfigPath.add("ItemsDroppedAfterTimeOut");
+        allConfigPath.add("EnableWorldGuardDetection");
+
+        for (String path : allConfigPath) {
+            FileConfiguration configuration = YamlConfiguration.loadConfiguration(fileManager.getConfigFile());
+            if (configuration.get(path) == null) {
+                File file = new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml");
+                File oldFile = new File(getDataFolder().getAbsolutePath() + File.separator + "config.old.yml");
+                file.renameTo(oldFile);
+                saveDefaultConfig();
+                log.warning("[DeadChest] Configuration update detected ! Don't forget to update your config.yml");
+                break;
+            }
+        }
     }
 }
