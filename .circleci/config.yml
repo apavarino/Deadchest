@@ -19,7 +19,7 @@ jobs:
       - run: mvn install
 
       - store_test_results:
-          path: target/surefire-reports
+          path: /tmp/test-results
 
       - store_artifacts:
           path: /home/circleci/deadchest/target/DeadChest-4.4.0.jar
