@@ -3,9 +3,9 @@
 </h1>
 
 <h2  align="center">
-    <img src="https://circleci.com/gh/apavarino/Deadchest.svg?style=shield" alt="CI" width="100" />
-    <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="CI" width="100" />
-    <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="CI" width="100" /> 
+    <img src="https://circleci.com/gh/apavarino/Deadchest.svg?style=shield" alt="CI"/>
+    <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="CI"/>
+    <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="CI"/> 
 </h2>
 
 
