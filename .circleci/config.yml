@@ -18,8 +18,5 @@ jobs:
 
       - run: mvn install
 
-      - store_test_results:
-          path: /tmp/test-results
-
       - store_artifacts:
-          path: /home/circleci/deadchest/target/DeadChest-4.4.0.jar
+          path: /home/circleci/deadchest/target/DeadChest-SNAPSHOT.jar
