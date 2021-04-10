@@ -17,3 +17,7 @@ Java Edition required. Deadchest is mainly compatible with Bukkit, Spigot and Pa
 
 * Curseforge: https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest
 * Bukkit : https://dev.bukkit.org/projects/worldedit
+
+## Changelog
+
+You can see changelog [here](changelog.md)
