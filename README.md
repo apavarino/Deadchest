@@ -1,7 +1,13 @@
 <h1  align="center">
-    <img src="deadchest-logo.png" alt="WorldEdit" width="800" /> <br>
-   <img src="https://circleci.com/gh/apavarino/Deadchest.svg?style=svg&circle-token=9d944eab9037ddd95e3cf8cc9520cf207b82ca31" alt="CI" width="100" /> 
+    <img src="deadchest-logo.png" alt="Deadchest" width="800" /><br>
 </h1>
+
+<h2  align="center">
+    <img src="https://circleci.com/gh/apavarino/Deadchest.svg?style=shield" alt="CI" width="100" />
+    <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="CI" width="100" />
+    <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="CI" width="100" /> 
+</h2>
+
 
 **Keep your inventory in a chest when you die !**
 
