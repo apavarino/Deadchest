@@ -12,10 +12,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -308,6 +305,26 @@ public class DeadChestListener implements Listener {
             }
         }
     }
+
+    /**
+     * Disable water destruction of Deadchest
+     **/
+    @EventHandler
+    public void onBlockFromToEvent(BlockFromToEvent e) {
+        if (isGraveBlock(e.getToBlock().getType())) {
+            if (isIndestructible) {
+                for (ChestData cd : chestData) {
+                    log.warning(cd.getChestLocation().toString());
+                    log.warning(e.getToBlock().getLocation().toString());
+                    if (cd.getChestLocation().equals(e.getToBlock().getLocation())) {
+                        e.setCancelled(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     @EventHandler
     public void onEntityExplodeEvent(EntityExplodeEvent e) {
