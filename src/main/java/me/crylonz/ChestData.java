@@ -50,12 +50,12 @@ public final class ChestData implements ConfigurationSerializable {
                      final Location holographicTimer, final UUID asTimerId,
                      final UUID asOwnerId, final String worldName) {
         this.inventory = inventory;
-        this.chestLocation = chestLocation;
+        this.chestLocation = chestLocation.clone();
         this.playerName = playerName;
         this.playerUUID = playerUUID;
         this.chestDate = chestDate;
         this.isInfinity = isInfinity;
-        this.holographicTimer = holographicTimer;
+        this.holographicTimer = holographicTimer.clone();
         this.holographicTimerId = asTimerId;
         this.holographicOwnerId = asOwnerId;
         this.worldName = worldName;
@@ -78,7 +78,8 @@ public final class ChestData implements ConfigurationSerializable {
     }
 
     public static String serializeLocation(String worldName, Location location) {
-        return MessageFormat.format("{0};{1};{2};{3}", worldName, location.getX(), location.getY(), location.getZ());
+        return MessageFormat.format("{0};{1};{2};{3}", worldName, location.getX(), location.getY(), location.getZ())
+                .replaceAll(",", ".");
     }
 
     public static Location deserializeLocation(String locationStr) {
