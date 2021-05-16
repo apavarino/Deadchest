@@ -55,6 +55,12 @@ DropBlock: 1
 # true : Items are dropped when timer is over
 ItemsDroppedAfterTimeOut: false
 
+# DeadChest generation option
+GenerateOnLava: true
+GenerateOnWater: true
+GenerateOnRails: true
+GenerateInMinecart: true
+
 # Worldguard securities to allow/denied deadchest spawning in regions
 # false : No worldguard detection
 # true : Deadchest will check if the player can generate deadchest where he dies

@@ -1,5 +1,21 @@
-## Deadchest 4.4.0
+## Deadchest 4.5.0
+
 **FEATURES**
+
++ Add option to disable Deadchest in lava
++ Add option to disable Deadchest in water
++ Add option to disable Deadchest on rails
++ Add option to disable Deadchest on minecart
+
+**BUGFIX**
+
++ Fix player head destroying with water issue
++ Fix Task exception spamming on console in certain cases
+
+## Deadchest 4.4.0
+
+**FEATURES**
+
 + **Added player head as deadchest** ! (configurable in config.yml)
 + Added possibility to change [Deadchest] prefix by something else on command feedback
 + Added auto update configuration file system when updating the plugin
@@ -13,10 +29,10 @@
 **FEATURES**
 + Update for Minecraft 1.16.4
 + Upgrade Worldguard support
-    + Deadchest now handle region priority
-    + remove dc_nobody flag
-    + add dc_guest flag
-    
+  + Deadchest now handle region priority
+  + remove dc_nobody flag
+  + add dc_guest flag
+
 **BUGFIX**
 + Invisible armorstand was not usable with Deadchest
 + Activation of worldguard detection was not working correctly
@@ -44,11 +60,10 @@ Hotfix : Patch the issue related to WorldGuard on 4.1.0.
 **CHANGE**
 + Remove previous Worldguard support system
 + New WorldGuard support : Works now with flags :
-    + **dc-owner** :  Only owner of the region can generate deadchest (true/false)
-    + **dc-member** : Only member of the region can generate deadchest (true/false)
-    + **dc-nobody** : Nobody can generate deadchest in the region
+  + **dc-owner** :  Only owner of the region can generate deadchest (true/false)
+  + **dc-member** : Only member of the region can generate deadchest (true/false)
+  + **dc-nobody** : Nobody can generate deadchest in the region
 + When a player dies on ladder, inside a door or in vines, deadchest now try to place the deadchest next to it instead of placing it at the top
-
 
 **BUGFIX**
 + **Fix Deadchest dupe with books**
@@ -62,16 +77,15 @@ Hotfix : Patch the issue related to WorldGuard on 4.1.0.
 + Adding new localization system with powerfull configuration
 + Adding timer customization
 + Adding Log system : All events related to deadchest are now stocked in a file
-+ Adding WorldGuard support : A Deadchest is not generate if the player is not member/owner of the region 
-where he died
++ Adding WorldGuard support : A Deadchest is not generate if the player is not member/owner of the region
+  where he died
 + Adding autocompletion for commands
 + Adding option in config file to enable items dropping on the floor when a deadchest time out
 
 **CHANGES**
 + Code refactoring
 + Improve stability
-+ No more collision with holograms. That mean that you can get your deadchest by the top or the bottom of it 
-  without hitting the hologram instead.
++ No more collision with holograms. That mean that you can get your deadchest by the top or the bottom of it without hitting the hologram instead.
 + Remove "×" at the beginning and the end of holograms
 + Improve /dc repair command feedback
 + New system to handle deadchest holograms
@@ -107,7 +121,7 @@ FEATURES
 + Added option to choose how deadchest drop items (inventory or ground)
 + Added new permission deadchest.giveBack (op by default)
 + Added new command /dc giveback <PlayerName> to get back the content of the oldest deadhcest of a player to him.
-If you want to recover several deadchest for a player, you juste have to execute the command again.
+  If you want to recover several deadchest for a player, you juste have to execute the command again.
 
 CHANGES 
 + Update localisation system
@@ -154,7 +168,7 @@ New features :
 + Add command /dc list <all/Player> to display deadchests of all or a specific player (deadchest.list.other)
 + Add a new config file (locale.yml) . You can edit text of the plugin to the langage you want
 + New option to disable DeadChest on certain worlds in config.yml
-Change :
+  Change :
 + Massive code rewrite
 + Performance optimization
 + deadchest.keepInventory permission change to deadchest.generate
@@ -203,7 +217,7 @@ BUGFIX : Attempt to get full compatibility with NPC plugins
 
 FEATURES :
 + Add parameter maxDeadChestPerPlayer, corresponding to the maximum number of deadchest that a player can have. if this
-number is exceeded. Inventory is dropped on the floor.
+  number is exceeded. Inventory is dropped on the floor.
 + Add permission deadchest.admin (need to type commands)
 + Add command /dc reload to reload the plugin
 + Add command /dc repair to clear holographic display on chest if something went wrong
@@ -232,7 +246,6 @@ BUGFIX :
 + Deadchest was not removed in memory if destroyed
 + If player was dying in a wall, deadchest was replacing the wall block
 
-
 ## Deadchest 1.7.0
 
 + FIX ISSUE : Duplication item in strange condition
@@ -259,9 +272,9 @@ BUGFIX :
 + BUGFIX : Comments on config file disappear after reload
 + ADD OPTION : EnableForOP in config file. Disable or not deadChest for OP
 + ADD PERMISSIONS :
-    + deadchest.noDropChest : player don't drop dead chest on death
-    + deadchest.chestPass : Player can open all deadChest
-    + deadchest.infinyChest : Player dead chest never disappaear
+  + deadchest.noDropChest : player don't drop dead chest on death
+  + deadchest.chestPass : Player can open all deadChest
+  + deadchest.infinyChest : Player dead chest never disappaear
 
 ## Deadchest 1.2.0
 

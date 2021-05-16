@@ -54,6 +54,10 @@ public class DeadChest extends JavaPlugin {
     public static ArrayList<String> excludedItems = new ArrayList<>();
     public static boolean itemsDroppedAfterTimeOut = false;
     public static boolean enableWorldGuardDetection = false;
+    public static boolean generateOnLava = true;
+    public static boolean generateOnWater = true;
+    public static boolean generateOnRails = true;
+    public static boolean generateInMinecart = true;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -94,8 +98,6 @@ public class DeadChest extends JavaPlugin {
         if (autoCleanUpOnStart) {
             cleanAllDeadChests();
         }
-
-
         launchRepeatingTask();
     }
 
@@ -169,6 +171,10 @@ public class DeadChest extends JavaPlugin {
             enableWorldGuardDetection = (boolean) getConfig().get("EnableWorldGuardDetection");
             dropMode = (int) getConfig().get("DropMode");
             dropBlock = (int) getConfig().get("DropBlock");
+            generateOnLava = (boolean) getConfig().get("GenerateOnLava");
+            generateOnWater = (boolean) getConfig().get("GenerateOnWater");
+            generateOnRails = (boolean) getConfig().get("GenerateOnRails");
+            generateInMinecart = (boolean) getConfig().get("GenerateInMinecart");
         }
 
         // database (chestData.yml)
@@ -344,6 +350,10 @@ public class DeadChest extends JavaPlugin {
         allConfigPath.add("ExcludedItems");
         allConfigPath.add("ItemsDroppedAfterTimeOut");
         allConfigPath.add("EnableWorldGuardDetection");
+        allConfigPath.add("GenerateOnLava");
+        allConfigPath.add("GenerateOnWater");
+        allConfigPath.add("GenerateOnRails");
+        allConfigPath.add("GenerateInMinecart");
 
         for (String path : allConfigPath) {
             FileConfiguration configuration = YamlConfiguration.loadConfiguration(fileManager.getConfigFile());
@@ -352,7 +362,9 @@ public class DeadChest extends JavaPlugin {
                 File oldFile = new File(getDataFolder().getAbsolutePath() + File.separator + "config.old.yml");
                 file.renameTo(oldFile);
                 saveDefaultConfig();
+                log.warning("**********");
                 log.warning("[DeadChest] Configuration update detected ! Don't forget to update your config.yml");
+                log.warning("**********");
                 break;
             }
         }

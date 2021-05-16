@@ -7,6 +7,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -35,17 +36,45 @@ public class DeadChestListener implements Listener {
 
         Player p = e.getEntity().getPlayer();
 
-
         if (p == null
                 || excludedWorlds.contains(p.getWorld().getName())
-                || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE))
+                || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
+        }
 
         if (worldGuardCheck(p) && (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate)) {
-            if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer || maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
+            if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer ||
+                    maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
                 World world = p.getWorld();
                 Location loc = p.getLocation();
+
+                if (!generateOnLava && loc.getBlock().getType().equals(Material.LAVA)) {
+                    generateLog("Player dies in lava : No deadchest generated");
+                    return;
+                }
+
+                if (!generateOnWater && loc.getBlock().getType().equals(Material.WATER)) {
+                    generateLog("Player dies in water : No deadchest generated");
+                    return;
+                }
+
+                if (!generateOnRails &&
+                        loc.getBlock().getType().equals(Material.RAIL) ||
+                        loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
+                        loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
+                        loc.getBlock().getType().equals(Material.POWERED_RAIL)) {
+                    generateLog("Player dies on rails : No deadchest generated");
+                    return;
+                }
+
+                if (!generateInMinecart && p.getVehicle() != null) {
+                    if (p.getVehicle().getType().equals(EntityType.MINECART)) {
+                        generateLog("Player dies in a minecart : No deadchest generated");
+                        return;
+                    }
+                }
+
 
                 // Handle case bottom of the world
                 if (loc.getY() < 1) {
@@ -90,7 +119,6 @@ public class DeadChestListener implements Listener {
                             loc = tmpLoc;
                         }
                     }
-
 
                     if (world.getBlockAt(loc).getType() != Material.AIR
                             && world.getBlockAt(loc).getType() != Material.CAVE_AIR

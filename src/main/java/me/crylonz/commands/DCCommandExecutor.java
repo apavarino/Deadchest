@@ -383,6 +383,10 @@ public class DCCommandExecutor implements CommandExecutor {
         enableWorldGuardDetection = (boolean) p.getConfig().get("EnableWorldGuardDetection");
         dropMode = (int) p.getConfig().get("DropMode");
         dropBlock = (int) p.getConfig().get("DropBlock");
+        generateOnLava = (boolean) p.getConfig().get("GenerateOnLava");
+        generateOnWater = (boolean) p.getConfig().get("GenerateOnWater");
+        generateOnRails = (boolean) p.getConfig().get("GenerateOnRails");
+        generateInMinecart = (boolean) p.getConfig().get("GenerateInMinecart");
 
         local.set(fileManager.getConfig3().getConfigurationSection("localisation").getValues(true));
     }
