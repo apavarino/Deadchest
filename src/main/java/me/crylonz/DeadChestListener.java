@@ -314,8 +314,6 @@ public class DeadChestListener implements Listener {
         if (isGraveBlock(e.getToBlock().getType())) {
             if (isIndestructible) {
                 for (ChestData cd : chestData) {
-                    log.warning(cd.getChestLocation().toString());
-                    log.warning(e.getToBlock().getLocation().toString());
                     if (cd.getChestLocation().equals(e.getToBlock().getLocation())) {
                         e.setCancelled(true);
                         break;
