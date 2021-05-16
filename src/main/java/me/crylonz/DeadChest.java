@@ -2,6 +2,7 @@ package me.crylonz;
 
 import me.crylonz.commands.DCCommandExecutor;
 import me.crylonz.commands.TabCompletion;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -58,6 +59,7 @@ public class DeadChest extends JavaPlugin {
     public static boolean generateOnWater = true;
     public static boolean generateOnRails = true;
     public static boolean generateInMinecart = true;
+    public static boolean bstats = true;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -68,6 +70,7 @@ public class DeadChest extends JavaPlugin {
     public DeadChest() {
         super();
     }
+
 
     protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
@@ -81,6 +84,10 @@ public class DeadChest extends JavaPlugin {
         graveBlocks.add(Material.PLAYER_HEAD);
 
         Objects.requireNonNull(getCommand("dc")).setTabCompleter(new TabCompletion());
+
+        if (bstats) {
+            Metrics metrics = new Metrics(this, 11385);
+        }
 
         plugin = this;
         PluginManager pm = getServer().getPluginManager();

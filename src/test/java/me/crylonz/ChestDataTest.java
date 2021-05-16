@@ -23,6 +23,7 @@ public class ChestDataTest extends TestCase {
 
     @Before
     public void setUp() {
+        DeadChest.bstats = false;
         server = MockBukkit.mock();
         plugin = MockBukkit.load(DeadChest.class);
         world = new WorldMock(Material.DIRT, 3);

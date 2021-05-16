@@ -6,6 +6,7 @@
 + Add option to disable Deadchest in water
 + Add option to disable Deadchest on rails
 + Add option to disable Deadchest on minecart
++ Added bstats for plugin statistics
 
 **BUGFIX**
 
