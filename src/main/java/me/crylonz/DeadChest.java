@@ -293,12 +293,14 @@ public class DeadChest extends JavaPlugin {
                                             && chestDuration != 0) {
 
                                         Location loc = cd.getChestLocation();
-                                        loc.getWorld().getBlockAt(loc).setType(Material.AIR);
 
-                                        if (itemsDroppedAfterTimeOut) {
-                                            for (ItemStack i : cd.getInventory()) {
-                                                if (i != null) {
-                                                    loc.getWorld().dropItemNaturally(loc, i);
+                                        if (loc.getWorld() != null) {
+                                            loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+                                            if (itemsDroppedAfterTimeOut) {
+                                                for (ItemStack i : cd.getInventory()) {
+                                                    if (i != null) {
+                                                        loc.getWorld().dropItemNaturally(loc, i);
+                                                    }
                                                 }
                                             }
                                         }
