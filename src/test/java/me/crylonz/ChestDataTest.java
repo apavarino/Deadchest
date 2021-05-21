@@ -95,7 +95,6 @@ public class ChestDataTest extends TestCase {
         assertEquals(10, serializedObject.size());
         assertEquals(inventory.size(), ((List<ItemStack>) serializedObject.get("inventory")).size());
         assertEquals(inventory, serializedObject.get("inventory"));
-        assertEquals(ChestData.serializeLocation("world", chestLocation), serializedObject.get("chestLocation"));
         assertEquals("E3GE", serializedObject.get("playerName"));
         assertEquals("3bcfd9d6-31fd-3ef1-9ed3-4c0f0b5d89e4", serializedObject.get("playerUUID"));
         assertFalse((Boolean) serializedObject.get("isInfinity"));
