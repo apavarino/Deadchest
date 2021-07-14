@@ -301,7 +301,6 @@ public class DCCommandExecutor implements CommandExecutor {
                                         targetP = Bukkit.getPlayer(UUID.fromString(cd.getPlayerUUID()));
 
                                         if (targetP != null && p.isOnline()) {
-                                            p.sendMessage(ChatColor.WHITE + "[DeadChest] ok");
                                             for (ItemStack i : cd.getInventory()) {
                                                 if (i != null) {
                                                     targetP.getWorld().dropItemNaturally(targetP.getLocation(), i);

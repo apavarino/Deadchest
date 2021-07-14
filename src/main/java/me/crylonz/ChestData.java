@@ -15,8 +15,6 @@ import java.util.*;
 @SerializableAs("ChestData")
 public final class ChestData implements ConfigurationSerializable {
 
-    enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
-
     private List<ItemStack> inventory;
     private Location chestLocation;
     private String playerName;
@@ -27,6 +25,19 @@ public final class ChestData implements ConfigurationSerializable {
     private UUID holographicTimerId;
     private UUID holographicOwnerId;
     private String worldName;
+
+    public ChestData(ChestData chest) {
+        this.inventory = chest.getInventory();
+        this.chestLocation = chest.getChestLocation();
+        this.playerName = chest.getPlayerName();
+        this.playerUUID = chest.getPlayerUUID();
+        this.chestDate = chest.getChestDate();
+        this.isInfinity = chest.isInfinity();
+        this.holographicTimer = chest.getHolographicTimer();
+        this.holographicTimerId = chest.getHolographicTimerId();
+        this.holographicOwnerId = chest.getHolographicOwnerId();
+        this.worldName = chest.getWorldName();
+    }
 
     ChestData(final Inventory inv, final Location chestLocation, final Player p, final boolean isInfinity, final ArmorStand asTimer, final ArmorStand owner) {
 
@@ -134,6 +145,10 @@ public final class ChestData implements ConfigurationSerializable {
         return worldName;
     }
 
+    public void setInventory(List<ItemStack> inventory) {
+        this.inventory = inventory;
+    }
+
     public void removeArmorStand() {
 
         final int radius = 1;
@@ -170,4 +185,6 @@ public final class ChestData implements ConfigurationSerializable {
         map.put("as_owner_id", holographicOwnerId.toString());
         return map;
     }
+
+    enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
 }
