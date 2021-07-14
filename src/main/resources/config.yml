@@ -26,6 +26,11 @@ logDeadChestOnConsole: false
 # true : permission needed
 RequirePermissionToGenerate: false
 
+# Players need permission deadchest.get to get his deadchest ?
+# false : no permission needed
+# true : permission needed
+RequirePermissionToGetChest: false
+
 # Players need permission deadchest.list.own to use /dc list (list all deadchests of the player) ?
 # false : no permission needed
 # true : permission needed

@@ -45,6 +45,7 @@ public class DeadChest extends JavaPlugin {
     public static int maxDeadChestPerPlayer = 5;
     public static boolean logDeadChestOnConsole = false;
     public static boolean requirePermissionToGenerate = false;
+    public static boolean requirePermissionToGetChest = false;
     public static boolean permissionRequiredToListOwn = false;
     public static boolean autoCleanUpOnStart = false;
     public static boolean generateDeadChestInCreative = true;
@@ -170,6 +171,7 @@ public class DeadChest extends JavaPlugin {
             maxDeadChestPerPlayer = (int) getConfig().get("maxDeadChestPerPlayer");
             logDeadChestOnConsole = (boolean) getConfig().get("logDeadChestOnConsole");
             requirePermissionToGenerate = (boolean) getConfig().get("RequirePermissionToGenerate");
+            requirePermissionToGetChest = (boolean) getConfig().get("RequirePermissionToGetChest");
             permissionRequiredToListOwn = (boolean) getConfig().get("RequirePermissionToListOwn");
             autoCleanUpOnStart = (boolean) getConfig().get("AutoCleanupOnStart");
             generateDeadChestInCreative = (boolean) getConfig().get("GenerateDeadChestInCreative");
@@ -347,6 +349,7 @@ public class DeadChest extends JavaPlugin {
         allConfigPath.add("maxDeadChestPerPlayer");
         allConfigPath.add("logDeadChestOnConsole");
         allConfigPath.add("RequirePermissionToGenerate");
+        allConfigPath.add("RequirePermissionToGetChest");
         allConfigPath.add("RequirePermissionToListOwn");
         allConfigPath.add("AutoCleanupOnStart");
         allConfigPath.add("GenerateDeadChestInCreative");
@@ -369,9 +372,13 @@ public class DeadChest extends JavaPlugin {
                 File oldFile = new File(getDataFolder().getAbsolutePath() + File.separator + "config.old.yml");
                 file.renameTo(oldFile);
                 saveDefaultConfig();
-                log.warning("**********");
-                log.warning("[DeadChest] Configuration update detected ! Don't forget to update your config.yml");
-                log.warning("**********");
+                log.warning("---------------------------------------");
+                log.warning("");
+                log.warning("[DeadChest] Configuration update detected !");
+                log.warning("[DeadChest] Config back to default : Don't forget to update your config.yml");
+                log.warning("[DeadChest] Your old config is in config.old.yml");
+                log.warning("");
+                log.warning("---------------------------------------");
                 break;
             }
         }

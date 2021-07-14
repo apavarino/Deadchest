@@ -29,6 +29,7 @@ public class Localization {
         local.put("loc_dcgbsuccess", "§aThe oldest deadchest content of this player returned to him");
         local.put("loc_gbplayer", "§aYou have retrieved the content of your deadchest");
         local.put("loc_chestPos", "§6Your deadchest is at");
+        local.put("loc_noPermsToGet", "§cYou are not allowed to open this chest");
     }
 
     public String get(String key) {

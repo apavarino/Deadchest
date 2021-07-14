@@ -375,6 +375,7 @@ public class DCCommandExecutor implements CommandExecutor {
         maxDeadChestPerPlayer = (int) p.getConfig().get("maxDeadChestPerPlayer");
         logDeadChestOnConsole = (boolean) p.getConfig().get("logDeadChestOnConsole");
         requirePermissionToGenerate = (boolean) p.getConfig().get("RequirePermissionToGenerate");
+        requirePermissionToGetChest = (boolean) p.getConfig().get("RequirePermissionToGetChest");
         permissionRequiredToListOwn = (boolean) p.getConfig().get("RequirePermissionToListOwn");
         autoCleanUpOnStart = (boolean) p.getConfig().get("AutoCleanupOnStart");
         generateDeadChestInCreative = (boolean) p.getConfig().get("GenerateDeadChestInCreative");

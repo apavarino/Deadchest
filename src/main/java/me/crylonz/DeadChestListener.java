@@ -236,6 +236,13 @@ public class DeadChestListener implements Listener {
                         if (!OnlyOwnerCanOpenDeadChest || e.getPlayer().getUniqueId().toString().equals(cd.getPlayerUUID())
                                 || e.getPlayer().hasPermission("deadChest.chestPass")) {
 
+                            if (!e.getPlayer().hasPermission("deadchest.get") && requirePermissionToGetChest) {
+                                generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", e.getPlayer().getName()));
+                                e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
+                                e.setCancelled(true);
+                                return;
+                            }
+
                             generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + e.getPlayer().getName() + "] in " + e.getPlayer().getWorld().getName());
 
                             // put all item on the inventory
