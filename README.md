@@ -22,3 +22,8 @@ Java Edition required. Deadchest is mainly compatible with Bukkit, Spigot and Pa
 ## Changelog
 
 You can see changelog [here](changelog.md)
+
+## Statistics
+<img align="center" src="https://bstats.org/signatures/bukkit/Deadchest.svg" alt="stats"/> 
+
+More stats [here](https://bstats.org/plugin/bukkit/DeadChest/11385)
