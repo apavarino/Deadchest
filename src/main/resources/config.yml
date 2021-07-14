@@ -53,6 +53,9 @@ DropMode: 1
 # Wich block is used to generate the deadchest
 # 1 : CHEST
 # 2 : PLAYER HEAD
+# 3 : BARREL
+# 4 : SHULKER BOX
+# 5 : ENDER CHEST
 DropBlock: 1
 
 # Items drop after timeout

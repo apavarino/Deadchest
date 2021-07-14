@@ -83,6 +83,9 @@ public class DeadChest extends JavaPlugin {
         // Wich block can be used as grave ?
         graveBlocks.add(Material.CHEST);
         graveBlocks.add(Material.PLAYER_HEAD);
+        graveBlocks.add(Material.ENDER_CHEST);
+        graveBlocks.add(Material.BARREL);
+        graveBlocks.add(Material.SHULKER_BOX);
 
         Objects.requireNonNull(getCommand("dc")).setTabCompleter(new TabCompletion());
 

@@ -143,16 +143,26 @@ public class DeadChestListener implements Listener {
 
                 if (!isInventoryEmpty(p.getInventory())) {
 
-                    if (dropBlock == 1) {
-                        b.setType(Material.CHEST);
-                    } else {
-                        b.setType(Material.PLAYER_HEAD);
-                        BlockState state = b.getState();
-                        Skull skull = (Skull) state;
-                        skull.setOwningPlayer(p);
-                        skull.update();
+                    switch (dropBlock) {
+                        case 2:
+                            b.setType(Material.PLAYER_HEAD);
+                            BlockState state = b.getState();
+                            Skull skull = (Skull) state;
+                            skull.setOwningPlayer(p);
+                            skull.update();
+                            break;
+                        case 3:
+                            b.setType(Material.BARREL);
+                            break;
+                        case 4:
+                            b.setType(Material.SHULKER_BOX);
+                            break;
+                        case 5:
+                            b.setType(Material.ENDER_CHEST);
+                            break;
+                        default:
+                            b.setType(Material.CHEST);
                     }
-
 
                     String firstLine = local.replacePlayer(local.get("holo_owner"), e.getEntity().getDisplayName());
                     ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
@@ -256,7 +266,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.DIAMOND_HELMET ||
                                                 i.getType() == Material.CHAINMAIL_HELMET ||
                                                 i.getType() == Material.TURTLE_HELMET ||
-                                                i.getType() == Material.NETHERITE_HELMET) &&
+                                                (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_HELMET)) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getHelmet() == null)
                                             e.getPlayer().getInventory().setHelmet(i);
@@ -266,7 +276,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_BOOTS ||
                                                 i.getType() == Material.DIAMOND_BOOTS ||
                                                 i.getType() == Material.CHAINMAIL_BOOTS ||
-                                                i.getType() == Material.NETHERITE_BOOTS) &&
+                                                (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS)) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getBoots() == null)
                                             e.getPlayer().getInventory().setBoots(i);
@@ -276,7 +286,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_CHESTPLATE ||
                                                 i.getType() == Material.DIAMOND_CHESTPLATE ||
                                                 i.getType() == Material.CHAINMAIL_CHESTPLATE ||
-                                                i.getType() == Material.NETHERITE_CHESTPLATE ||
+                                                (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS) ||
                                                 i.getType() == Material.ELYTRA) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getChestplate() == null)
@@ -287,7 +297,7 @@ public class DeadChestListener implements Listener {
                                                 i.getType() == Material.LEATHER_LEGGINGS ||
                                                 i.getType() == Material.DIAMOND_LEGGINGS ||
                                                 i.getType() == Material.CHAINMAIL_LEGGINGS ||
-                                                i.getType() == Material.NETHERITE_LEGGINGS) &&
+                                                (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_LEGGINGS)) &&
                                                 !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
                                                 e.getPlayer().getInventory().getLeggings() == null)
                                             e.getPlayer().getInventory().setLeggings(i);

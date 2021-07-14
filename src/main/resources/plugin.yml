@@ -8,10 +8,10 @@ api-version: "1.13"
 permissions:
   deadchest.generate:
     description: Allows a player to keep inventory in a chest when he dies
-    default: false
+    default: op
   deadchest.get:
     description: Allows a player to get his inventory by picking his deadchest
-    default: false
+    default: op
   deadchest.chestPass:
     description: Player can open all deadChest
     default: op

@@ -23,7 +23,6 @@ import static me.crylonz.DeadChest.wgsdc;
 
 public class Utils {
 
-
     public static BooleanFlag DEADCHEST_GUEST_FLAG;
     public static BooleanFlag DEADCHEST_OWNER_FLAG;
     public static BooleanFlag DEADCHEST_MEMBER_FLAG;
