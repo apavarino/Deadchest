@@ -34,6 +34,10 @@ public class DeadChestListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
+        if (e.getKeepInventory()) {
+            return;
+        }
+
         Player p = e.getEntity().getPlayer();
 
         if (p == null
