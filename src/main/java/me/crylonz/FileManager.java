@@ -13,13 +13,13 @@ public class FileManager {
 
     private final File configFile;
 
-    private static FileConfiguration config2 = null;
-    private static File config2File = null;
-    private static final String config2FileName = "chestData.yml";
+    private static FileConfiguration chestDataConfig = null;
+    private static File chestDataFile = null;
+    private static final String chestDataFileName = "chestData.yml";
 
-    private static FileConfiguration config3 = null;
-    private static File config3File = null;
-    private static String config3FileName = "locale.yml";
+    private static FileConfiguration localizationConfig = null;
+    private static File localizationFile = null;
+    private static final String localizationFileName = "locale.yml";
 
     private final Plugin p;
 
@@ -27,8 +27,8 @@ public class FileManager {
     public FileManager(Plugin p) {
         this.p = p;
         configFile = new File(p.getDataFolder(), "config.yml");
-        config2File = new File(p.getDataFolder(), config2FileName);
-        config3File = new File(p.getDataFolder(), config3FileName);
+        chestDataFile = new File(p.getDataFolder(), chestDataFileName);
+        localizationFile = new File(p.getDataFolder(), localizationFileName);
     }
 
     // Default config
@@ -37,69 +37,69 @@ public class FileManager {
     }
 
     // Config 2
-    public File getConfig2File() {
-        return config2File;
+    public File getChestDataFile() {
+        return chestDataFile;
     }
 
-    public void reloadConfig2() {
-        if (config2File == null) {
-            config2File = new File(p.getDataFolder(), config2FileName);
+    public void reloadChestDataConfig() {
+        if (chestDataFile == null) {
+            chestDataFile = new File(p.getDataFolder(), chestDataFileName);
         }
-        config2 = YamlConfiguration.loadConfiguration(config2File);
+        chestDataConfig = YamlConfiguration.loadConfiguration(chestDataFile);
     }
 
-    public FileConfiguration getConfig2() {
-        if (config2 == null) {
-            reloadConfig2();
+    public FileConfiguration getChestDataConfig() {
+        if (chestDataConfig == null) {
+            reloadChestDataConfig();
         }
-        return config2;
+        return chestDataConfig;
     }
 
-    public void saveConfig2() {
-        if (config2 == null || config2File == null) {
+    public void saveChestDataConfig() {
+        if (chestDataConfig == null || chestDataFile == null) {
             return;
         }
         try {
-            getConfig2().save(config2File);
+            getChestDataConfig().save(chestDataFile);
         } catch (IOException ex) {
-            DeadChest.log.severe("Could not save config to " + config2File + ex);
+            DeadChest.log.severe("Could not save config to " + chestDataFile + ex);
         }
     }
 
     // Config 3
-    public File getConfig3File() {
-        return config3File;
+    public File getLocalizationConfigFile() {
+        return localizationFile;
     }
 
-    public void reloadConfig3() {
-        if (config3File == null) {
-            config3File = new File(p.getDataFolder(), config3FileName);
+    public void reloadLocalizationConfig() {
+        if (localizationFile == null) {
+            localizationFile = new File(p.getDataFolder(), localizationFileName);
         }
-        config3 = YamlConfiguration.loadConfiguration(config3File);
+        localizationConfig = YamlConfiguration.loadConfiguration(localizationFile);
     }
 
-    public FileConfiguration getConfig3() {
-        if (config3 == null) {
-            reloadConfig3();
+    public FileConfiguration getLocalizationConfig() {
+        if (localizationConfig == null) {
+            reloadLocalizationConfig();
         }
-        return config3;
+        return localizationConfig;
     }
 
-    public void saveConfig3() {
-        if (config3 == null || config3File == null) {
+    public void saveLocalizationConfig() {
+        if (localizationConfig == null || localizationFile == null) {
             return;
         }
         try {
-            getConfig3().save(config3File);
+            getLocalizationConfig().save(localizationFile);
         } catch (IOException ex) {
-            DeadChest.log.severe("Could not save config to " + config3File + ex);
+            DeadChest.log.severe("Could not save config to " + localizationFile + ex);
         }
     }
 
     // custom func
     public void saveModification() {
-        getConfig2().set("chestData", chestData);
-        saveConfig2();
+        getChestDataConfig().set("chestData", chestData);
+        saveChestDataConfig();
     }
 
 }

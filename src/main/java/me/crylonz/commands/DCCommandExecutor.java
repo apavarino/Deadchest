@@ -31,7 +31,6 @@ public class DCCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-
         if (cmd.getName().equalsIgnoreCase("dc")) {
 
             if (args.length > 0) {
@@ -347,11 +346,11 @@ public class DCCommandExecutor implements CommandExecutor {
 
     public void reloadPlugin() {
 
-        fileManager.reloadConfig2();
-        fileManager.reloadConfig3();
+        fileManager.reloadChestDataConfig();
+        fileManager.reloadLocalizationConfig();
         p.reloadConfig();
         @SuppressWarnings("unchecked")
-        ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
+        ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
 
         @SuppressWarnings("unchecked")
         ArrayList<String> tmpExludedWorld = (ArrayList<String>) p.getConfig().get("ExcludedWorld");
@@ -359,7 +358,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
 
         if (tmp != null) {
-            chestData = (List<ChestData>) fileManager.getConfig2().get("chestData");
+            chestData = (List<ChestData>) fileManager.getChestDataConfig().get("chestData");
         }
 
         if (tmpExludedWorld != null)
@@ -388,6 +387,6 @@ public class DCCommandExecutor implements CommandExecutor {
         generateOnRails = (boolean) p.getConfig().get("GenerateOnRails");
         generateInMinecart = (boolean) p.getConfig().get("GenerateInMinecart");
 
-        local.set(fileManager.getConfig3().getConfigurationSection("localisation").getValues(true));
+        local.set(fileManager.getLocalizationConfig().getConfigurationSection("localisation").getValues(true));
     }
 }

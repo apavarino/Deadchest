@@ -72,13 +72,16 @@ public class DeadChest extends JavaPlugin {
         super();
     }
 
-
     protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
 
-
     public void onEnable() {
+
+        plugin = this;
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new DeadChestListener(), this);
+        fileManager = new FileManager(this);
 
         // Wich block can be used as grave ?
         graveBlocks.add(Material.CHEST);
@@ -93,12 +96,7 @@ public class DeadChest extends JavaPlugin {
             Metrics metrics = new Metrics(this, 11385);
         }
 
-        plugin = this;
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(), this);
-
         chestData = new ArrayList<>();
-        fileManager = new FileManager(this);
         local = new Localization();
 
         Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
@@ -137,8 +135,8 @@ public class DeadChest extends JavaPlugin {
     public void onDisable() {
 
         // chest data
-        if (fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
+        if (fileManager.getChestDataFile().exists()) {
+            fileManager.saveChestDataConfig();
         }
     }
 
@@ -153,7 +151,7 @@ public class DeadChest extends JavaPlugin {
             autoUpdateConfigFile();
 
             @SuppressWarnings("unchecked")
-            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
+            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
 
             @SuppressWarnings("unchecked")
             ArrayList<String> tmpExludedWorld = (ArrayList<String>) getConfig().get("ExcludedWorld");
@@ -190,14 +188,14 @@ public class DeadChest extends JavaPlugin {
         }
 
         // database (chestData.yml)
-        if (!fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
+        if (!fileManager.getChestDataFile().exists()) {
+            fileManager.saveChestDataConfig();
         }
 
         // locale file for translation
-        if (!fileManager.getConfig3File().exists()) {
-            fileManager.saveConfig3();
-            fileManager.getConfig3().options().header(
+        if (!fileManager.getLocalizationConfigFile().exists()) {
+            fileManager.saveLocalizationConfig();
+            fileManager.getLocalizationConfig().options().header(
                     "+--------------------------------------------------------------+\n" +
                             "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
                             "+--------------------------------------------------------------+\n" +
@@ -237,7 +235,7 @@ public class DeadChest extends JavaPlugin {
             // and add missing if needed
 
             Map<String, Object> localTmp =
-                    Objects.requireNonNull(fileManager.getConfig3().
+                    Objects.requireNonNull(fileManager.getLocalizationConfig().
                             getConfigurationSection("localisation")).getValues(true);
 
             for (Map.Entry<String, Object> entry : local.get().entrySet()) {
@@ -246,8 +244,8 @@ public class DeadChest extends JavaPlugin {
             local.set(localTmp);
         }
 
-        fileManager.getConfig3().createSection("localisation", local.get());
-        fileManager.saveConfig3();
+        fileManager.getLocalizationConfig().createSection("localisation", local.get());
+        fileManager.saveLocalizationConfig();
     }
 
     private void launchRepeatingTask() {
