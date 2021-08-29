@@ -139,7 +139,9 @@ public class DeadChestListener implements Listener {
 
                 Location groundLocation = loc.clone();
                 groundLocation.setY(groundLocation.getY() - 1);
-                if (world.getBlockAt(groundLocation).getType() == Material.GRASS_PATH || world.getBlockAt(groundLocation).getType() == Material.FARMLAND) {
+                if (isBefore1_17() && world.getBlockAt(groundLocation).getType() == Material.valueOf("GRASS_PATH") ||
+                        !isBefore1_17() && world.getBlockAt(groundLocation).getType() == Material.DIRT_PATH ||
+                        world.getBlockAt(groundLocation).getType() == Material.FARMLAND) {
                     loc.setY(loc.getY() + 1);
                 }
 

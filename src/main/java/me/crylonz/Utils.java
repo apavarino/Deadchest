@@ -80,6 +80,10 @@ public class Utils {
         return true;
     }
 
+    public static boolean isBefore1_17() {
+        return Bukkit.getVersion().contains("1.16") || isBefore1_16();
+    }
+
     public static boolean isBefore1_16() {
         return (Bukkit.getVersion().contains("1.15")
                 || Bukkit.getVersion().contains("1.14")
