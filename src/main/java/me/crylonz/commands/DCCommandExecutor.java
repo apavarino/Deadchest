@@ -184,15 +184,18 @@ public class DCCommandExecutor implements CommandExecutor {
                                     for (ChestData cd : chestData) {
                                         if (cd.getPlayerUUID().equalsIgnoreCase(p.getUniqueId().toString())) {
 
+                                            String worldName = cd.getChestLocation().getWorld() != null ?
+                                                    cd.getChestLocation().getWorld().getName() : "???";
+
                                             if (cd.isInfinity() || chestDuration == 0) {
-                                                p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " |"
+                                                p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                                                         + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                         + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                         + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                         + " | "
                                                         + "∞ " + local.get("loc_endtimer"));
                                             } else {
-                                                long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
+                                                long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
                                                 long diffSeconds = Math.abs(diff / 1000 % 60);
                                                 long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                 long diffHours = Math.abs(diff / (60 * 60 * 1000));
@@ -218,20 +221,22 @@ public class DCCommandExecutor implements CommandExecutor {
                                             p.sendMessage(local.get("loc_prefix") + local.get("loc_dclistall") + ":");
                                             for (ChestData cd : chestData) {
 
+                                                String worldName = cd.getChestLocation().getWorld() != null ?
+                                                        cd.getChestLocation().getWorld().getName() : "???";
 
                                                 if (cd.isInfinity() || chestDuration == 0) {
-                                                    p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " | "
+                                                    p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " | "
                                                             + ChatColor.GOLD + cd.getPlayerName() + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                             + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                             + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                             + " | "
                                                             + "∞ " + local.get("loc_endtimer"));
                                                 } else {
-                                                    long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
+                                                    long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
                                                     long diffSeconds = Math.abs(diff / 1000 % 60);
                                                     long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                     long diffHours = Math.abs(diff / (60 * 60 * 1000));
-                                                    p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " | "
+                                                    p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " | "
                                                             + ChatColor.GOLD + cd.getPlayerName() + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                             + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                             + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
@@ -252,19 +257,22 @@ public class DCCommandExecutor implements CommandExecutor {
                                             for (ChestData cd : chestData) {
                                                 if (cd.getPlayerName().equalsIgnoreCase(args[1])) {
 
+                                                    String worldName = cd.getChestLocation().getWorld() != null ?
+                                                            cd.getChestLocation().getWorld().getName() : "???";
+
                                                     if (cd.isInfinity() || chestDuration == 0) {
-                                                        p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " |"
+                                                        p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                                                                 + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                                 + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                                 + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
                                                                 + " | "
                                                                 + "∞ " + local.get("loc_endtimer"));
                                                     } else {
-                                                        long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
+                                                        long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
                                                         long diffSeconds = Math.abs(diff / 1000 % 60);
                                                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
-                                                        p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + cd.getChestLocation().getWorld().getName() + " |"
+                                                        p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                                                                 + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                                 + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
                                                                 + ChatColor.AQUA + " Z: " + ChatColor.WHITE + cd.getChestLocation().getZ()
@@ -354,6 +362,8 @@ public class DCCommandExecutor implements CommandExecutor {
 
         @SuppressWarnings("unchecked")
         ArrayList<String> tmpExludedWorld = (ArrayList<String>) p.getConfig().get("ExcludedWorld");
+
+        @SuppressWarnings("unchecked")
         ArrayList<String> tmpExludedItems = (ArrayList<String>) p.getConfig().get("ExcludedItems");
 
 
