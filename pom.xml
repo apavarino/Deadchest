@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>my.crylonz</groupId>
     <artifactId>DeadChest</artifactId>
-    <version>4.6.0</version>
+    <version>4.7.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -77,12 +77,6 @@
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.5-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.seeseemelk</groupId>
-            <artifactId>MockBukkit-v1.16</artifactId>
-            <version>0.25.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

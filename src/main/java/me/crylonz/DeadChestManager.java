@@ -7,12 +7,16 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import static me.crylonz.DeadChest.*;
+import static me.crylonz.Utils.isGraveBlock;
 
 public class DeadChestManager {
 
@@ -116,6 +120,72 @@ public class DeadChestManager {
                 }
             }
         }
+    }
 
+    public static boolean removeDeadChestIfItRemovedFromWorld(ChestData chestData, Iterator<ChestData> chestDataIt) {
+        World world = chestData.getChestLocation().getWorld();
+        if (world != null && !isGraveBlock(world.getBlockAt(chestData.getChestLocation()).getType())) {
+            for (ItemStack is : chestData.getInventory()) {
+                if (is != null) {
+                    world.dropItemNaturally(chestData.getChestLocation(), is);
+                }
+            }
+            chestData.removeArmorStand();
+            chestDataIt.remove();
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
+        if (chestData.getChestDate().getTime() + chestDuration * 1000L < date.getTime() && !chestData.isInfinity()
+                && chestDuration != 0) {
+
+            Location loc = chestData.getChestLocation();
+
+            if (loc.getWorld() != null) {
+                loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+                if (itemsDroppedAfterTimeOut) {
+                    for (ItemStack itemStack : chestData.getInventory()) {
+                        if (itemStack != null) {
+                            loc.getWorld().dropItemNaturally(loc, itemStack);
+                        }
+                    }
+                }
+            }
+
+            chestData.removeArmorStand();
+            chestDataIt.remove();
+            return true;
+        }
+        return false;
+    }
+
+    public static void updateTimer(ChestData chestData, Date date) {
+        Location chestTimer = chestData.getHolographicTimer();
+
+        if (chestTimer.getWorld() != null) {
+
+            ArrayList<Entity> entityList = (ArrayList<Entity>) chestTimer.getWorld().getNearbyEntities(chestTimer, 1.0, 1.0, 1.0);
+            for (Entity entity : entityList) {
+                if (entity.getType().equals(EntityType.ARMOR_STAND)) {
+                    if (!entity.hasMetadata("deadchest")) {
+                        reloadMetaData();
+                    }
+                    if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
+                        long diff = date.getTime() - (chestData.getChestDate().getTime() + chestDuration * 1000L);
+                        long diffSeconds = Math.abs(diff / 1000 % 60);
+                        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
+                        long diffHours = Math.abs(diff / (60 * 60 * 1000));
+
+                        if (!chestData.isInfinity() && chestDuration != 0) {
+                            entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
+                        } else {
+                            entity.setCustomName(local.get("loc_infinityChest"));
+                        }
+                    }
+                }
+            }
+        }
     }
 }

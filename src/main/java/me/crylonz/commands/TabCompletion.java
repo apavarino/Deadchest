@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TabCompletion implements TabCompleter {
 
-    private List<String> list = new ArrayList<>();
+    private final List<String> list = new ArrayList<>();
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
@@ -70,8 +70,6 @@ public class TabCompletion implements TabCompleter {
                     }
 
                 }
-
-
             }
         }
         return list;

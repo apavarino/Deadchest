@@ -3,16 +3,11 @@ package me.crylonz;
 import me.crylonz.commands.DCCommandExecutor;
 import me.crylonz.commands.TabCompletion;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -23,10 +18,8 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static me.crylonz.DeadChestManager.cleanAllDeadChests;
-import static me.crylonz.DeadChestManager.reloadMetaData;
+import static me.crylonz.DeadChestManager.*;
 import static me.crylonz.Utils.generateLog;
-import static me.crylonz.Utils.isGraveBlock;
 
 public class DeadChest extends JavaPlugin {
 
@@ -61,24 +54,26 @@ public class DeadChest extends JavaPlugin {
     public static boolean generateOnRails = true;
     public static boolean generateInMinecart = true;
     public static boolean bstats = true;
+    public static boolean isChangesNeedToBeSave = false;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
     }
 
-    private boolean isChanged = false;
-
     public DeadChest() {
         super();
     }
-
 
     protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
 
-
     public void onEnable() {
+
+        plugin = this;
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new DeadChestListener(), this);
+        fileManager = new FileManager(this);
 
         // Wich block can be used as grave ?
         graveBlocks.add(Material.CHEST);
@@ -93,12 +88,7 @@ public class DeadChest extends JavaPlugin {
             Metrics metrics = new Metrics(this, 11385);
         }
 
-        plugin = this;
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(), this);
-
         chestData = new ArrayList<>();
-        fileManager = new FileManager(this);
         local = new Localization();
 
         Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
@@ -137,8 +127,8 @@ public class DeadChest extends JavaPlugin {
     public void onDisable() {
 
         // chest data
-        if (fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
+        if (fileManager.getChestDataFile().exists()) {
+            fileManager.saveChestDataConfig();
         }
     }
 
@@ -153,7 +143,7 @@ public class DeadChest extends JavaPlugin {
             autoUpdateConfigFile();
 
             @SuppressWarnings("unchecked")
-            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getConfig2().get("chestData");
+            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
 
             @SuppressWarnings("unchecked")
             ArrayList<String> tmpExludedWorld = (ArrayList<String>) getConfig().get("ExcludedWorld");
@@ -190,14 +180,14 @@ public class DeadChest extends JavaPlugin {
         }
 
         // database (chestData.yml)
-        if (!fileManager.getConfig2File().exists()) {
-            fileManager.saveConfig2();
+        if (!fileManager.getChestDataFile().exists()) {
+            fileManager.saveChestDataConfig();
         }
 
         // locale file for translation
-        if (!fileManager.getConfig3File().exists()) {
-            fileManager.saveConfig3();
-            fileManager.getConfig3().options().header(
+        if (!fileManager.getLocalizationConfigFile().exists()) {
+            fileManager.saveLocalizationConfig();
+            fileManager.getLocalizationConfig().options().header(
                     "+--------------------------------------------------------------+\n" +
                             "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
                             "+--------------------------------------------------------------+\n" +
@@ -237,7 +227,7 @@ public class DeadChest extends JavaPlugin {
             // and add missing if needed
 
             Map<String, Object> localTmp =
-                    Objects.requireNonNull(fileManager.getConfig3().
+                    Objects.requireNonNull(fileManager.getLocalizationConfig().
                             getConfigurationSection("localisation")).getValues(true);
 
             for (Map.Entry<String, Object> entry : local.get().entrySet()) {
@@ -246,98 +236,43 @@ public class DeadChest extends JavaPlugin {
             local.set(localTmp);
         }
 
-        fileManager.getConfig3().createSection("localisation", local.get());
-        fileManager.saveConfig3();
+        fileManager.getLocalizationConfig().createSection("localisation", local.get());
+        fileManager.saveLocalizationConfig();
     }
 
     private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            public void run() {
-                if (chestData != null && !chestData.isEmpty()) {
-                    Date now = new Date();
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            if (chestData != null && !chestData.isEmpty()) {
 
-                    Iterator<ChestData> chestDataIt = chestData.iterator();
+                Date now = new Date();
+                Iterator<ChestData> chestDataIt = chestData.iterator();
 
-                    while (chestDataIt.hasNext()) {
-                        ChestData cd = chestDataIt.next();
-                        World w = cd.getChestLocation().getWorld();
+                while (chestDataIt.hasNext()) {
+                    ChestData chestData = chestDataIt.next();
+                    World world = chestData.getChestLocation().getWorld();
 
-                        if (w != null) {
-                            if (w.isChunkLoaded(cd.getChestLocation().getBlockX() / 16,
-                                    cd.getChestLocation().getBlockZ() / 16)) {
+                    if (world != null) {
 
-                                Location as = cd.getHolographicTimer();
+                        if (world.isChunkLoaded(chestData.getChestLocation().getBlockX() / 16,
+                                chestData.getChestLocation().getBlockZ() / 16)) {
 
-                                // test if deadchest is always here
-                                Block b = w.getBlockAt(cd.getChestLocation());
+                            // Check if deadchest is always here
+                            isChangesNeedToBeSave = removeDeadChestIfItRemovedFromWorld(chestData, chestDataIt);
 
-                                if (!isGraveBlock(b.getType())) {
-
-                                    for (ItemStack is : cd.getInventory()) {
-                                        if (is != null) {
-                                            w.dropItemNaturally(cd.getChestLocation(), is);
-                                        }
-                                    }
-                                    cd.removeArmorStand();
-                                    chestDataIt.remove();
-                                    isChanged = true;
-                                }
-
-                                // Update timer
-                                if (as.getWorld() != null) {
-
-                                    ArrayList<Entity> entityList = (ArrayList<Entity>) as.getWorld().getNearbyEntities(as, 1.0, 1.0, 1.0);
-                                    for (Entity entity : entityList) {
-                                        if (entity.getType().equals(EntityType.ARMOR_STAND)) {
-                                            if (!entity.hasMetadata("deadchest")) {
-                                                reloadMetaData();
-                                            }
-                                            if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                                                long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000);
-                                                long diffSeconds = Math.abs(diff / 1000 % 60);
-                                                long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
-                                                long diffHours = Math.abs(diff / (60 * 60 * 1000));
-
-                                                if (!cd.isInfinity() && chestDuration != 0) {
-                                                    entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
-                                                } else {
-                                                    entity.setCustomName(local.get("loc_infinityChest"));
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if (cd.getChestDate().getTime() + chestDuration * 1000 < now.getTime() && !cd.isInfinity()
-                                            && chestDuration != 0) {
-
-                                        Location loc = cd.getChestLocation();
-
-                                        if (loc.getWorld() != null) {
-                                            loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-                                            if (itemsDroppedAfterTimeOut) {
-                                                for (ItemStack i : cd.getInventory()) {
-                                                    if (i != null) {
-                                                        loc.getWorld().dropItemNaturally(loc, i);
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        cd.removeArmorStand();
-                                        chestDataIt.remove();
-                                        isChanged = true;
-                                        generateLog("Deadchest of [" + cd.getPlayerName() + "] has expired in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
-                                    }
-                                }
-                            }
+                            // Update timer
+                            updateTimer(chestData, now);
+                        }
+                        if (handleExpirateDeadChest(chestData, chestDataIt, now)) {
+                            isChangesNeedToBeSave = true;
+                            generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                         }
                     }
-
-                    if (isChanged) {
-                        fileManager.saveModification();
-                        isChanged = false;
-                    }
                 }
+            }
+
+            if (isChangesNeedToBeSave) {
+                fileManager.saveModification();
+                isChangesNeedToBeSave = false;
             }
         }, 20, 20);
     }
