@@ -16,7 +16,7 @@ DeadChestDuration: 300
 IndestuctibleChest: true
 
 # Maximum number of deadchest per player (0 = infiny)
-maxDeadChestPerPlayer: 5
+maxDeadChestPerPlayer: 15
 
 # Log a message in the console when a player die with the coordinate of the deadchest
 logDeadChestOnConsole: false
