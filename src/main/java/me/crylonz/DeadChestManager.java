@@ -137,9 +137,8 @@ public class DeadChestManager {
         return false;
     }
 
-    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt) {
-        Date now = new Date();
-        if (chestData.getChestDate().getTime() + chestDuration * 1000L < now.getTime() && !chestData.isInfinity()
+    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
+        if (chestData.getChestDate().getTime() + chestDuration * 1000L < date.getTime() && !chestData.isInfinity()
                 && chestDuration != 0) {
 
             Location loc = chestData.getChestLocation();
@@ -162,8 +161,7 @@ public class DeadChestManager {
         return false;
     }
 
-    public static void updateTimer(ChestData chestData) {
-        Date now = new Date();
+    public static void updateTimer(ChestData chestData, Date date) {
         Location chestTimer = chestData.getHolographicTimer();
 
         if (chestTimer.getWorld() != null) {
@@ -175,7 +173,7 @@ public class DeadChestManager {
                         reloadMetaData();
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                        long diff = now.getTime() - (chestData.getChestDate().getTime() + chestDuration * 1000L);
+                        long diff = date.getTime() - (chestData.getChestDate().getTime() + chestDuration * 1000L);
                         long diffSeconds = Math.abs(diff / 1000 % 60);
                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                         long diffHours = Math.abs(diff / (60 * 60 * 1000));

@@ -260,9 +260,9 @@ public class DeadChest extends JavaPlugin {
                             isChangesNeedToBeSave = removeDeadChestIfItRemovedFromWorld(chestData, chestDataIt);
 
                             // Update timer
-                            updateTimer(chestData);
+                            updateTimer(chestData, now);
                         }
-                        if (handleExpirateDeadChest(chestData, chestDataIt)) {
+                        if (handleExpirateDeadChest(chestData, chestDataIt, now)) {
                             isChangesNeedToBeSave = true;
                             generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                         }
