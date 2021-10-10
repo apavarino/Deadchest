@@ -32,4 +32,10 @@ public class PermissionUtils {
         return hasOneOf(player, permissions);
     }
 
+    public static boolean hasAdminOr(Player player, Permission permission) {
+        if(player.hasPermission(Permission.ADMIN.label))
+            return true;
+        return player.hasPermission(permission.label);
+    }
+
 }

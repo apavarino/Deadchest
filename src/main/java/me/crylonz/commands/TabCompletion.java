@@ -31,22 +31,22 @@ public class TabCompletion implements TabCompleter {
                         list.add("repair");
                     }
 
-                    if (PermissionUtils.hasAdminOrOneOf(player, new Permission[]{Permission.REMOVE_OTHER, Permission.REMOVE_OWN})) {
+                    if (PermissionUtils.hasAdminOrOneOf(player, Permission.LIST)) {
                         list.add("remove");
                     }
 
-                    if (player.hasPermission(Permission.ADMIN.label) || player.hasPermission(Permission.GIVEBACK.label)) {
+                    if (PermissionUtils.hasAdminOr(player, Permission.GIVEBACK)) {
                         list.add("giveBack");
                     }
 
-                    if (PermissionUtils.hasAdminOrOneOf(player, new Permission[]{Permission.LIST_OWN, Permission.LIST_OTHER})) {
+                    if (PermissionUtils.hasAdminOrOneOf(player, Permission.REMOVE)) {
                         list.add("list");
                     }
                 }
 
                 if (args.length == 2) {
                     if (args[0].equals("remove")) {
-                        if (player.hasPermission(Permission.ADMIN.label) || player.hasPermission(Permission.REMOVE_OTHER.label)) {
+                        if (PermissionUtils.hasAdminOr(player, Permission.REMOVE_OTHER)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
                             }
@@ -54,7 +54,7 @@ public class TabCompletion implements TabCompleter {
                     }
 
                     if (args[0].equals("list")) {
-                        if (player.hasPermission(Permission.ADMIN.label) || player.hasPermission(Permission.LIST_OTHER.label)) {
+                        if (PermissionUtils.hasAdminOr(player, Permission.LIST_OTHER)) {
                             list.add("all");
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
@@ -62,7 +62,7 @@ public class TabCompletion implements TabCompleter {
                         }
                     }
                     if (args[0].equals("giveBack")) {
-                        if (player.hasPermission(Permission.ADMIN.label) || player.hasPermission(Permission.GIVEBACK.label)) {
+                        if (PermissionUtils.hasAdminOr(player, Permission.GIVEBACK)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
                             }

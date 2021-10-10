@@ -13,6 +13,8 @@ public enum Permission {
     ADMIN("deadchest.admin");
 
     public final String label;
+    public static final Permission[] REMOVE = {REMOVE_OWN, REMOVE_OTHER};
+    public static final Permission[] LIST = {LIST_OWN, LIST_OTHER};
 
     private Permission(String label) {
         this.label = label;
