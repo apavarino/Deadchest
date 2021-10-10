@@ -269,46 +269,16 @@ public class DeadChestListener implements Listener {
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
-                                            if ((i.getType() == Material.IRON_HELMET ||
-                                                    i.getType() == Material.GOLDEN_HELMET ||
-                                                    i.getType() == Material.LEATHER_HELMET ||
-                                                    i.getType() == Material.DIAMOND_HELMET ||
-                                                    i.getType() == Material.CHAINMAIL_HELMET ||
-                                                    i.getType() == Material.TURTLE_HELMET ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_HELMET)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getHelmet() == null)
+                                            if (Utils.isHelmet(i) && e.getPlayer().getInventory().getHelmet() == null)
                                                 e.getPlayer().getInventory().setHelmet(i);
 
-                                            else if ((i.getType() == Material.IRON_BOOTS ||
-                                                    i.getType() == Material.GOLDEN_BOOTS ||
-                                                    i.getType() == Material.LEATHER_BOOTS ||
-                                                    i.getType() == Material.DIAMOND_BOOTS ||
-                                                    i.getType() == Material.CHAINMAIL_BOOTS ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getBoots() == null)
+                                            else if (Utils.isBoots(i) && e.getPlayer().getInventory().getBoots() == null)
                                                 e.getPlayer().getInventory().setBoots(i);
 
-                                            else if ((i.getType() == Material.IRON_CHESTPLATE ||
-                                                    i.getType() == Material.GOLDEN_CHESTPLATE ||
-                                                    i.getType() == Material.LEATHER_CHESTPLATE ||
-                                                    i.getType() == Material.DIAMOND_CHESTPLATE ||
-                                                    i.getType() == Material.CHAINMAIL_CHESTPLATE ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS) ||
-                                                    i.getType() == Material.ELYTRA) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getChestplate() == null)
+                                            else if ( Utils.isChestplate(i) && e.getPlayer().getInventory().getChestplate() == null)
                                                 e.getPlayer().getInventory().setChestplate(i);
 
-                                            else if ((i.getType() == Material.IRON_LEGGINGS ||
-                                                    i.getType() == Material.GOLDEN_LEGGINGS ||
-                                                    i.getType() == Material.LEATHER_LEGGINGS ||
-                                                    i.getType() == Material.DIAMOND_LEGGINGS ||
-                                                    i.getType() == Material.CHAINMAIL_LEGGINGS ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_LEGGINGS)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getLeggings() == null)
+                                            else if (Utils.isLeggings(i) && e.getPlayer().getInventory().getLeggings() == null)
                                                 e.getPlayer().getInventory().setLeggings(i);
 
                                             else if (e.getPlayer().getInventory().firstEmpty() != -1)
