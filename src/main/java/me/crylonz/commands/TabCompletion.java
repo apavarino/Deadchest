@@ -31,7 +31,7 @@ public class TabCompletion implements TabCompleter {
                         list.add("repair");
                     }
 
-                    if (PermissionUtils.hasAdminOrOneOf(player, Permission.LIST)) {
+                    if (PermissionUtils.hasAdminOrOneOf(player, PermissionUtils.LIST_ALL)) {
                         list.add("remove");
                     }
 
@@ -39,7 +39,7 @@ public class TabCompletion implements TabCompleter {
                         list.add("giveBack");
                     }
 
-                    if (PermissionUtils.hasAdminOrOneOf(player, Permission.REMOVE)) {
+                    if (PermissionUtils.hasAdminOrOneOf(player, PermissionUtils.REMOVE_ALL)) {
                         list.add("list");
                     }
                 }

@@ -4,6 +4,9 @@ import org.bukkit.entity.Player;
 
 public class PermissionUtils {
 
+    public static final Permission[] REMOVE_ALL = {Permission.REMOVE_OWN, Permission.REMOVE_OTHER};
+    public static final Permission[] LIST_ALL = {Permission.LIST_OWN, Permission.LIST_OTHER};
+
     public static boolean hasOneOf(Player player, Permission[] permissions) {
         for(Permission permission: permissions) {
             if(player.hasPermission(permission.label))
