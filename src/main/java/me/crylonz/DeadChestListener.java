@@ -240,22 +240,26 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
+        final String CHESTPASS_PERMISSION = "deadChest.chestPass";
 
         Block block = e.getClickedBlock();
 
         if (block != null && isGraveBlock(block.getType())) {
+            final Player player = e.getPlayer();
+            final String playerUUID = player.getUniqueId().toString();
+            final boolean playerHasPermission = player.hasPermission(CHESTPASS_PERMISSION);
+            final World playerWorld = player.getWorld();
             // if block is a dead chest
             if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation().equals(block.getLocation())) {
                         // if everybody can open chest or if the chest is the chest of the current player
-                        if (!OnlyOwnerCanOpenDeadChest || e.getPlayer().getUniqueId().toString().equals(cd.getPlayerUUID())
-                                || e.getPlayer().hasPermission("deadChest.chestPass")) {
+                        if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission){
 
-                            if (!e.getPlayer().hasPermission("deadchest.get") && requirePermissionToGetChest) {
-                                generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", e.getPlayer().getName()));
-                                e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
+                            if (!player.hasPermission("deadchest.get") && requirePermissionToGetChest) {
+                                generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
+                                player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
                                 e.setCancelled(true);
                                 return;
                             }
@@ -263,11 +267,11 @@ public class DeadChestListener implements Listener {
                             Bukkit.getServer().getPluginManager().callEvent(deadchestPickUpEvent);
 
                             if (!deadchestPickUpEvent.isCancelled()) {
-                                generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + e.getPlayer().getName() + "] in " + e.getPlayer().getWorld().getName());
+                                generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + player.getName() + "] in " + playerWorld.getName());
 
                                 // put all item on the inventory
                                 if (dropMode == 1) {
-                                    final PlayerInventory playerInventory = e.getPlayer().getInventory();
+                                    final PlayerInventory playerInventory = player.getInventory();
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
@@ -286,14 +290,14 @@ public class DeadChestListener implements Listener {
                                             else if (playerInventory.firstEmpty() != -1)
                                                 playerInventory.addItem(i);
                                             else
-                                                e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                                playerWorld.dropItemNaturally(block.getLocation(), i);
                                         }
                                     }
                                 } else {
                                     // pushed item on the ground
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
-                                            e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                            playerWorld.dropItemNaturally(block.getLocation(), i);
                                         }
                                     }
                                 }
@@ -302,7 +306,7 @@ public class DeadChestListener implements Listener {
                                 chestData.remove(cd);
                                 fileManager.saveModification();
                                 block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
-                                e.getPlayer().playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+                                player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
                                 cd.removeArmorStand();
                                 break;
                             } else {
@@ -310,7 +314,7 @@ public class DeadChestListener implements Listener {
                             }
                         } else {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
+                            player.sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
                         }
                     }
                 }
