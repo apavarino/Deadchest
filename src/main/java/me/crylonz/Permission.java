@@ -1,20 +1,20 @@
 package me.crylonz;
 
-public class Permission {
+public enum Permission {
+    CHESTPASS("deadchest.chestPass"),
+    GET("deadchest.get"),
+    GENERATE("deadchest.generate"),
+    GIVEBACK("deadchest.giveback"),
+    INFINITY_CHEST("deadchest.infityChest"),
+    REMOVE_OWN("deadchest.remove.own"),
+    REMOVE_OTHER("deadchest.remove.other"),
+    LIST_OWN("deadchest.list.own"),
+    LIST_OTHER("deadchest.list.other"),
+    ADMIN("deadchest.admin");
 
-    private static final String _DC = "deadchest";
+    public final String label;
 
-    public static final String CHESTPASS = _DC + ".chestPass";
-    public static final String GET = _DC + ".get";
-    public static final String GENERATE = _DC + ".generate";
-    public static final String GIVEBACK = _DC + ".giveback";
-    public static final String INFINITY_CHEST = _DC + ".infityChest";
-
-    public static final String REMOVE_OWN = _DC + ".remove.own";
-    public static final String REMOVE_OTHER = _DC + ".remove.other";
-
-    public static final String LIST_OWN = _DC + ".list.own";
-    public static final String LIST_OTHER = _DC + ".list.other";
-
-    public static final String ADMIN = _DC + ".admin";
+    private Permission(String label) {
+        this.label = label;
+    }
 }

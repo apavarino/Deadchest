@@ -47,7 +47,7 @@ public class DeadChestListener implements Listener {
             return;
         }
 
-        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE) || !requirePermissionToGenerate)) {
+        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !requirePermissionToGenerate)) {
             if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer ||
                     maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
@@ -214,7 +214,7 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST), holoTime, holoName));
+                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST.label), holoTime, holoName));
 
                     e.getDrops().clear();
                     p.getInventory().clear();
@@ -245,7 +245,7 @@ public class DeadChestListener implements Listener {
         if (block != null && isGraveBlock(block.getType())) {
             final Player player = e.getPlayer();
             final String playerUUID = player.getUniqueId().toString();
-            final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS);
+            final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
             final World playerWorld = player.getWorld();
             // if block is a dead chest
             if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -255,7 +255,7 @@ public class DeadChestListener implements Listener {
                         // if everybody can open chest or if the chest is the chest of the current player
                         if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission){
 
-                            if (!player.hasPermission(Permission.GET) && requirePermissionToGetChest) {
+                            if (!player.hasPermission(Permission.GET.label) && requirePermissionToGetChest) {
                                 generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
                                 player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
                                 e.setCancelled(true);
