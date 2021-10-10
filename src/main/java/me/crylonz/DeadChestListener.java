@@ -19,6 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -266,23 +267,24 @@ public class DeadChestListener implements Listener {
 
                                 // put all item on the inventory
                                 if (dropMode == 1) {
+                                    final PlayerInventory playerInventory = e.getPlayer().getInventory();
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
-                                            if (Utils.isHelmet(i) && e.getPlayer().getInventory().getHelmet() == null)
-                                                e.getPlayer().getInventory().setHelmet(i);
+                                            if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
+                                                playerInventory.setHelmet(i);
 
-                                            else if (Utils.isBoots(i) && e.getPlayer().getInventory().getBoots() == null)
-                                                e.getPlayer().getInventory().setBoots(i);
+                                            else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
+                                                playerInventory.setBoots(i);
 
-                                            else if ( Utils.isChestplate(i) && e.getPlayer().getInventory().getChestplate() == null)
-                                                e.getPlayer().getInventory().setChestplate(i);
+                                            else if ( Utils.isChestplate(i) && playerInventory.getChestplate() == null)
+                                                playerInventory.setChestplate(i);
 
-                                            else if (Utils.isLeggings(i) && e.getPlayer().getInventory().getLeggings() == null)
-                                                e.getPlayer().getInventory().setLeggings(i);
+                                            else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
+                                                playerInventory.setLeggings(i);
 
-                                            else if (e.getPlayer().getInventory().firstEmpty() != -1)
-                                                e.getPlayer().getInventory().addItem(i);
+                                            else if (playerInventory.firstEmpty() != -1)
+                                                playerInventory.addItem(i);
                                             else
                                                 e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
                                         }
