@@ -1,5 +1,6 @@
 package me.crylonz.commands;
 
+import me.crylonz.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,31 +23,31 @@ public class TabCompletion implements TabCompleter {
                 Player player = (Player) sender;
 
                 if (args.length == 1) {
-                    if (player.hasPermission("deadchest.admin")) {
+                    if (player.hasPermission(Permission.ADMIN)) {
                         list.add("reload");
                         list.add("removeinfinite");
                         list.add("removeall");
                         list.add("repair");
                     }
 
-                    if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.remove.own")
-                            && player.hasPermission("deadchest.remove.other")) {
+                    if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.REMOVE_OWN)
+                            && player.hasPermission(Permission.REMOVE_OTHER)) {
                         list.add("remove");
                     }
 
-                    if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.giveback")) {
+                    if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.GIVEBACK)) {
                         list.add("giveBack");
                     }
 
-                    if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.list.own") ||
-                            player.hasPermission("deadchest.list.other")) {
+                    if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.LIST_OWN) ||
+                            player.hasPermission(Permission.LIST_OTHER)) {
                         list.add("list");
                     }
                 }
 
                 if (args.length == 2) {
                     if (args[0].equals("remove")) {
-                        if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.remove.other")) {
+                        if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.REMOVE_OTHER)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
                             }
@@ -54,7 +55,7 @@ public class TabCompletion implements TabCompleter {
                     }
 
                     if (args[0].equals("list")) {
-                        if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.list.other")) {
+                        if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.LIST_OTHER)) {
                             list.add("all");
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
@@ -62,7 +63,7 @@ public class TabCompletion implements TabCompleter {
                         }
                     }
                     if (args[0].equals("giveBack")) {
-                        if (player.hasPermission("deadchest.admin") || player.hasPermission("deadchest.giveBack")) {
+                        if (player.hasPermission(Permission.ADMIN) || player.hasPermission(Permission.GIVEBACK)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());
                             }
