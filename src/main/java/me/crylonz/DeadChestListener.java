@@ -19,6 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class DeadChestListener implements Listener {
             return;
         }
 
-        if (worldGuardCheck(p) && (p.hasPermission("deadchest.generate") || !requirePermissionToGenerate)) {
+        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !requirePermissionToGenerate)) {
             if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer ||
                     maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
 
@@ -213,7 +214,7 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission("deadChest.infinityChest"), holoTime, holoName));
+                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST.label), holoTime, holoName));
 
                     e.getDrops().clear();
                     p.getInventory().clear();
@@ -239,22 +240,24 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
-
         Block block = e.getClickedBlock();
 
         if (block != null && isGraveBlock(block.getType())) {
+            final Player player = e.getPlayer();
+            final String playerUUID = player.getUniqueId().toString();
+            final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
+            final World playerWorld = player.getWorld();
             // if block is a dead chest
             if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation().equals(block.getLocation())) {
                         // if everybody can open chest or if the chest is the chest of the current player
-                        if (!OnlyOwnerCanOpenDeadChest || e.getPlayer().getUniqueId().toString().equals(cd.getPlayerUUID())
-                                || e.getPlayer().hasPermission("deadChest.chestPass")) {
+                        if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission){
 
-                            if (!e.getPlayer().hasPermission("deadchest.get") && requirePermissionToGetChest) {
-                                generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", e.getPlayer().getName()));
-                                e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
+                            if (!player.hasPermission(Permission.GET.label) && requirePermissionToGetChest) {
+                                generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
+                                player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
                                 e.setCancelled(true);
                                 return;
                             }
@@ -262,66 +265,37 @@ public class DeadChestListener implements Listener {
                             Bukkit.getServer().getPluginManager().callEvent(deadchestPickUpEvent);
 
                             if (!deadchestPickUpEvent.isCancelled()) {
-                                generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + e.getPlayer().getName() + "] in " + e.getPlayer().getWorld().getName());
+                                generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + player.getName() + "] in " + playerWorld.getName());
 
                                 // put all item on the inventory
                                 if (dropMode == 1) {
+                                    final PlayerInventory playerInventory = player.getInventory();
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
-                                            if ((i.getType() == Material.IRON_HELMET ||
-                                                    i.getType() == Material.GOLDEN_HELMET ||
-                                                    i.getType() == Material.LEATHER_HELMET ||
-                                                    i.getType() == Material.DIAMOND_HELMET ||
-                                                    i.getType() == Material.CHAINMAIL_HELMET ||
-                                                    i.getType() == Material.TURTLE_HELMET ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_HELMET)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getHelmet() == null)
-                                                e.getPlayer().getInventory().setHelmet(i);
+                                            if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
+                                                playerInventory.setHelmet(i);
 
-                                            else if ((i.getType() == Material.IRON_BOOTS ||
-                                                    i.getType() == Material.GOLDEN_BOOTS ||
-                                                    i.getType() == Material.LEATHER_BOOTS ||
-                                                    i.getType() == Material.DIAMOND_BOOTS ||
-                                                    i.getType() == Material.CHAINMAIL_BOOTS ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getBoots() == null)
-                                                e.getPlayer().getInventory().setBoots(i);
+                                            else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
+                                                playerInventory.setBoots(i);
 
-                                            else if ((i.getType() == Material.IRON_CHESTPLATE ||
-                                                    i.getType() == Material.GOLDEN_CHESTPLATE ||
-                                                    i.getType() == Material.LEATHER_CHESTPLATE ||
-                                                    i.getType() == Material.DIAMOND_CHESTPLATE ||
-                                                    i.getType() == Material.CHAINMAIL_CHESTPLATE ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_BOOTS) ||
-                                                    i.getType() == Material.ELYTRA) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getChestplate() == null)
-                                                e.getPlayer().getInventory().setChestplate(i);
+                                            else if ( Utils.isChestplate(i) && playerInventory.getChestplate() == null)
+                                                playerInventory.setChestplate(i);
 
-                                            else if ((i.getType() == Material.IRON_LEGGINGS ||
-                                                    i.getType() == Material.GOLDEN_LEGGINGS ||
-                                                    i.getType() == Material.LEATHER_LEGGINGS ||
-                                                    i.getType() == Material.DIAMOND_LEGGINGS ||
-                                                    i.getType() == Material.CHAINMAIL_LEGGINGS ||
-                                                    (!Utils.isBefore1_16() && i.getType() == Material.NETHERITE_LEGGINGS)) &&
-                                                    !i.getEnchantments().containsKey(Enchantment.BINDING_CURSE) &&
-                                                    e.getPlayer().getInventory().getLeggings() == null)
-                                                e.getPlayer().getInventory().setLeggings(i);
+                                            else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
+                                                playerInventory.setLeggings(i);
 
-                                            else if (e.getPlayer().getInventory().firstEmpty() != -1)
-                                                e.getPlayer().getInventory().addItem(i);
+                                            else if (playerInventory.firstEmpty() != -1)
+                                                playerInventory.addItem(i);
                                             else
-                                                e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                                playerWorld.dropItemNaturally(block.getLocation(), i);
                                         }
                                     }
                                 } else {
                                     // pushed item on the ground
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
-                                            e.getPlayer().getWorld().dropItemNaturally(block.getLocation(), i);
+                                            playerWorld.dropItemNaturally(block.getLocation(), i);
                                         }
                                     }
                                 }
@@ -330,7 +304,7 @@ public class DeadChestListener implements Listener {
                                 chestData.remove(cd);
                                 fileManager.saveModification();
                                 block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
-                                e.getPlayer().playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+                                player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
                                 cd.removeArmorStand();
                                 break;
                             } else {
@@ -338,7 +312,7 @@ public class DeadChestListener implements Listener {
                             }
                         } else {
                             e.setCancelled(true);
-                            e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
+                            player.sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
                         }
                     }
                 }

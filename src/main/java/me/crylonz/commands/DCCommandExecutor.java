@@ -1,6 +1,7 @@
 package me.crylonz.commands;
 
 import me.crylonz.ChestData;
+import me.crylonz.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ public class DCCommandExecutor implements CommandExecutor {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
 
-                        if (p.hasPermission("deadchest.admin")) {
+                        if (p.hasPermission(Permission.ADMIN.label)) {
                             reloadPlugin();
                             p.sendMessage(local.get("loc_prefix") + local.get("loc_reload"));
                             log.info(local.get("loc_prefix") + " Plugin is reloading");
@@ -53,7 +54,7 @@ public class DCCommandExecutor implements CommandExecutor {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
 
-                        if (p.hasPermission("deadchest.admin")) {
+                        if (p.hasPermission(Permission.ADMIN.label)) {
                             Collection<Entity> entities = p.getWorld().getNearbyEntities(
                                     p.getLocation(), 100.0D, 25.0D, 100.0D);
 
@@ -84,7 +85,7 @@ public class DCCommandExecutor implements CommandExecutor {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
 
-                        if (p.hasPermission("deadchest.admin")) {
+                        if (p.hasPermission(Permission.ADMIN.label)) {
                             int cpt = 0;
 
                             if (chestData != null && !chestData.isEmpty()) {
@@ -121,7 +122,7 @@ public class DCCommandExecutor implements CommandExecutor {
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
 
-                        if (p.hasPermission("deadchest.admin")) {
+                        if (p.hasPermission(Permission.ADMIN.label)) {
                             int cpt = cleanAllDeadChests();
                             p.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
                                     ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
@@ -132,8 +133,8 @@ public class DCCommandExecutor implements CommandExecutor {
                         Player p = (Player) sender;
 
 
-                        if ((args.length == 2 && p.hasPermission("deadchest.remove.other")) ||
-                                (args.length == 1 && p.hasPermission("deadchest.remove.own"))) {
+                        if ((args.length == 2 && p.hasPermission(Permission.REMOVE_OTHER.label)) ||
+                                (args.length == 1 && p.hasPermission(Permission.REMOVE_OWN.label))) {
 
                             String pname = args.length == 2 ? args[1] : p.getName();
                             int cpt = 0;
@@ -175,7 +176,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
-                        if (p.hasPermission("deadchest.list.own") || !permissionRequiredToListOwn) {
+                        if (p.hasPermission(Permission.LIST_OWN.label) || !permissionRequiredToListOwn) {
 
                             if (args.length == 1) {
                                 Date now = new Date();
@@ -214,7 +215,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                 }
 
                             } else if (args.length == 2) {
-                                if (p.hasPermission("deadchest.list.other")) {
+                                if (p.hasPermission(Permission.LIST_OTHER.label)) {
                                     if (args[1].equalsIgnoreCase("all")) {
                                         Date now = new Date();
                                         if (!chestData.isEmpty()) {
@@ -299,7 +300,7 @@ public class DCCommandExecutor implements CommandExecutor {
                         Player p = (Player) sender;
                         Player targetP = null;
 
-                        if (p.hasPermission("deadchest.giveBack")) {
+                        if (p.hasPermission(Permission.GIVEBACK.label)) {
                             if (args.length == 2) {
 
                                 for (ChestData cd : chestData) {
