@@ -5,7 +5,7 @@ public enum Permission {
     GET("deadchest.get"),
     GENERATE("deadchest.generate"),
     GIVEBACK("deadchest.giveback"),
-    INFINITY_CHEST("deadchest.infityChest"),
+    INFINITY_CHEST("deadchest.infinityChest"),
     REMOVE_OWN("deadchest.remove.own"),
     REMOVE_OTHER("deadchest.remove.other"),
     LIST_OWN("deadchest.list.own"),
