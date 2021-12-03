@@ -85,6 +85,10 @@ public class Utils {
         return true;
     }
 
+    public static boolean isBefore1_18() {
+        return Bukkit.getVersion().contains("1.17") || isBefore1_17();
+    }
+
     public static boolean isBefore1_17() {
         return Bukkit.getVersion().contains("1.16") || isBefore1_16();
     }
@@ -134,6 +138,14 @@ public class Utils {
 
     public static boolean isNetherite(ItemStack i, Material netheriteGear) {
         return !isBefore1_16() && i.getType() == netheriteGear;
+    }
+
+    public static int computeMinHeight() {
+        if (isBefore1_18()) {
+            return 1;
+        } else {
+            return -64;
+        }
     }
 
     public static void computeChestType(Block b, Player p) {

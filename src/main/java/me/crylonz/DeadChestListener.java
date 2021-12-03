@@ -80,10 +80,11 @@ public class DeadChestListener implements Listener {
 
 
                 // Handle case bottom of the world
-                if (loc.getY() < 1) {
+                int minHeight = computeMinHeight();
+                if (loc.getY() < minHeight) {
                     loc.setY(world.getHighestBlockYAt((int) loc.getX(), (int) loc.getZ()) + 1);
-                    if (loc.getY() < 1)
-                        loc.setY(1);
+                    if (loc.getY() < minHeight)
+                        loc.setY(minHeight);
                 }
 
                 // Handle case top of the world
