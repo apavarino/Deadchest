@@ -117,6 +117,10 @@ public final class ChestData implements ConfigurationSerializable {
         return inventory;
     }
 
+    public void setInventory(List<ItemStack> inventory) {
+        this.inventory = inventory;
+    }
+
     public Location getChestLocation() {
         return chestLocation;
     }
@@ -145,27 +149,31 @@ public final class ChestData implements ConfigurationSerializable {
         return worldName;
     }
 
-    public void setInventory(List<ItemStack> inventory) {
-        this.inventory = inventory;
-    }
-
-    public void removeArmorStand() {
-
+    public boolean removeArmorStand() {
         final int radius = 1;
         final int armorStandShiftY = 1;
 
         if (chestLocation.getWorld() != null) {
 
+            chestLocation.getChunk().setForceLoaded(true);
+
             Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
                     new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() + armorStandShiftY,
                             chestLocation.getZ()), radius, radius, radius);
-
+            boolean isEmpty = entities.size() > 0;
             for (Entity entity : entities) {
                 if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
                     entity.remove();
                 }
             }
+
+            if (chestLocation.getChunk().isForceLoaded() && chestLocation.getChunk().isLoaded()) {
+                chestLocation.getChunk().setForceLoaded(false);
+            }
+
+            return isEmpty;
         }
+        return false;
     }
 
     @Override

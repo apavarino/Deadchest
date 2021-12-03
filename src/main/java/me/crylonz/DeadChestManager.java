@@ -1,8 +1,10 @@
 package me.crylonz;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import static me.crylonz.DeadChest.*;
+import static me.crylonz.Utils.computeChestType;
 import static me.crylonz.Utils.isGraveBlock;
 
 public class DeadChestManager {
@@ -122,16 +125,11 @@ public class DeadChestManager {
         }
     }
 
-    public static boolean removeDeadChestIfItRemovedFromWorld(ChestData chestData, Iterator<ChestData> chestDataIt) {
+    public static boolean replaceDeadChestIfItDeseapears(ChestData chestData) {
         World world = chestData.getChestLocation().getWorld();
         if (world != null && !isGraveBlock(world.getBlockAt(chestData.getChestLocation()).getType())) {
-            for (ItemStack is : chestData.getInventory()) {
-                if (is != null) {
-                    world.dropItemNaturally(chestData.getChestLocation(), is);
-                }
-            }
-            chestData.removeArmorStand();
-            chestDataIt.remove();
+            Block b = world.getBlockAt(chestData.getChestLocation());
+            computeChestType(b, Bukkit.getPlayer(chestData.getPlayerUUID()));
             return true;
         }
         return false;
@@ -153,9 +151,10 @@ public class DeadChestManager {
                     }
                 }
             }
+            if (chestData.removeArmorStand()) {
+                chestDataIt.remove();
+            }
 
-            chestData.removeArmorStand();
-            chestDataIt.remove();
             return true;
         }
         return false;

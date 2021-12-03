@@ -3,8 +3,6 @@ package me.crylonz;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -150,27 +148,7 @@ public class DeadChestListener implements Listener {
 
                 if (!isInventoryEmpty(p.getInventory())) {
 
-                    switch (dropBlock) {
-                        case 2:
-                            b.setType(Material.PLAYER_HEAD);
-                            BlockState state = b.getState();
-                            Skull skull = (Skull) state;
-                            skull.setOwningPlayer(p);
-                            skull.update();
-                            break;
-                        case 3:
-                            b.setType(Material.BARREL);
-                            break;
-                        case 4:
-                            b.setType(Material.SHULKER_BOX);
-                            break;
-                        case 5:
-                            b.setType(Material.ENDER_CHEST);
-                            break;
-                        default:
-                            b.setType(Material.CHEST);
-                    }
-
+                    computeChestType(b, p);
                     String firstLine = local.replacePlayer(local.get("holo_owner"), e.getEntity().getDisplayName());
                     ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
 
@@ -240,6 +218,16 @@ public class DeadChestListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
+
+        if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            for (ChestData cd : chestData) {
+                if (cd.getChestLocation().distance(e.getClickedBlock().getLocation()) <= 1) {
+                    e.setCancelled(true);
+                    break;
+                }
+            }
+        }
+
         Block block = e.getClickedBlock();
 
         if (block != null && isGraveBlock(block.getType())) {
@@ -248,12 +236,12 @@ public class DeadChestListener implements Listener {
             final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
             final World playerWorld = player.getWorld();
             // if block is a dead chest
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation().equals(block.getLocation())) {
                         // if everybody can open chest or if the chest is the chest of the current player
-                        if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission){
+                        if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission) {
 
                             if (!player.hasPermission(Permission.GET.label) && requirePermissionToGetChest) {
                                 generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
@@ -279,7 +267,7 @@ public class DeadChestListener implements Listener {
                                             else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
                                                 playerInventory.setBoots(i);
 
-                                            else if ( Utils.isChestplate(i) && playerInventory.getChestplate() == null)
+                                            else if (Utils.isChestplate(i) && playerInventory.getChestplate() == null)
                                                 playerInventory.setChestplate(i);
 
                                             else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
@@ -342,12 +330,10 @@ public class DeadChestListener implements Listener {
     @EventHandler
     public void onBlockFromToEvent(BlockFromToEvent e) {
         if (isGraveBlock(e.getToBlock().getType())) {
-            if (isIndestructible) {
-                for (ChestData cd : chestData) {
-                    if (cd.getChestLocation().equals(e.getToBlock().getLocation())) {
-                        e.setCancelled(true);
-                        break;
-                    }
+            for (ChestData cd : chestData) {
+                if (cd.getChestLocation().equals(e.getToBlock().getLocation())) {
+                    e.setCancelled(true);
+                    break;
                 }
             }
         }
@@ -417,4 +403,19 @@ public class DeadChestListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockPistonExtendEvent(BlockPistonExtendEvent event) {
+        for (Block block : event.getBlocks()) {
+            if (block != null && (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD))
+                for (ChestData cd : chestData) {
+                    if (cd.getChestLocation().equals(block.getLocation())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+        }
+    }
 }
+
+

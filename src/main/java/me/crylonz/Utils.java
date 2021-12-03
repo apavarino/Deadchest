@@ -6,10 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static me.crylonz.DeadChest.graveBlocks;
-import static me.crylonz.DeadChest.wgsdc;
+import static me.crylonz.DeadChest.*;
 
 public class Utils {
 
@@ -126,11 +129,37 @@ public class Utils {
         final boolean isNetheriteGear = isNetherite(i, netheriteGear);
         final boolean hasCurseOfBinding = i.getEnchantments().containsKey(Enchantment.BINDING_CURSE);
 
-        return  (isStandardGear || isNetheriteGear) && !hasCurseOfBinding;
+        return (isStandardGear || isNetheriteGear) && !hasCurseOfBinding;
     }
 
     public static boolean isNetherite(ItemStack i, Material netheriteGear) {
         return !isBefore1_16() && i.getType() == netheriteGear;
+    }
+
+    public static void computeChestType(Block b, Player p) {
+        switch (dropBlock) {
+            case 2:
+                b.setType(Material.PLAYER_HEAD);
+                b.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
+                BlockState state = b.getState();
+                Skull skull = (Skull) state;
+                if (p != null) {
+                    skull.setOwningPlayer(p);
+                }
+                skull.update();
+                break;
+            case 3:
+                b.setType(Material.BARREL);
+                break;
+            case 4:
+                b.setType(Material.SHULKER_BOX);
+                break;
+            case 5:
+                b.setType(Material.ENDER_CHEST);
+                break;
+            default:
+                b.setType(Material.CHEST);
+        }
     }
 
 }
