@@ -164,7 +164,7 @@ public class DeadChestManager {
         Location chestTimer = chestData.getHolographicTimer();
 	    Location chestLocation = chestData.getChestLocation();
 		
-	    if (chestTimer.getWorld() != null && chestLocation.getWorld() != null && chestLocation.getWorld().isChunkLoaded(chestLocation.getBlockX() >> 4, chestLocation.getBlockZ() >> 4)){
+	    if (chestTimer.getWorld() != null && chestLocation.getWorld() != null && chestLocation.getWorld().isChunkLoaded(chestLocation.getBlockX() / 16, chestLocation.getBlockZ() / 16)) {
 
             ArrayList<Entity> entityList = (ArrayList<Entity>) chestTimer.getWorld().getNearbyEntities(chestTimer, 1.0, 1.0, 1.0);
             for (Entity entity : entityList) {
