@@ -154,26 +154,34 @@ public final class ChestData implements ConfigurationSerializable {
         final int armorStandShiftY = 1;
 
         if (chestLocation.getWorld() != null) {
-
+            if(chestLocation.getChunk().isLoaded()){
+                doRemoveArmorStands(radius,armorStandShiftY);
+                return true;
+            }
             chestLocation.getChunk().setForceLoaded(true);
 
-            Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
-                    new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() + armorStandShiftY,
-                            chestLocation.getZ()), radius, radius, radius);
-            boolean isEmpty = entities.size() > 0;
-            for (Entity entity : entities) {
-                if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
-                    entity.remove();
-                }
-            }
+            Bukkit.getScheduler().runTaskLater(DeadChest.plugin,()->{
+                doRemoveArmorStands(radius,armorStandShiftY);
+            },5);
 
-            if (chestLocation.getChunk().isForceLoaded() && chestLocation.getChunk().isLoaded()) {
-                chestLocation.getChunk().setForceLoaded(false);
-            }
-
-            return isEmpty;
+            return true;
         }
         return false;
+    }
+
+    private void doRemoveArmorStands(int radius, int armorStandShiftY){
+        Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
+                new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() + armorStandShiftY,
+                        chestLocation.getZ()), radius, radius, radius);
+        for (Entity entity : entities) {
+            if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
+                entity.remove();
+            }
+        }
+
+        if (chestLocation.getChunk().isForceLoaded() && chestLocation.getChunk().isLoaded()) {
+            chestLocation.getChunk().setForceLoaded(false);
+        }
     }
 
     @Override

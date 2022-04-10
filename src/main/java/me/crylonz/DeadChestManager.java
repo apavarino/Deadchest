@@ -151,9 +151,8 @@ public class DeadChestManager {
                     }
                 }
             }
-            if (chestData.removeArmorStand()) {
-                chestDataIt.remove();
-            }
+            chestData.removeArmorStand();
+            chestDataIt.remove();
 
             return true;
         }
