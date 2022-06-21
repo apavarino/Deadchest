@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -69,7 +68,7 @@ public class DeadChest extends JavaPlugin {
         super(loader, description, dataFolder, file);
     }
 
-    public static void handleEvent(Entity[] entities) {
+    public static void handleEvent() {
         if (chestData != null && !chestData.isEmpty()) {
 
             Date now = new Date();
@@ -80,14 +79,13 @@ public class DeadChest extends JavaPlugin {
                 World world = chestData.getChestLocation().getWorld();
 
                 if (world != null) {
-
                     updateTimer(chestData, now);
 
                     if (handleExpirateDeadChest(chestData, chestDataIt, now)) {
                         isChangesNeedToBeSave = true;
                         generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                     } else {
-                        if (chestData.getChestLocation().getChunk().isLoaded()) {
+                        if (chestData.isChunkLoaded()) {
                             isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chestData);
                         }
                     }
@@ -274,7 +272,7 @@ public class DeadChest extends JavaPlugin {
     }
 
     private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> DeadChest.handleEvent(null), 20, 20);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, DeadChest::handleEvent, 20, 20);
     }
 
     // Add missing parameters on config.yml

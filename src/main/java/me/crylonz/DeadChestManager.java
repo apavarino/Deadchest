@@ -162,9 +162,8 @@ public class DeadChestManager {
 
     public static void updateTimer(ChestData chestData, Date date) {
         Location chestTimer = chestData.getHolographicTimer();
-	    Location chestLocation = chestData.getChestLocation();
-		
-	    if (chestTimer.getWorld() != null && chestLocation.getWorld() != null && chestLocation.getWorld().isChunkLoaded(chestLocation.getBlockX() / 16, chestLocation.getBlockZ() / 16)) {
+
+        if (chestTimer.getWorld() != null && chestData.isChunkLoaded()) {
 
             ArrayList<Entity> entityList = (ArrayList<Entity>) chestTimer.getWorld().getNearbyEntities(chestTimer, 1.0, 1.0, 1.0);
             for (Entity entity : entityList) {

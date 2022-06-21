@@ -158,8 +158,13 @@ public final class ChestData implements ConfigurationSerializable {
             chestLocation.getChunk().setForceLoaded(true);
 
             Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
-                    new Location(chestLocation.getWorld(), chestLocation.getX(), chestLocation.getY() + armorStandShiftY,
-                            chestLocation.getZ()), radius, radius, radius);
+                    new Location(
+                            chestLocation.getWorld(),
+                            chestLocation.getX(),
+                            chestLocation.getY() + armorStandShiftY,
+                            chestLocation.getZ()
+                    ), radius, radius, radius);
+
             boolean isEmpty = entities.size() > 0;
             for (Entity entity : entities) {
                 if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
@@ -167,13 +172,29 @@ public final class ChestData implements ConfigurationSerializable {
                 }
             }
 
-            if (chestLocation.getChunk().isForceLoaded() && chestLocation.getChunk().isLoaded()) {
-                chestLocation.getChunk().setForceLoaded(false);
+            if (isChunkForceLoaded()) {
+                chestLocation.getWorld().unloadChunk(chestLocation.getBlockX() >> 4, chestLocation.getBlockZ() >> 4);
             }
 
             return isEmpty;
         }
         return false;
+    }
+
+    public boolean isChunkLoaded() {
+        return chestLocation.getWorld() == null ||
+                chestLocation.getWorld().isChunkLoaded(
+                        chestLocation.getBlockX() >> 4,
+                        chestLocation.getBlockZ() >> 4
+                );
+    }
+
+    public boolean isChunkForceLoaded() {
+        return chestLocation.getWorld() == null ||
+                chestLocation.getWorld().isChunkForceLoaded(
+                        chestLocation.getBlockX() >> 4,
+                        chestLocation.getBlockZ() >> 4
+                );
     }
 
     @Override
