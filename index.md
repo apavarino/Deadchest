@@ -8,7 +8,7 @@ your site, from the content in your Markdown files.
 
 {% for menu-item in site.data.menus.sidebar %}
 <ul>
-   <li>{{ menu-item.title}}</li>
+   <li> [editor on GitHub]({{ menu-item.title}})</li>
 </ul>
 {% endfor %}
 
