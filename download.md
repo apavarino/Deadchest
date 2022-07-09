@@ -19,4 +19,4 @@ Deadchest is build to work with Java 8+ and support the following server softwar
 - And all server based on Bukkit/Spigot
 
 ### Next step
-See [installation part](https://github.com/apavarino/Deadchest/edit/gh-pages/download.md) for plugin installation
+See [installation part](https://apavarino.github.io/Deadchest/installation) or go to [home page](https://apavarino.github.io/Deadchest)
