@@ -19,6 +19,7 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 - [Worldguard integration](https://apavarino.github.io/Deadchest/worldguard)
 - [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting)
 - [Deadchest API](https://apavarino.github.io/Deadchest/api)
+- [Contribution](https://apavarino.github.io/Deadchest/contribution)
 
 ## Community
 
