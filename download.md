@@ -9,6 +9,9 @@ You can download the plugin here
 > If you find the plugin on another platform, please don't download it. This is not safe
 
 ### Requirement 
+
+You must run Minecraft 1.13 or newer. No support is provided for older version.
+
 Deadchest is build to work with Java 8+ and support the following server softwares
 
 - Bukkit
