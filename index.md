@@ -1,6 +1,6 @@
 ## Deadchest Documentation
 
-Welcome to the official documentation of the deadchest plugin. Here you will find everything you need to use the plugin.
+Welcome to the official documentation of Deadchest plugin. Here you will find everything you need to use the plugin.
 
 <div  align="center">
     <img src="https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png" alt="Deadchest" width="800" /><br>
