@@ -18,6 +18,10 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 - [Worldguard Integration](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
 - [Troubleshooting](https://github.com/apavarino/Deadchest/edit/gh-pages/troubleshooting.md)
 
+## Community
+
+You can join the discord of the community [here](https://discord.com/invite/jCsvJxS) for extra help.
+
 
 
 
