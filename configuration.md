@@ -29,5 +29,7 @@ Option | Value | Default | Description
 `ExcludedWorld`  | list of string  |  | List of worlds that DeadChests will NOT be generated in
 `ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests
 
+### Next step
+See [commmands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go to [home page](https://apavarino.github.io/Deadchest)
 
-[Commands & Permission](https://apavarino.github.io/Deadchest/commands-and-perms)
+
