@@ -1,4 +1,4 @@
-## Deadchest - Commands & Permission
+## Deadchest - Commands & Permissions
 Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 
 This section describes commands and permissions provided by the plugin
