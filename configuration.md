@@ -28,3 +28,6 @@ Option | Value | Default | Description
 `EnableWorldGuardDetection`  | boolean  | false | Enable Worldguard integration. More info [here](https://apavarino.github.io/Deadchest/worldguard)
 `ExcludedWorld`  | list of string  |  | List of worlds that DeadChests will NOT be generated in
 `ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests
+
+
+[Commands & Permission](https://apavarino.github.io/Deadchest/commands-and-perms)
