@@ -10,13 +10,13 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 
 ## Table of Contents
 
-- [Download](https://github.com/apavarino/Deadchest/edit/gh-pages/download.md)
-- [Installation](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
-- [How it works](https://github.com/apavarino/Deadchest/edit/gh-pages/how-it-works.md)
-- [Plugin configuration](https://github.com/apavarino/Deadchest/edit/gh-pages/confiugration.md)
-- [Change Language](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
-- [Worldguard Integration](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
-- [Troubleshooting](https://github.com/apavarino/Deadchest/edit/gh-pages/troubleshooting.md)
+- [Download](https://apavarino.github.io/Deadchest/download.md)
+- [Installation](https://apavarino.github.io/Deadchest/installation.md)
+- [How it works](https://apavarino.github.io/Deadchest/how-it-works.md)
+- [Plugin configuration](https://apavarino.github.io/Deadchest/configuration.md)
+- [Change Language](https://apavarino.github.io/Deadchest/language)
+- [Worldguard Integration](https://apavarino.github.io/Deadchest/worldguard.md)
+- [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting.md)
 
 ## Community
 
