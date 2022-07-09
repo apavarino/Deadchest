@@ -26,7 +26,7 @@ This is exactly the same logic than dying under the world expect that will take 
 
 ### Dying on block / Trap / Door / Torch / Rail etc...
 
-On this situation this is not possible to generated a chest on the block where the player dies without destroying block. For this reason the plugin will search for the next free space at the same X et Y by increasing Z value. For exemple if you dies on the door of your house. You deadchest will be probalby generate on your roof.
+On this situation this is not possible to generated a chest on the block where the player dies without destroying block. For this reason the plugin will search for the next free space at the same X et Y by increasing Z value. For exemple if you dies on the door of your house. Your deadchest will be probably generated on your roof.
 
 > One may wonder why it is not generated right next to it. A malicious player could block access to the door by dying voluntarily. If the chest is protected to be opened only by the owner, the other player will be stuck.
 
