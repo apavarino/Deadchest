@@ -12,14 +12,6 @@ Items on the chest can be collect by just left clicking on it. There is no space
 
 The plugin will **NEVER replace or destroy any solid block** of your world. An algorithm will look for the most suitable location depending on the situation
 
-### Performances
-
-Plugin is designed to handle big server with lot of players and lot of Deadchest at the same time.Many work is pushed to keep great performance. Deadchest only work on loaded chunk to prevent any performance drop.
-
-### Grief protection
-
-The plugin provides a high security against griefer. By default, all deadchests are protected to be only open by his owner. The chest cannot be destroyed moved or opened by other players. Deadchest cannot be destroyed by any type of explosion, cannot be pushed by a piston and cannot be merged with another chest. If you are using player head as Deadchest, it is protect by water destruction also.
-
 ### Nether / End / Customs world
 
 Deadchest works on every type of world. The behaviour is the same everywhere.
@@ -50,3 +42,11 @@ Items with enchantement curse of vanishing are not pushed to Deadchest to keep t
 
 ### Next step
 See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go to [home page](https://apavarino.github.io/Deadchest)
+
+### Grief protection
+
+The plugin provides a high security against griefer. By default, all deadchests are protected to be only open by his owner. The chest cannot be destroyed moved or opened by other players. Deadchest cannot be destroyed by any type of explosion, cannot be pushed by a piston and cannot be merged with another chest. If you are using player head as Deadchest, it is protect by water destruction also.
+
+### Performances
+
+Plugin is designed to handle big server with lot of players and lot of Deadchest at the same time.Many work is pushed to keep great performance. Deadchest only work on loaded chunk to prevent any performance drop.
