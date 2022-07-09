@@ -40,9 +40,6 @@ The chest will be generate at the dying position.
 
 Items with enchantement curse of vanishing are not pushed to Deadchest to keep the balance of the game.
 
-### Next step
-See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go to [home page](https://apavarino.github.io/Deadchest)
-
 ### Grief protection
 
 The plugin provides a high security against griefer. By default, all deadchests are protected to be only open by his owner. The chest cannot be destroyed moved or opened by other players. Deadchest cannot be destroyed by any type of explosion, cannot be pushed by a piston and cannot be merged with another chest. If you are using player head as Deadchest, it is protect by water destruction also.
@@ -50,3 +47,6 @@ The plugin provides a high security against griefer. By default, all deadchests 
 ### Performances
 
 Plugin is designed to handle big server with lot of players and lot of Deadchests at the same time. Many work is pushed to keep great performance. Deadchest only work on loaded chunk to prevent any performance drop.
+
+### Next step
+See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go to [home page](https://apavarino.github.io/Deadchest)
