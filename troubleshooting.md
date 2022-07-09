@@ -15,4 +15,4 @@ Type `/dc repair` next the the hologram you want to remove. You need to have eno
 You must remove your deadchest folder `plugins/deadchest` to do the update. Be sure that there is no active deadchest in your server before. You can remove active deadchests with `/dc removeall` command
 
 ### Next step
-See [api part](https://apavarino.github.io/Deadchest/troubleshooting) or go to [home page](https://apavarino.github.io/Deadchest)
+See [api part](https://apavarino.github.io/Deadchest/api) or go to [home page](https://apavarino.github.io/Deadchest)
