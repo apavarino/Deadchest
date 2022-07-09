@@ -47,3 +47,6 @@ The chest will be generate at the dying position.
 ### Curse of vanishing
 
 Items with enchantement curse of vanishing are not pushed to Deadchest to keep the balance of the game.
+
+### Next step
+See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go to [home page](https://apavarino.github.io/Deadchest)
