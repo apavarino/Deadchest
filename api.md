@@ -26,4 +26,4 @@ Command | Description | Version
 If you are a developer and you need more tools from Deadchest to work with. Contact me on Discord.
 
 ### Next step
-See [contribution](https://apavarino.github.io/Deadchest/contribution) or go to [home page](https://apavarino.github.io/Deadchest)
+See [contribution part](https://apavarino.github.io/Deadchest/contribution) or go to [home page](https://apavarino.github.io/Deadchest)
