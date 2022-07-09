@@ -1,4 +1,4 @@
-## Download Deadchest
+## Deadchest - Download 
 
 You can download the plugin here
 
