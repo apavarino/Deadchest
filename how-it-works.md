@@ -49,4 +49,4 @@ The plugin provides a high security against griefer. By default, all deadchests 
 
 ### Performances
 
-Plugin is designed to handle big server with lot of players and lot of Deadchest at the same time.Many work is pushed to keep great performance. Deadchest only work on loaded chunk to prevent any performance drop.
+Plugin is designed to handle big server with lot of players and lot of Deadchests at the same time. Many work is pushed to keep great performance. Deadchest only work on loaded chunk to prevent any performance drop.
