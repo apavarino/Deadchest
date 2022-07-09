@@ -10,7 +10,7 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 
 ## Table of Contents
 
-- [Download](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
+- [Download](https://github.com/apavarino/Deadchest/edit/gh-pages/download.md)
 - [Installation](https://github.com/apavarino/Deadchest/edit/gh-pages/installation.md)
 - [How it works](https://github.com/apavarino/Deadchest/edit/gh-pages/how-it-works.md)
 - [Plugin configuration](https://github.com/apavarino/Deadchest/edit/gh-pages/confiugration.md)
