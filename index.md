@@ -15,7 +15,7 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 - [How it works](https://apavarino.github.io/Deadchest/how-it-works)
 - [Plugin configuration](https://apavarino.github.io/Deadchest/configuration)
 - [Commands & Permissions](https://apavarino.github.io/Deadchest/commands-and-perms)
-- [Change language](https://apavarino.github.io/Deadchest/language)
+- [Plugin Customization](https://apavarino.github.io/Deadchest/customization)
 - [Worldguard integration](https://apavarino.github.io/Deadchest/worldguard)
 - [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting)
 
