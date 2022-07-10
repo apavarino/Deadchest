@@ -12,10 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import static me.crylonz.DeadChest.*;
 import static me.crylonz.Utils.computeChestType;
@@ -149,6 +146,7 @@ public class DeadChestManager {
                             loc.getWorld().dropItemNaturally(loc, itemStack);
                         }
                     }
+                     chestData.cleanInventory();
                 }
             }
             if (chestData.removeArmorStand()) {

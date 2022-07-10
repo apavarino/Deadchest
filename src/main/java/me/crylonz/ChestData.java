@@ -117,6 +117,10 @@ public final class ChestData implements ConfigurationSerializable {
         return inventory;
     }
 
+    public void cleanInventory() {
+            inventory = new ArrayList<>();
+    }
+
     public void setInventory(List<ItemStack> inventory) {
         this.inventory = inventory;
     }
