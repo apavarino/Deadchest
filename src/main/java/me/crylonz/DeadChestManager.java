@@ -149,6 +149,8 @@ public class DeadChestManager {
                             loc.getWorld().dropItemNaturally(loc, itemStack);
                         }
                     }
+                    if (chestData.getInventory() != null && !chestData.getInventory().isEmpty() )
+                        chestData.setInventory( new ArrayList<>());
                 }
             }
             if (chestData.removeArmorStand()) {
