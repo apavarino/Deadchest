@@ -57,13 +57,15 @@ public class DCCommandExecutor implements CommandExecutor {
                         if (p.hasPermission(Permission.ADMIN.label)) {
                             Collection<Entity> entities = p.getWorld().getNearbyEntities(
                                     p.getLocation(), 100.0D, 25.0D, 100.0D);
-
+                            boolean forceRemove = false;
+                            if (args.length == 2)
+                                forceRemove = args[1].equalsIgnoreCase("force");
                             int holoRemoved = 0;
                             for (Entity entity : entities) {
                                 if (entity.getType() == EntityType.ARMOR_STAND) {
                                     ArmorStand as = (ArmorStand) entity;
 
-                                    if (as.hasMetadata("deadchest")) {
+                                    if (as.hasMetadata("deadchest") || forceRemove) {
                                         holoRemoved++;
                                         entity.remove();
                                     }
