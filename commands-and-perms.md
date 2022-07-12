@@ -3,7 +3,7 @@ Make sure you have [installed](https://apavarino.github.io/Deadchest/installatio
 
 This section describes commands and permissions provided by the plugin
 
-Command | Description | Permission
+Command | Permission | Description
 --- | --- | --- |
 `/dc reload` | `deadchest.admin` | Reload the plugin
 `/dc remove` | `deadchest.remove.own` | Remove all deadchests of the current player
@@ -14,9 +14,9 @@ Command | Description | Permission
 `/dc list all` | `deadchest.list.other` | List all deadchest
 `/dc list <PlayerName>` | `deadchest.list.other` | List all deadchest of a player
 `/dc giveBack <PlayerName>` | `deadchest.giveBack` | Return the oldest deadchest inventory of a player to him
- | | `deadchest.generate` | Allow a player to generate deadchests
- | | `deadchest.chestPass` | Allow a player to get all deadchests
- | | `deadchest.infinityChest` |  Allow a player to have a infinity chest
+ -- | `deadchest.generate` | Allow a player to generate deadchests
+ -- | `deadchest.chestPass` | Allow a player to get all deadchests
+ -- | `deadchest.infinityChest` |  Allow a player to have a infinity chest
 
 
 ### Next step
