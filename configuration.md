@@ -30,6 +30,6 @@ Option | Value | Default | Description
 `ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests
 
 ### Next step
-See [commmands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go to [home page](https://apavarino.github.io/Deadchest)
+See [commands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go to [home page](https://apavarino.github.io/Deadchest)
 
 
