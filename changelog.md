@@ -1,3 +1,73 @@
+## Deadchest 4.11 [UNRELEASED]
+
++ Add force option to /dc repair
++ Potentially fixing chunk keeping loading for no reason
+
+## Deadchest 4.10
+
++ Fixing all performance issue
+
+## Deadchest 4.9.0
+
++ Improving memory performance related to chunk loading
+
+## Deadchest 4.8.2
+
++ Fixed performance issue
+
+## Deadchest 4.8.1
+
++ Fixed spam error on the console
+
+## Deadchest 4.8.0
+
+BUGFIX :
+
++ Fixed hologram issue staying in the world on 1.17+ version on unload chunk
++ Fixed unsafe head as deadchest (head are now not destroyable anymore by water/lava/piston..)
++ Fixed Netherite boots in place of chestplate
++ Fixed min height for Deadchest. Plugin now handle deadchest under y 0
+
+CHANGE :
+
++ You can no longer use right click to get your chest
++ If chest is abnormally removed. (like world bug, cuboid etc..), it now respawn at the same place until the timer is
+  out
+
+## Deadchest 4.7.0
+
+FEATURES :
+
++ Add gamerules keepInventory support (finally !) : If enable no Deadchest is generate
++ Code optimization
++ Switch default Deadchest time from 5min to 15min
++ Add support for customs items (Slimefun/Minetinker etc...)
++ Better 1.17 support
++ API Update
++ Add removeChest() method
++ Add DeadchesPickUpEvent
+
+BUG FIX :
+
++ Fix : error on /dc list when world does not exists anymore
++ Fix : Expired Deadchests was not removed on unloaded chunck
+
+## Deadchest 4.6.0
+
+**Features**
+
++ Official support for 1.17
++ Added basic API
++ Added permission to manage if user can open Deadchest
++ Added 3 new Deadchest type !
+  + Barrel chest (dropBlock : 3 in config.yml)
+  + Shulker chest  (dropBlock : 4 in config.yml)
+  + Ender chest  (dropBlock : 5 in config.yml)
+
+**BugFix**
+
++ Fix netherite stuff error with Minecraft lower than 1.16
+
 ## Deadchest 4.5.0
 
 **FEATURES**
