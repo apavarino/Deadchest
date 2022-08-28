@@ -52,7 +52,9 @@ public class TabCompletion implements TabCompleter {
                             }
                         }
                     }
-
+                    if (args[0].equals("repair") && player.hasPermission(Permission.ADMIN.label)) {
+                        list.add("force");
+                    }
                     if (args[0].equals("list")) {
                         if (PermissionUtils.hasAdminOr(player, Permission.LIST_OTHER)) {
                             list.add("all");
