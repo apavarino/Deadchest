@@ -178,6 +178,7 @@ public final class ChestData implements ConfigurationSerializable {
 
             if (isChunkForceLoaded()) {
                 chestLocation.getWorld().unloadChunk(chestLocation.getBlockX() >> 4, chestLocation.getBlockZ() >> 4);
+                chestLocation.getChunk().setForceLoaded(false);
             }
 
             return isEmpty;
