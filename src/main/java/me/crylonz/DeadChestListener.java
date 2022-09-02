@@ -1,5 +1,7 @@
 package me.crylonz;
 
+import me.crylonz.utils.ConfigKey;
+import me.crylonz.utils.DeadChestConfig;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -30,8 +32,19 @@ import static me.crylonz.Utils.*;
 
 public class DeadChestListener implements Listener {
 
+    private final DeadChest plugin;
+
+    public DeadChestListener(DeadChest plugin) {
+        this.plugin = plugin;
+    }
+
+    public DeadChestConfig getConfig() {
+        return plugin.config;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
+
 
         if (e.getKeepInventory()) {
             return;
@@ -40,29 +53,29 @@ public class DeadChestListener implements Listener {
         Player p = e.getEntity().getPlayer();
 
         if (p == null
-                || excludedWorlds.contains(p.getWorld().getName())
-                || (!generateDeadChestInCreative) && p.getGameMode().equals(GameMode.CREATIVE)) {
+                || config.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
+                || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
         }
 
-        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !requirePermissionToGenerate)) {
-            if ((playerDeadChestAmount(p) < maxDeadChestPerPlayer ||
-                    maxDeadChestPerPlayer == 0) && p.getMetadata("NPC").isEmpty()) {
+        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
+            if ((playerDeadChestAmount(p) < getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) ||
+                    getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) == 0) && p.getMetadata("NPC").isEmpty()) {
 
                 World world = p.getWorld();
                 Location loc = p.getLocation();
 
-                if (!generateOnLava && loc.getBlock().getType().equals(Material.LAVA)) {
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_LAVA) && loc.getBlock().getType().equals(Material.LAVA)) {
                     generateLog("Player dies in lava : No deadchest generated");
                     return;
                 }
 
-                if (!generateOnWater && loc.getBlock().getType().equals(Material.WATER)) {
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_WATER) && loc.getBlock().getType().equals(Material.WATER)) {
                     generateLog("Player dies in water : No deadchest generated");
                     return;
                 }
 
-                if (!generateOnRails &&
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS) &&
                         loc.getBlock().getType().equals(Material.RAIL) ||
                         loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
                         loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
@@ -71,7 +84,7 @@ public class DeadChestListener implements Listener {
                     return;
                 }
 
-                if (!generateInMinecart && p.getVehicle() != null) {
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_IN_MINECART) && p.getVehicle() != null) {
                     if (p.getVehicle().getType().equals(EntityType.MINECART)) {
                         generateLog("Player dies in a minecart : No deadchest generated");
                         return;
@@ -187,7 +200,7 @@ public class DeadChestListener implements Listener {
                         p.getInventory().setItemInOffHand(null);
                     }
 
-                    for (String item : excludedItems) {
+                    for (String item : config.getArray(ConfigKey.EXCLUDED_WORLDS)) {
                         if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
                             p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
                         }
@@ -198,7 +211,7 @@ public class DeadChestListener implements Listener {
                     e.getDrops().clear();
                     p.getInventory().clear();
 
-                    if (displayDeadChestPositionOnDeath) {
+                    if (getConfig().getBoolean(ConfigKey.DISPLAY_POSITION_ON_DEATH)) {
                         p.sendMessage(local.get("loc_prefix") + local.get("loc_chestPos") + " X: " +
                                 ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
                                 ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
@@ -208,7 +221,7 @@ public class DeadChestListener implements Listener {
                     fileManager.saveModification();
                     generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
 
-                    if (logDeadChestOnConsole)
+                    if (getConfig().getBoolean(ConfigKey.LOG_DEADCHEST_ON_CONSOLE))
                         log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
                 } else {
                     generateLog("Player [" + p.getName() + "] died without inventory : No Deadchest generated");
@@ -242,9 +255,9 @@ public class DeadChestListener implements Listener {
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation().equals(block.getLocation())) {
                         // if everybody can open chest or if the chest is the chest of the current player
-                        if (!OnlyOwnerCanOpenDeadChest || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission) {
+                        if (!getConfig().getBoolean(ConfigKey.ONLY_OWNER_CAN_OPEN_CHEST) || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission) {
 
-                            if (!player.hasPermission(Permission.GET.label) && requirePermissionToGetChest) {
+                            if (!player.hasPermission(Permission.GET.label) && getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GET_CHEST)) {
                                 generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
                                 player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
                                 e.setCancelled(true);
@@ -257,7 +270,7 @@ public class DeadChestListener implements Listener {
                                 generateLog("Deadchest of [" + cd.getPlayerName() + "] was taken by [" + player.getName() + "] in " + playerWorld.getName());
 
                                 // put all item on the inventory
-                                if (dropMode == 1) {
+                                if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
@@ -312,7 +325,7 @@ public class DeadChestListener implements Listener {
     @EventHandler
     public void onBlockBreakEvent(BlockBreakEvent e) {
         if (isGraveBlock(e.getBlock().getType())) {
-            if (isIndestructible) {
+            if (getConfig().getBoolean(ConfigKey.INDESTRUCTIBLE_CHEST)) {
                 for (ChestData cd : chestData) {
                     if (cd.getChestLocation() == e.getBlock().getLocation()) {
                         e.setCancelled(true);
@@ -364,7 +377,7 @@ public class DeadChestListener implements Listener {
                 Block block = blocklist.get(i);
                 for (ChestData cd : chestData) {
                     if (isGraveBlock(block.getType()) && cd.getChestLocation().equals(block.getLocation())) {
-                        if (isIndestructible) {
+                        if (getConfig().getBoolean(ConfigKey.INDESTRUCTIBLE_CHEST)) {
                             blocklist.remove(block);
                             generateLog("Deadchest of [" + cd.getPlayerName() + "] was protected from explosion in " + Objects.requireNonNull(cd.getChestLocation().getWorld()).getName());
                         } else {

@@ -2,6 +2,7 @@ package me.crylonz;
 
 
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -149,7 +150,7 @@ public class Utils {
     }
 
     public static void computeChestType(Block b, Player p) {
-        switch (dropBlock) {
+        switch (config.getInt(ConfigKey.DROP_BLOCK)) {
             case 2:
                 b.setType(Material.PLAYER_HEAD);
                 b.setMetadata("deadchest", new FixedMetadataValue(plugin, true));

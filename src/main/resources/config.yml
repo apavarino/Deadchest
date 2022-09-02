@@ -9,6 +9,8 @@
 # If you make any changes in this file, please run the command '/dc reload' to apply the changes!                              #
 ################################################################################################################################
 
+auto-update: true
+
 # Should DeadChests be openable by other players or just the owner?
 #   > false - DeadChests can be opened by anyone.
 #   > true  - DeadChests can only be opened by the owner.
@@ -21,7 +23,7 @@ DeadChestDuration: 300
 # Should DeadChests be protected from explosions and other players?
 #   > false - DeadChests will not be protected and can be broken.
 #   > true  - DeadChests will be protected.
-IndestuctibleChest: true
+IndestructibleChest: true
 
 # The maximum number of DeadChests a player can have active at a time...
 #   You can disable this limit by setting the value to 0.

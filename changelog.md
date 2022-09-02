@@ -1,5 +1,8 @@
 ## Deadchest 4.11 [UNRELEASED]
 
++ Adding auto-updater
++ Code change : Update configuration code
++ Fix typo "Indestuctible" in config.yml
 + Add force option to /dc repair
 + Potentially fixing chunk keeping loading for no reason
 

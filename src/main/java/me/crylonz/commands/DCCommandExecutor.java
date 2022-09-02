@@ -1,7 +1,9 @@
 package me.crylonz.commands;
 
 import me.crylonz.ChestData;
+import me.crylonz.DeadChest;
 import me.crylonz.Permission;
+import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -23,10 +24,10 @@ import static me.crylonz.DeadChestManager.cleanAllDeadChests;
 
 public class DCCommandExecutor implements CommandExecutor {
 
-    private final Plugin p;
+    private final DeadChest plugin;
 
-    public DCCommandExecutor(Plugin p) {
-        this.p = p;
+    public DCCommandExecutor(DeadChest p) {
+        this.plugin = p;
     }
 
     @Override
@@ -99,7 +100,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
                                     if (cd.getChestLocation().getWorld() != null) {
 
-                                        if (cd.isInfinity() || chestDuration == 0) {
+                                        if (cd.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                                             // remove chest
                                             Location loc = cd.getChestLocation();
                                             loc.getWorld().getBlockAt(loc).setType(Material.AIR);
@@ -178,7 +179,7 @@ public class DCCommandExecutor implements CommandExecutor {
 
                     if (sender instanceof Player) {
                         Player p = (Player) sender;
-                        if (p.hasPermission(Permission.LIST_OWN.label) || !permissionRequiredToListOwn) {
+                        if (p.hasPermission(Permission.LIST_OWN.label) || !config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN)) {
 
                             if (args.length == 1) {
                                 Date now = new Date();
@@ -190,7 +191,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                             String worldName = cd.getChestLocation().getWorld() != null ?
                                                     cd.getChestLocation().getWorld().getName() : "???";
 
-                                            if (cd.isInfinity() || chestDuration == 0) {
+                                            if (cd.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                                                 p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                                                         + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                         + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
@@ -198,7 +199,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                                         + " | "
                                                         + "∞ " + local.get("loc_endtimer"));
                                             } else {
-                                                long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
+                                                long diff = now.getTime() - (cd.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
                                                 long diffSeconds = Math.abs(diff / 1000 % 60);
                                                 long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                 long diffHours = Math.abs(diff / (60 * 60 * 1000));
@@ -227,7 +228,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                                 String worldName = cd.getChestLocation().getWorld() != null ?
                                                         cd.getChestLocation().getWorld().getName() : "???";
 
-                                                if (cd.isInfinity() || chestDuration == 0) {
+                                                if (cd.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                                                     p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " | "
                                                             + ChatColor.GOLD + cd.getPlayerName() + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                             + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
@@ -235,7 +236,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                                             + " | "
                                                             + "∞ " + local.get("loc_endtimer"));
                                                 } else {
-                                                    long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
+                                                    long diff = now.getTime() - (cd.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
                                                     long diffSeconds = Math.abs(diff / 1000 % 60);
                                                     long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                     long diffHours = Math.abs(diff / (60 * 60 * 1000));
@@ -263,7 +264,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                                     String worldName = cd.getChestLocation().getWorld() != null ?
                                                             cd.getChestLocation().getWorld().getName() : "???";
 
-                                                    if (cd.isInfinity() || chestDuration == 0) {
+                                                    if (cd.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                                                         p.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                                                                 + ChatColor.AQUA + " X: " + ChatColor.WHITE + cd.getChestLocation().getX()
                                                                 + ChatColor.AQUA + " Y: " + ChatColor.WHITE + cd.getChestLocation().getY()
@@ -271,7 +272,7 @@ public class DCCommandExecutor implements CommandExecutor {
                                                                 + " | "
                                                                 + "∞ " + local.get("loc_endtimer"));
                                                     } else {
-                                                        long diff = now.getTime() - (cd.getChestDate().getTime() + chestDuration * 1000L);
+                                                        long diff = now.getTime() - (cd.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
                                                         long diffSeconds = Math.abs(diff / 1000 % 60);
                                                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                                                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
@@ -359,47 +360,15 @@ public class DCCommandExecutor implements CommandExecutor {
 
         fileManager.reloadChestDataConfig();
         fileManager.reloadLocalizationConfig();
-        p.reloadConfig();
+        plugin.reloadConfig();
+        plugin.registerConfig();
+
+
         @SuppressWarnings("unchecked")
         ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
-
-        @SuppressWarnings("unchecked")
-        ArrayList<String> tmpExludedWorld = (ArrayList<String>) p.getConfig().get("ExcludedWorld");
-
-        @SuppressWarnings("unchecked")
-        ArrayList<String> tmpExludedItems = (ArrayList<String>) p.getConfig().get("ExcludedItems");
-
-
         if (tmp != null) {
             chestData = (List<ChestData>) fileManager.getChestDataConfig().get("chestData");
         }
-
-        if (tmpExludedWorld != null)
-            excludedWorlds = tmpExludedWorld;
-
-        if (tmpExludedItems != null)
-            excludedItems = tmpExludedItems;
-
-        isIndestructible = p.getConfig().getBoolean("IndestuctibleChest");
-        OnlyOwnerCanOpenDeadChest = p.getConfig().getBoolean("OnlyOwnerCanOpenDeadChest");
-        chestDuration = p.getConfig().getInt("DeadChestDuration");
-        maxDeadChestPerPlayer = (int) p.getConfig().get("maxDeadChestPerPlayer");
-        logDeadChestOnConsole = (boolean) p.getConfig().get("logDeadChestOnConsole");
-        requirePermissionToGenerate = (boolean) p.getConfig().get("RequirePermissionToGenerate");
-        requirePermissionToGetChest = (boolean) p.getConfig().get("RequirePermissionToGetChest");
-        permissionRequiredToListOwn = (boolean) p.getConfig().get("RequirePermissionToListOwn");
-        autoCleanUpOnStart = (boolean) p.getConfig().get("AutoCleanupOnStart");
-        generateDeadChestInCreative = (boolean) p.getConfig().get("GenerateDeadChestInCreative");
-        displayDeadChestPositionOnDeath = (boolean) p.getConfig().get("DisplayDeadChestPositionOnDeath");
-        itemsDroppedAfterTimeOut = (boolean) p.getConfig().get("ItemsDroppedAfterTimeOut");
-        enableWorldGuardDetection = (boolean) p.getConfig().get("EnableWorldGuardDetection");
-        dropMode = (int) p.getConfig().get("DropMode");
-        dropBlock = (int) p.getConfig().get("DropBlock");
-        generateOnLava = (boolean) p.getConfig().get("GenerateOnLava");
-        generateOnWater = (boolean) p.getConfig().get("GenerateOnWater");
-        generateOnRails = (boolean) p.getConfig().get("GenerateOnRails");
-        generateInMinecart = (boolean) p.getConfig().get("GenerateInMinecart");
-
         local.set(fileManager.getLocalizationConfig().getConfigurationSection("localisation").getValues(true));
     }
 }

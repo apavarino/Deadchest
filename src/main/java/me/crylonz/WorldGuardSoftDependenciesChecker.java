@@ -10,9 +10,10 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import me.crylonz.utils.ConfigKey;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.DeadChest.enableWorldGuardDetection;
+import static me.crylonz.DeadChest.config;
 import static me.crylonz.Utils.*;
 
 public class WorldGuardSoftDependenciesChecker {
@@ -40,7 +41,7 @@ public class WorldGuardSoftDependenciesChecker {
 
     public boolean worldGuardChecker(Player p) {
 
-        if (!enableWorldGuardDetection) {
+        if (!config.getBoolean(ConfigKey.WORLD_GUARD_DETECTION)) {
             return true;
         }
 
