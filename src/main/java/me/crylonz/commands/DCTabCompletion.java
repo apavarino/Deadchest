@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabCompletion implements TabCompleter {
+public class DCTabCompletion implements TabCompleter {
 
     private final List<String> list = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class TabCompletion implements TabCompleter {
                             }
                         }
                     }
-                    if (args[0].equals("giveBack")) {
+                    if (args[0].equals("giveback")) {
                         if (PermissionUtils.hasAdminOr(player, Permission.GIVEBACK)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());

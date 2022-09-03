@@ -1,7 +1,7 @@
 package me.crylonz;
 
 import me.crylonz.commands.DCCommandExecutor;
-import me.crylonz.commands.TabCompletion;
+import me.crylonz.commands.DCTabCompletion;
 import me.crylonz.utils.ConfigKey;
 import me.crylonz.utils.DeadChestConfig;
 import me.crylonz.utils.DeadChestUpdater;
@@ -65,7 +65,7 @@ public class DeadChest extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
                 .setExecutor(new DCCommandExecutor(this));
 
-        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new TabCompletion());
+        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
 
         if (bstats) {
             Metrics metrics = new Metrics(this, 11385);
