@@ -368,7 +368,6 @@ public class DeadChestUpdater {
      */
     private void saveFile(String file) {
         final File folder = this.updateFolder;
-        this.plugin.getLogger().warning(file);
 
         deleteOldFiles();
         if (!folder.exists()) {
@@ -397,7 +396,6 @@ public class DeadChestUpdater {
             URL fileUrl = followRedirects(this.versionLink);
             final int fileLength = fileUrl.openConnection().getContentLength();
             in = new BufferedInputStream(fileUrl.openStream());
-//            fout = new FileOutputStream(new File(this.updateFolder, file.getName()));
             fout = new FileOutputStream(new File(this.updateFolder, this.versionFileName));
 
             final byte[] data = new byte[DeadChestUpdater.BYTE_SIZE];

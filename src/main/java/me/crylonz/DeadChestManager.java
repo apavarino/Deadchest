@@ -52,7 +52,7 @@ public class DeadChestManager {
     }
 
     /**
-     * Generate an hologram at the given position
+     * Generate a hologram at the given position
      *
      * @param location position to place
      * @param text     text to display

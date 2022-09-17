@@ -51,32 +51,6 @@ public class DeadChest extends JavaPlugin {
 
     public void onEnable() {
 
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(this), this);
-
-        // Wich block can be used as grave ?
-        graveBlocks.add(Material.CHEST);
-        graveBlocks.add(Material.PLAYER_HEAD);
-        graveBlocks.add(Material.ENDER_CHEST);
-        graveBlocks.add(Material.BARREL);
-        graveBlocks.add(Material.SHULKER_BOX);
-
-
-        Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
-                .setExecutor(new DCCommandExecutor(this));
-
-        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
-
-        if (bstats) {
-            Metrics metrics = new Metrics(this, 11385);
-        }
-
-        launchRepeatingTask();
-    }
-
-    @Override
-    public void onLoad() {
-
         config = new DeadChestConfig(this);
         plugin = this;
         fileManager = new FileManager(this);
@@ -109,6 +83,29 @@ public class DeadChest extends JavaPlugin {
         } else {
             log.info("[DeadChest] Worldguard support disabled by user");
         }
+
+
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new DeadChestListener(this), this);
+
+        // Wich block can be used as grave ?
+        graveBlocks.add(Material.CHEST);
+        graveBlocks.add(Material.PLAYER_HEAD);
+        graveBlocks.add(Material.ENDER_CHEST);
+        graveBlocks.add(Material.BARREL);
+        graveBlocks.add(Material.SHULKER_BOX);
+
+
+        Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
+                .setExecutor(new DCCommandExecutor(this));
+
+        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
+
+        if (bstats) {
+            Metrics metrics = new Metrics(this, 11385);
+        }
+
+        launchRepeatingTask();
     }
 
     public void onDisable() {
@@ -160,8 +157,9 @@ public class DeadChest extends JavaPlugin {
             @SuppressWarnings("unchecked")
             ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
 
-            if (tmp != null)
+            if (tmp != null) {
                 chestData = tmp;
+            }
         }
 
         // locale file for translation
