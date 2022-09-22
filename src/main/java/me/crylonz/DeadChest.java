@@ -70,21 +70,6 @@ public class DeadChest extends JavaPlugin {
             cleanAllDeadChests();
         }
 
-        if (config.getBoolean(ConfigKey.WORLD_GUARD_DETECTION)) {
-
-            try {
-                wgsdc = new WorldGuardSoftDependenciesChecker();
-                wgsdc.load();
-                log.info("[DeadChest] Worldguard detected : Support is enabled");
-
-            } catch (NoClassDefFoundError e) {
-                log.info("[DeadChest] Worldguard not detected : Support is disabled");
-            }
-        } else {
-            log.info("[DeadChest] Worldguard support disabled by user");
-        }
-
-
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new DeadChestListener(this), this);
 
@@ -106,6 +91,23 @@ public class DeadChest extends JavaPlugin {
         }
 
         launchRepeatingTask();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (this.getConfig().getBoolean(ConfigKey.WORLD_GUARD_DETECTION.toString())) {
+            try {
+                wgsdc = new WorldGuardSoftDependenciesChecker();
+                wgsdc.load();
+                log.info("[DeadChest] Worldguard detected : Support is enabled");
+
+            } catch (NoClassDefFoundError e) {
+                log.info("[DeadChest] Worldguard not detected : Support is disabled");
+            }
+        } else {
+            log.info("[DeadChest] Worldguard support disabled by user");
+        }
     }
 
     public void onDisable() {
