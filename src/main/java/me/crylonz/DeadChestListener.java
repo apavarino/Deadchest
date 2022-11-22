@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -208,6 +209,7 @@ public class DeadChestListener implements Listener {
 
                     chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST.label), holoTime, holoName));
 
+                    ItemStack[] backupInv = p.getInventory().getContents();
                     e.getDrops().clear();
                     p.getInventory().clear();
 
@@ -219,7 +221,9 @@ public class DeadChestListener implements Listener {
                     }
 
                     fileManager.saveModification();
+
                     generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+                    generateLog("Chest content : " + Arrays.asList(backupInv));
 
                     if (getConfig().getBoolean(ConfigKey.LOG_DEADCHEST_ON_CONSOLE))
                         log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
