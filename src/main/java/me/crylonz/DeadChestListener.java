@@ -201,7 +201,7 @@ public class DeadChestListener implements Listener {
                         p.getInventory().setItemInOffHand(null);
                     }
 
-                    for (String item : config.getArray(ConfigKey.EXCLUDED_WORLDS)) {
+                    for (String item : config.getArray(ConfigKey.EXCLUDED_ITEMS)) {
                         if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
                             p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
                         }

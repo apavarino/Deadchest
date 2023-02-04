@@ -2,7 +2,7 @@ name: DeadChest
 main: me.crylonz.DeadChest
 softdepend: [Multiverse-Core, WorldGuard]
 author: Crylonz
-version: "4.13.0"
+version: "4.14.0"
 description: Keep your inventory in a chest when you die
 api-version: "1.13"
 permissions:
