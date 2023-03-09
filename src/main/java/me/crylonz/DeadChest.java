@@ -140,6 +140,7 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.GENERATE_ON_RAILS.toString(), true);
         config.register(ConfigKey.GENERATE_IN_MINECART.toString(), true);
         config.register(ConfigKey.EXCLUDED_WORLDS.toString(), Collections.emptyList());
+        config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
         config.register(ConfigKey.EXCLUDED_ITEMS.toString(), Collections.emptyList());
     }
 

@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -57,6 +58,13 @@ public class DeadChestListener implements Listener {
                 || config.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
                 || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
+        }
+
+        if (config.getBoolean(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH)) {
+            if (p.getKiller() != null && p.getKiller() instanceof Player) {
+                e.setKeepInventory(true);
+                return;
+            }
         }
 
         if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {

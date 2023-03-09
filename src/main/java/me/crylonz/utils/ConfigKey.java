@@ -22,6 +22,7 @@ public enum ConfigKey {
     GENERATE_ON_RAILS("GenerateOnRails"),
     GENERATE_IN_MINECART("GenerateInMinecart"),
     EXCLUDED_WORLDS("ExcludedWorld"),
+    KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),
     EXCLUDED_ITEMS("ExcludedItems");
     private final String text;
 

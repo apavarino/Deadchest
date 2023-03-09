@@ -32,6 +32,11 @@ maxDeadChestPerPlayer: 15
 # Should we notify the console when and where a DeadChest is created?
 logDeadChestOnConsole: false
 
+# Should players keep their inventory when they die to a player?
+#   > false - Deaths by players will not be treated specially.
+#   > true  - Deaths by players will always keep the players inventory.
+KeepInventoryOnPvpDeath: false
+
 # Should players require permission ('deadchest.generate') to generate a DeadChest?
 #   > false - Players will NOT require permission to generate a DeadChest.
 #   > true  - Players WILL require permission to generate a DeadChest.
