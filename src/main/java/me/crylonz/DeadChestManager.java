@@ -143,8 +143,8 @@ public class DeadChestManager {
             Location loc = chestData.getChestLocation();
 
             if (loc.getWorld() != null) {
-                if (!chestData.isHasRemovedBlock()) {
-                    chestData.setHasRemovedBlock(true);
+                if (!chestData.isRemovedBlock()) {
+                    chestData.setRemovedBlock(true);
                     loc.getWorld().getBlockAt(loc).setType(Material.AIR);
                 }
                 if (config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
