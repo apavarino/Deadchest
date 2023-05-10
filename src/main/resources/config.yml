@@ -69,18 +69,21 @@ DropMode: 1
 #   > 5 - ENDER CHEST
 DropBlock: 1
 
+# Store Player XP on Deadchest
+StoreXP: false
+
 # Should we drop DeadChest contents when the timer expires?
 #   > false - DeadChest contents are removed when the timer expires.
 #   > true  - DeadChest contents are dropped when the timer expires.
 ItemsDroppedAfterTimeOut: false
 
-# Should we generate a DeadChest on lava?
+# Should generate a DeadChest on lava?
 GenerateOnLava: true
-# Should we generate a DeadChest on water?
+# Should generate a DeadChest on water?
 GenerateOnWater: true
-# Should we generate a DeadChest on rails?
+# Should generate a DeadChest on rails?
 GenerateOnRails: true
-# Should we generate a DeadChest in minecarts?
+# Should generate a DeadChest in minecarts?
 GenerateInMinecart: true
 
 # Should we check for WorldGuard regions when a player dies?

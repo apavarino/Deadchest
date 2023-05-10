@@ -22,7 +22,8 @@ public enum ConfigKey {
     GENERATE_ON_RAILS("GenerateOnRails"),
     GENERATE_IN_MINECART("GenerateInMinecart"),
     EXCLUDED_WORLDS("ExcludedWorld"),
-    EXCLUDED_ITEMS("ExcludedItems");
+    EXCLUDED_ITEMS("ExcludedItems"),
+    STORE_XP("StoreXP");
     private final String text;
 
     ConfigKey(final String text) {

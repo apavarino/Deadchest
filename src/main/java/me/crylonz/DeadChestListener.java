@@ -8,6 +8,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -207,7 +208,22 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST.label), holoTime, holoName));
+                    if (config.getBoolean(ConfigKey.STORE_XP)) {
+                        e.setDroppedExp(0);
+                    }
+
+
+                    chestData.add(
+                            new ChestData(
+                                    p.getInventory(),
+                                    b.getLocation(),
+                                    p,
+                                    p.hasPermission(Permission.INFINITY_CHEST.label),
+                                    holoTime,
+                                    holoName,
+                                    computeXpToStore(p)
+                            )
+                    );
 
                     ItemStack[] backupInv = p.getInventory().getContents();
                     e.getDrops().clear();
@@ -276,6 +292,7 @@ public class DeadChestListener implements Listener {
                                 // put all item on the inventory
                                 if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
+                                    player.giveExp(cd.getXpStored());
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
@@ -302,6 +319,9 @@ public class DeadChestListener implements Listener {
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
                                             playerWorld.dropItemNaturally(block.getLocation(), i);
+                                        }
+                                        if (cd.getXpStored() != 0) {
+                                            playerWorld.spawn(block.getLocation(), ExperienceOrb.class).setExperience(cd.getXpStored());
                                         }
                                     }
                                 }

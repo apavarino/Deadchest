@@ -175,5 +175,13 @@ public class Utils {
         }
     }
 
+    public static int computeXpToStore(Player player) {
+
+        if (config.getBoolean(ConfigKey.STORE_XP)) {
+            return player.getTotalExperience();
+        }
+        return 0;
+    }
+
 }
 
