@@ -3,6 +3,7 @@ package me.crylonz;
 import me.crylonz.commands.DCCommandExecutor;
 import me.crylonz.commands.DCTabCompletion;
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.Localization;
 import me.crylonz.utils.ConfigKey;
 import me.crylonz.utils.DeadChestConfig;
 import me.crylonz.utils.DeadChestUpdater;
