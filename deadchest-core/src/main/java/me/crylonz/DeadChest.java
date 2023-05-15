@@ -156,7 +156,6 @@ public class DeadChest extends JavaPlugin {
         if (!fileManager.getChestDataFile().exists()) {
             fileManager.saveChestDataConfig();
         } else {
-
             ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().getList("chestData");
 
             if (tmp != null) {
