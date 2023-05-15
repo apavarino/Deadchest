@@ -1,8 +1,8 @@
 package me.crylonz.commands;
 
-import me.crylonz.ChestData;
 import me.crylonz.DeadChest;
 import me.crylonz.Permission;
+import me.crylonz.deadchest.ChestData;
 import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

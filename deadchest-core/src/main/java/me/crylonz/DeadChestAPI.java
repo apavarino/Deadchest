@@ -1,5 +1,6 @@
 package me.crylonz;
 
+import me.crylonz.deadchest.ChestData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -24,7 +25,20 @@ public class DeadChestAPI {
         List<ChestData> chestData = new ArrayList<>();
         DeadChest.chestData.forEach(chest -> {
             if (chest.getPlayerName().equalsIgnoreCase(player.getName())) {
-                chestData.add(new ChestData(chest));
+                chestData.add(chest.copy(
+                        chest.getInventory(),
+                        chest.getChestLocation(),
+                        chest.getPlayerName(),
+                        chest.getPlayerUUID(),
+                        chest.getChestDate(),
+                        chest.isInfinity(),
+                        chest.isRemovedBlock(),
+                        chest.getHolographicTimer(),
+                        chest.getHolographicTimerId(),
+                        chest.getHolographicOwnerId(),
+                        chest.getWorldName(),
+                        chest.getXpStored()
+                ));
             }
         });
         return chestData;

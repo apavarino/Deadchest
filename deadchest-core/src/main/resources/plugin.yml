@@ -5,6 +5,8 @@ author: Crylonz
 version: "4.16.0"
 description: Keep your inventory in a chest when you die
 api-version: "1.13"
+libraries:
+  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21
 permissions:
   deadchest.generate:
     description: Allows a player to keep inventory in a chest when he dies

@@ -1,5 +1,6 @@
 package me.crylonz;
 
+import me.crylonz.deadchest.ChestData;
 import me.crylonz.utils.ConfigKey;
 import me.crylonz.utils.DeadChestConfig;
 import org.bukkit.*;
@@ -212,7 +213,7 @@ public class DeadChestListener implements Listener {
                         e.setDroppedExp(0);
                     }
 
-
+                    log.warning(String.valueOf(b.getLocation()));
                     chestData.add(
                             new ChestData(
                                     p.getInventory(),

@@ -1,5 +1,6 @@
 package me.crylonz;
 
+import me.crylonz.deadchest.ChestData;
 import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

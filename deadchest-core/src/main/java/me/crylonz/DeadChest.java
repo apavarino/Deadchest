@@ -2,6 +2,7 @@ package me.crylonz;
 
 import me.crylonz.commands.DCCommandExecutor;
 import me.crylonz.commands.DCTabCompletion;
+import me.crylonz.deadchest.ChestData;
 import me.crylonz.utils.ConfigKey;
 import me.crylonz.utils.DeadChestConfig;
 import me.crylonz.utils.DeadChestUpdater;
@@ -37,10 +38,6 @@ public class DeadChest extends JavaPlugin {
 
     public static DeadChestConfig config;
 
-    static {
-        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
-    }
-
     public DeadChest() {
         super();
     }
@@ -50,6 +47,8 @@ public class DeadChest extends JavaPlugin {
     }
 
     public void onEnable() {
+
+        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
 
         config = new DeadChestConfig(this);
         plugin = this;
@@ -157,8 +156,8 @@ public class DeadChest extends JavaPlugin {
         if (!fileManager.getChestDataFile().exists()) {
             fileManager.saveChestDataConfig();
         } else {
-            @SuppressWarnings("unchecked")
-            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
+
+            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().getList("chestData");
 
             if (tmp != null) {
                 chestData = tmp;
