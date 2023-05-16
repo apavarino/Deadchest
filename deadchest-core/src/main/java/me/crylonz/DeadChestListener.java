@@ -1,6 +1,7 @@
 package me.crylonz;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChest;
 import me.crylonz.utils.ConfigKey;
 import me.crylonz.utils.DeadChestConfig;
 import org.bukkit.*;
@@ -28,10 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.Utils.*;
+import static me.crylonz.deadchest.DeadChest.*;
 
 public class DeadChestListener implements Listener {
 
@@ -42,7 +43,7 @@ public class DeadChestListener implements Listener {
     }
 
     public DeadChestConfig getConfig() {
-        return plugin.config;
+        return DeadChest.dcConfig;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -56,7 +57,7 @@ public class DeadChestListener implements Listener {
         Player p = e.getEntity().getPlayer();
 
         if (p == null
-                || config.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
+                || dcConfig.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
                 || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
         }
@@ -203,17 +204,17 @@ public class DeadChestListener implements Listener {
                         p.getInventory().setItemInOffHand(null);
                     }
 
-                    for (String item : config.getArray(ConfigKey.EXCLUDED_ITEMS)) {
+                    for (String item : dcConfig.getArray(ConfigKey.EXCLUDED_ITEMS)) {
                         if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
                             p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
                         }
                     }
 
-                    if (config.getBoolean(ConfigKey.STORE_XP)) {
+                    if (dcConfig.getBoolean(ConfigKey.STORE_XP)) {
                         e.setDroppedExp(0);
                     }
 
-                    log.warning(String.valueOf(b.getLocation()));
+                    plugin.getLogger().warning(String.valueOf(b.getLocation()));
                     chestData.add(
                             new ChestData(
                                     p.getInventory(),
@@ -243,7 +244,7 @@ public class DeadChestListener implements Listener {
                     generateLog("Chest content : " + Arrays.asList(backupInv));
 
                     if (getConfig().getBoolean(ConfigKey.LOG_DEADCHEST_ON_CONSOLE))
-                        log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+                        plugin.getLogger().info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
                 } else {
                     generateLog("Player [" + p.getName() + "] died without inventory : No Deadchest generated");
                 }

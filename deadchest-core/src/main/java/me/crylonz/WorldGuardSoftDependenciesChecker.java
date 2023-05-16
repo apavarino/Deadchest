@@ -13,8 +13,9 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.crylonz.utils.ConfigKey;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.DeadChest.config;
 import static me.crylonz.Utils.*;
+import static me.crylonz.deadchest.DeadChest.dcConfig;
+import static me.crylonz.deadchest.DeadChest.plugin;
 
 public class WorldGuardSoftDependenciesChecker {
 
@@ -35,13 +36,14 @@ public class WorldGuardSoftDependenciesChecker {
 
         } catch (
                 FlagConflictException e) {
-            DeadChest.log.warning("Conflict in Deadchest flags");
+
+            plugin.getLogger().warning("Conflict in DeadChest flags");
         }
     }
 
     public boolean worldGuardChecker(Player p) {
 
-        if (!config.getBoolean(ConfigKey.WORLD_GUARD_DETECTION)) {
+        if (!dcConfig.getBoolean(ConfigKey.WORLD_GUARD_DETECTION)) {
             return true;
         }
 

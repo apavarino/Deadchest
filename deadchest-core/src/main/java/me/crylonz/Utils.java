@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static me.crylonz.DeadChest.*;
+import static me.crylonz.deadchest.DeadChest.*;
 
 public class Utils {
 
@@ -40,7 +40,7 @@ public class Utils {
         return true;
     }
 
-    static void generateLog(String message) {
+    public static void generateLog(String message) {
         File log = new File("plugins/DeadChest/deadchest.log");
         try {
             log.createNewFile();
@@ -49,7 +49,7 @@ public class Utils {
             String finalMsg = "[" + formatter.format(date) + "] " + message + "\n";
             Files.write(Paths.get("plugins/DeadChest/deadchest.log"), finalMsg.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            DeadChest.log.warning("Can't write log for Deadchest : " + e);
+            plugin.getLogger().warning("Can't write log for Deadchest : " + e);
         }
     }
 
@@ -150,7 +150,7 @@ public class Utils {
     }
 
     public static void computeChestType(Block b, Player p) {
-        switch (config.getInt(ConfigKey.DROP_BLOCK)) {
+        switch (dcConfig.getInt(ConfigKey.DROP_BLOCK)) {
             case 2:
                 b.setType(Material.PLAYER_HEAD);
                 b.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
@@ -177,7 +177,7 @@ public class Utils {
 
     public static int computeXpToStore(Player player) {
 
-        if (config.getBoolean(ConfigKey.STORE_XP)) {
+        if (dcConfig.getBoolean(ConfigKey.STORE_XP)) {
             return player.getTotalExperience();
         }
         return 0;

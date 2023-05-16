@@ -1,5 +1,5 @@
 name: DeadChest
-main: me.crylonz.DeadChest
+main: me.crylonz.deadchest.DeadChest
 softdepend: [Multiverse-Core, WorldGuard]
 author: Crylonz
 version: "4.16.0"

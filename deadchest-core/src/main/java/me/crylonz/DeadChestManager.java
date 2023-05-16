@@ -1,6 +1,7 @@
 package me.crylonz;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChest;
 import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,9 +20,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import static me.crylonz.DeadChest.*;
 import static me.crylonz.Utils.computeChestType;
 import static me.crylonz.Utils.isGraveBlock;
+import static me.crylonz.deadchest.DeadChest.*;
 
 public class DeadChestManager {
 
@@ -118,9 +119,9 @@ public class DeadChestManager {
 
                 for (Entity ne : nearbyEntities) {
                     if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, false));
+                        ne.setMetadata("deadchest", new FixedMetadataValue(plugin, false));
                     } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, true));
+                        ne.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
                     }
                 }
             }
@@ -137,9 +138,9 @@ public class DeadChestManager {
         return false;
     }
 
-    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
-        if (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
-                && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
+    public static boolean handleExpirateDeadChest(ChestData chestData, Date date) {
+        if (chestData.getChestDate().getTime() + dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
+                && dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
 
             Location loc = chestData.getChestLocation();
 
@@ -148,7 +149,7 @@ public class DeadChestManager {
                     chestData.setRemovedBlock(true);
                     loc.getWorld().getBlockAt(loc).setType(Material.AIR);
                 }
-                if (config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
+                if (dcConfig.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
                     for (ItemStack itemStack : chestData.getInventory()) {
                         if (itemStack != null) {
                             loc.getWorld().dropItemNaturally(loc, itemStack);
@@ -158,7 +159,8 @@ public class DeadChestManager {
                 }
             }
             if (chestData.removeArmorStand()) {
-                chestDataIt.remove();
+                DeadChest.chestData.remove(chestData);
+
             }
 
             return true;
@@ -178,12 +180,12 @@ public class DeadChestManager {
                         reloadMetaData();
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                        long diff = date.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
+                        long diff = date.getTime() - (chestData.getChestDate().getTime() + dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
                         long diffSeconds = Math.abs(diff / 1000 % 60);
                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
 
-                        if (!chestData.isInfinity() && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
+                        if (!chestData.isInfinity() && dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
                             entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
                         } else {
                             entity.setCustomName(local.get("loc_infinityChest"));

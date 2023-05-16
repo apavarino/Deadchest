@@ -1,8 +1,8 @@
 package me.crylonz.commands;
 
-import me.crylonz.DeadChest;
 import me.crylonz.Permission;
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChest;
 import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,8 +16,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.cleanAllDeadChests;
+import static me.crylonz.deadchest.DeadChest.*;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
 
@@ -94,7 +94,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                     ChestData chestData = chestDataIt.next();
 
                     if (chestData.getChestLocation().getWorld() != null) {
-                        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
+                        if (chestData.isInfinity() || dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
 
                             // remove chest
                             Location loc = chestData.getChestLocation();
@@ -176,7 +176,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
     public void registerListOwn() {
         registerCommand("dc list", null, () -> {
             if (player != null) {
-                if (player.hasPermission(Permission.LIST_OWN.label) || !config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN)) {
+                if (player.hasPermission(Permission.LIST_OWN.label) || !dcConfig.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN)) {
                     Date now = new Date();
                     if (!chestData.isEmpty()) {
                         sender.sendMessage(local.get("loc_prefix") + local.get("loc_dclistown") + " :");
@@ -229,7 +229,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
         String worldName = chestData.getChestLocation().getWorld() != null ?
                 chestData.getChestLocation().getWorld().getName() : "???";
 
-        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
+        if (chestData.isInfinity() || dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
             sender.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
                     + ChatColor.AQUA + " X: " + ChatColor.WHITE + chestData.getChestLocation().getX()
                     + ChatColor.AQUA + " Y: " + ChatColor.WHITE + chestData.getChestLocation().getY()
@@ -237,7 +237,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                     + " | "
                     + "∞ " + local.get("loc_endtimer"));
         } else {
-            long diff = now.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
+            long diff = now.getTime() - (chestData.getChestDate().getTime() + dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
             long diffSeconds = Math.abs(diff / 1000 % 60);
             long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
             long diffHours = Math.abs(diff / (60 * 60 * 1000));

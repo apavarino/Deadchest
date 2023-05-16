@@ -1,12 +1,12 @@
 package me.crylonz.commands;
 
-import me.crylonz.DeadChest;
+import me.crylonz.deadchest.DeadChest;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import static me.crylonz.DeadChest.local;
+import static me.crylonz.deadchest.DeadChest.local;
 
 public class DCCommandExecutor implements CommandExecutor {
 
@@ -17,7 +17,6 @@ public class DCCommandExecutor implements CommandExecutor {
         this.plugin = p;
         this.commandRegistration = new DCCommandRegistrationService(plugin);
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
