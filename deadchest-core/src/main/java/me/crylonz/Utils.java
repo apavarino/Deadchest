@@ -80,8 +80,8 @@ public class Utils {
     }
 
     public static boolean worldGuardCheck(Player p) {
-        if (wgsdc != null) {
-            return wgsdc.worldGuardChecker(p);
+        if (worldGuardDependenciesChecker != null) {
+            return worldGuardDependenciesChecker.worldGuardChecker(p);
         }
         return true;
     }

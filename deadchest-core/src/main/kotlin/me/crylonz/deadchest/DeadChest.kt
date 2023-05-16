@@ -4,7 +4,6 @@ import me.crylonz.DeadChestListener
 import me.crylonz.DeadChestManager.*
 import me.crylonz.FileManager
 import me.crylonz.Utils.generateLog
-import me.crylonz.WorldGuardSoftDependenciesChecker
 import me.crylonz.commands.DCCommandExecutor
 import me.crylonz.commands.DCTabCompletion
 import me.crylonz.utils.ConfigKey.*
@@ -23,13 +22,13 @@ open class DeadChest : JavaPlugin() {
     companion object {
         var bstats = true
         var isChangesNeedToBeSave = false
-        
+
         lateinit var chestData: MutableList<ChestData>
         lateinit var plugin: Plugin
         lateinit var local: Localization
         lateinit var dcConfig: DeadChestConfig
         lateinit var fileManager: FileManager
-        lateinit var wgsdc: WorldGuardSoftDependenciesChecker
+        lateinit var worldGuardDependenciesChecker: WorldGuardSoftDependenciesChecker
         lateinit var graveBlocks: MutableList<Material>
     }
 
@@ -41,7 +40,6 @@ open class DeadChest : JavaPlugin() {
         plugin = this
         dcConfig = DeadChestConfig(this)
         fileManager = FileManager(this)
-
 
         registerConfig()
         initializeConfig()
@@ -81,8 +79,8 @@ open class DeadChest : JavaPlugin() {
         super.onLoad()
         if (this.config.getBoolean(WORLD_GUARD_DETECTION.toString())) {
             try {
-                wgsdc = WorldGuardSoftDependenciesChecker()
-                wgsdc!!.load()
+                worldGuardDependenciesChecker = WorldGuardSoftDependenciesChecker()
+                worldGuardDependenciesChecker.load()
                 logger.info("[DeadChest] Worldguard detected : Support is enabled")
             } catch (e: NoClassDefFoundError) {
                 logger.info("[DeadChest] Worldguard not detected : Support is disabled")
