@@ -5,7 +5,7 @@ import me.crylonz.DeadChestManager.*
 import me.crylonz.FileManager
 import me.crylonz.Utils.generateLog
 import me.crylonz.commands.DCCommandExecutor
-import me.crylonz.commands.DCTabCompletion
+import me.crylonz.deadchest.commands.DCTabCompletion
 import me.crylonz.utils.ConfigKey.*
 import me.crylonz.utils.DeadChestConfig
 import me.crylonz.utils.DeadChestUpdater

@@ -1,5 +1,7 @@
-package me.crylonz.deadchest
+package me.crylonz
 
+import me.crylonz.deadchest.ChestData
+import me.crylonz.deadchest.DeadChest
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
