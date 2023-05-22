@@ -14,7 +14,7 @@ import java.util.*
 @SerializableAs("ChestData")
 data class ChestData(
 
-    var inventory: List<ItemStack>,
+    var inventory: List<ItemStack?>,
     var chestLocation: Location,
     var playerName: String,
     var playerUUID: String,

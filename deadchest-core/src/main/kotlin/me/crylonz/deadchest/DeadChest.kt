@@ -4,7 +4,7 @@ import me.crylonz.DeadChestListener
 import me.crylonz.DeadChestManager.*
 import me.crylonz.FileManager
 import me.crylonz.Utils.generateLog
-import me.crylonz.commands.DCCommandExecutor
+import me.crylonz.deadchest.commands.DCCommandExecutor
 import me.crylonz.deadchest.commands.DCTabCompletion
 import me.crylonz.utils.ConfigKey.*
 import me.crylonz.utils.DeadChestConfig
@@ -45,7 +45,7 @@ open class DeadChest : JavaPlugin() {
         initializeConfig()
 
         if (dcConfig.getBoolean(AUTO_UPDATE)) {
-            val updater = DeadChestUpdater(this, 322882, file, DEFAULT, true)
+            DeadChestUpdater(this, 322882, file, DEFAULT, true)
         }
 
         if (dcConfig.getBoolean(AUTO_CLEANUP_ON_START)) {
@@ -60,7 +60,7 @@ open class DeadChest : JavaPlugin() {
         getCommand("dc")?.tabCompleter = DCTabCompletion()
 
         if (bstats) {
-            val metrics = Metrics(this, 11385)
+            Metrics(this, 11385)
         }
 
         // Wich block can be used as grave ?
