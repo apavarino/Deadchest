@@ -1,3 +1,6 @@
+## Deadchest 4.16.1
++ Fixes amount of stored experience recovered from chest after death, same amount restored as dying in vanilla
+
 ## Deadchest 4.11
 
 + Adding auto-updater

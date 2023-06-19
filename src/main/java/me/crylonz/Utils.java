@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -175,10 +176,12 @@ public class Utils {
         }
     }
 
-    public static int computeXpToStore(Player player) {
-
+    public static int computeXpToStore(PlayerDeathEvent entity) {
         if (config.getBoolean(ConfigKey.STORE_XP)) {
-            return player.getTotalExperience();
+            // This does give the player 7 1/2 levels on first death above level 8
+            // if player dies again with 7 1/2 levels, player drops to 4 levels and so on.
+            // this is normal minecraft behaviour
+            return entity.getDroppedExp();
         }
         return 0;
     }

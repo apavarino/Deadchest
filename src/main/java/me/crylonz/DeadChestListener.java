@@ -208,10 +208,14 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
+                    // getDroppedExp() has to be called before setDroppedExp()
+                    // otherwise getDroppedExp() == setDroppedExp()
+                    int newExp;
+                    newExp = computeXpToStore(e);
+
                     if (config.getBoolean(ConfigKey.STORE_XP)) {
                         e.setDroppedExp(0);
                     }
-
 
                     chestData.add(
                             new ChestData(
@@ -221,7 +225,7 @@ public class DeadChestListener implements Listener {
                                     p.hasPermission(Permission.INFINITY_CHEST.label),
                                     holoTime,
                                     holoName,
-                                    computeXpToStore(p)
+                                    newExp
                             )
                     );
 
