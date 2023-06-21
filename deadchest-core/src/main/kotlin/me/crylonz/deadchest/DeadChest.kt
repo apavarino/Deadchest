@@ -4,12 +4,11 @@ import me.crylonz.DeadChestListener
 import me.crylonz.DeadChestManager.*
 import me.crylonz.FileManager
 import me.crylonz.Utils.generateLog
+import me.crylonz.deadchest.DeadChestUpdater.UpdateType
 import me.crylonz.deadchest.commands.DCCommandExecutor
 import me.crylonz.deadchest.commands.DCTabCompletion
-import me.crylonz.utils.ConfigKey.*
-import me.crylonz.utils.DeadChestConfig
-import me.crylonz.utils.DeadChestUpdater
-import me.crylonz.utils.DeadChestUpdater.UpdateType.DEFAULT
+import me.crylonz.deadchest.utils.ConfigKey.*
+import me.crylonz.deadchest.utils.DeadChestConfig
 import org.bstats.bukkit.Metrics
 import org.bukkit.Material
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -45,7 +44,7 @@ open class DeadChest : JavaPlugin() {
         initializeConfig()
 
         if (dcConfig.getBoolean(AUTO_UPDATE)) {
-            DeadChestUpdater(this, 322882, file, DEFAULT, true)
+            DeadChestUpdater(this, 322882, file, UpdateType.DEFAULT, true)
         }
 
         if (dcConfig.getBoolean(AUTO_CLEANUP_ON_START)) {

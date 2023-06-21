@@ -9,8 +9,8 @@ import me.crylonz.deadchest.DeadChest.Companion.chestData
 import me.crylonz.deadchest.DeadChest.Companion.dcConfig
 import me.crylonz.deadchest.DeadChest.Companion.fileManager
 import me.crylonz.deadchest.DeadChest.Companion.local
-import me.crylonz.utils.ConfigKey.DEADCHEST_DURATION
-import me.crylonz.utils.ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN
+import me.crylonz.deadchest.utils.ConfigKey.DEADCHEST_DURATION
+import me.crylonz.deadchest.utils.ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
 import org.bukkit.Material

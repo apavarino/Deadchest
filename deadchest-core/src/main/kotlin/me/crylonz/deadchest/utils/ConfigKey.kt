@@ -1,6 +1,6 @@
-package me.crylonz.utils;
+package me.crylonz.deadchest.utils
 
-public enum ConfigKey {
+enum class ConfigKey(private val text: String) {
     AUTO_UPDATE("auto-update"),
     INDESTRUCTIBLE_CHEST("IndestructibleChest"),
     ONLY_OWNER_CAN_OPEN_CHEST("OnlyOwnerCanOpenDeadChest"),
@@ -24,14 +24,8 @@ public enum ConfigKey {
     EXCLUDED_WORLDS("ExcludedWorld"),
     EXCLUDED_ITEMS("ExcludedItems"),
     STORE_XP("StoreXP");
-    private final String text;
 
-    ConfigKey(final String text) {
-        this.text = text;
-    }
-
-    @Override
-    public String toString() {
-        return text;
+    override fun toString(): String {
+        return text
     }
 }

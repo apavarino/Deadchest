@@ -2,7 +2,6 @@ package me.crylonz;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChest;
-import me.crylonz.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +22,8 @@ import java.util.Iterator;
 import static me.crylonz.Utils.computeChestType;
 import static me.crylonz.Utils.isGraveBlock;
 import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.utils.ConfigKey.DEADCHEST_DURATION;
+import static me.crylonz.deadchest.utils.ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT;
 
 public class DeadChestManager {
 
@@ -139,8 +140,8 @@ public class DeadChestManager {
     }
 
     public static boolean handleExpirateDeadChest(ChestData chestData, Date date) {
-        if (chestData.getChestDate().getTime() + dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
-                && dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
+        if (chestData.getChestDate().getTime() + dcConfig.getInt(DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
+                && dcConfig.getInt(DEADCHEST_DURATION) != 0) {
 
             Location loc = chestData.getChestLocation();
 
@@ -149,7 +150,7 @@ public class DeadChestManager {
                     chestData.setRemovedBlock(true);
                     loc.getWorld().getBlockAt(loc).setType(Material.AIR);
                 }
-                if (dcConfig.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
+                if (dcConfig.getBoolean(ITEMS_DROPPED_AFTER_TIMEOUT)) {
                     for (ItemStack itemStack : chestData.getInventory()) {
                         if (itemStack != null) {
                             loc.getWorld().dropItemNaturally(loc, itemStack);
@@ -180,12 +181,12 @@ public class DeadChestManager {
                         reloadMetaData();
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                        long diff = date.getTime() - (chestData.getChestDate().getTime() + dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
+                        long diff = date.getTime() - (chestData.getChestDate().getTime() + dcConfig.getInt(DEADCHEST_DURATION) * 1000L);
                         long diffSeconds = Math.abs(diff / 1000 % 60);
                         long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
 
-                        if (!chestData.isInfinity() && dcConfig.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
+                        if (!chestData.isInfinity() && dcConfig.getInt(DEADCHEST_DURATION) != 0) {
                             entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
                         } else {
                             entity.setCustomName(local.get("loc_infinityChest"));

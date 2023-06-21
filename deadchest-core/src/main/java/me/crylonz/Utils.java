@@ -2,7 +2,7 @@ package me.crylonz;
 
 
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
-import me.crylonz.utils.ConfigKey;
+import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.utils.ConfigKey.DROP_BLOCK;
 
 public class Utils {
 
@@ -150,7 +151,7 @@ public class Utils {
     }
 
     public static void computeChestType(Block b, Player p) {
-        switch (dcConfig.getInt(ConfigKey.DROP_BLOCK)) {
+        switch (dcConfig.getInt(DROP_BLOCK)) {
             case 2:
                 b.setType(Material.PLAYER_HEAD);
                 b.setMetadata("deadchest", new FixedMetadataValue(plugin, true));

@@ -4,7 +4,6 @@ import me.crylonz.Permission
 import me.crylonz.Permission.ADMIN
 import org.bukkit.entity.Player
 
-
 object PermissionUtils {
 
     var REMOVE_ALL = listOf(Permission.REMOVE_OWN, Permission.REMOVE_OTHER)

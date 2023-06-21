@@ -2,8 +2,8 @@ package me.crylonz;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChest;
-import me.crylonz.utils.ConfigKey;
-import me.crylonz.utils.DeadChestConfig;
+import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -31,8 +31,10 @@ import java.util.Objects;
 
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
+import static me.crylonz.Permission.GENERATE;
 import static me.crylonz.Utils.*;
 import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.utils.ConfigKey.*;
 
 public class DeadChestListener implements Listener {
 
@@ -56,30 +58,30 @@ public class DeadChestListener implements Listener {
 
         Player p = e.getEntity().getPlayer();
 
-        if (p == null
-                || dcConfig.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
-                || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
+        if ((p == null)
+                || dcConfig.getArray(EXCLUDED_WORLDS).contains(p.getWorld().getName())
+                || ((!getConfig().getBoolean(GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE))) {
             return;
         }
 
-        if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
-            if ((playerDeadChestAmount(p) < getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) ||
-                    getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) == 0) && p.getMetadata("NPC").isEmpty()) {
+        if (worldGuardCheck(p) && (p.hasPermission(GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
+            if (((playerDeadChestAmount(p) < getConfig().getInt(MAX_DEAD_CHEST_PER_PLAYER)) ||
+                    (getConfig().getInt(MAX_DEAD_CHEST_PER_PLAYER) == 0)) && p.getMetadata("NPC").isEmpty()) {
 
                 World world = p.getWorld();
                 Location loc = p.getLocation();
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_LAVA) && loc.getBlock().getType().equals(Material.LAVA)) {
+                if (!getConfig().getBoolean(GENERATE_ON_LAVA) && loc.getBlock().getType().equals(Material.LAVA)) {
                     generateLog("Player dies in lava : No deadchest generated");
                     return;
                 }
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_WATER) && loc.getBlock().getType().equals(Material.WATER)) {
+                if (!getConfig().getBoolean(GENERATE_ON_WATER) && loc.getBlock().getType().equals(Material.WATER)) {
                     generateLog("Player dies in water : No deadchest generated");
                     return;
                 }
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS) &&
+                if (!getConfig().getBoolean(GENERATE_ON_RAILS) &&
                         loc.getBlock().getType().equals(Material.RAIL) ||
                         loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
                         loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
@@ -88,7 +90,7 @@ public class DeadChestListener implements Listener {
                     return;
                 }
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_IN_MINECART) && p.getVehicle() != null) {
+                if (!getConfig().getBoolean(GENERATE_IN_MINECART) && p.getVehicle() != null) {
                     if (p.getVehicle().getType().equals(EntityType.MINECART)) {
                         generateLog("Player dies in a minecart : No deadchest generated");
                         return;
@@ -214,7 +216,6 @@ public class DeadChestListener implements Listener {
                         e.setDroppedExp(0);
                     }
 
-                    plugin.getLogger().warning(String.valueOf(b.getLocation()));
                     chestData.add(
                             new ChestData(
                                     p.getInventory(),

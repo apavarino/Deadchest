@@ -1,4 +1,4 @@
-package me.crylonz.utils;
+package me.crylonz.deadchest;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -102,7 +102,7 @@ public class DeadChestUpdater {
     // Updater thread
     private Thread thread;
     // Used for determining the outcome of the update process
-    private DeadChestUpdater.UpdateResult result = DeadChestUpdater.UpdateResult.SUCCESS;
+    private UpdateResult result = UpdateResult.SUCCESS;
 
     /**
      * Gives the developer the result of the update process. Can be obtained by called {@link #getResult()}
@@ -294,7 +294,7 @@ public class DeadChestUpdater {
      * @return result of the update process.
      * @see UpdateResult
      */
-    public DeadChestUpdater.UpdateResult getResult() {
+    public UpdateResult getResult() {
         this.waitForThread();
         return this.result;
     }
@@ -414,7 +414,7 @@ public class DeadChestUpdater {
             }
         } catch (Exception ex) {
             this.plugin.getLogger().log(Level.WARNING, "The auto-updater tried to download a new update, but was unsuccessful.", ex);
-            this.result = DeadChestUpdater.UpdateResult.FAIL_DOWNLOAD;
+            this.result = UpdateResult.FAIL_DOWNLOAD;
         } finally {
             try {
                 if (in != null) {
@@ -514,7 +514,7 @@ public class DeadChestUpdater {
 
         } catch (final IOException e) {
             this.plugin.getLogger().log(Level.SEVERE, "The auto-updater tried to unzip a new update file, but was unsuccessful.", e);
-            this.result = DeadChestUpdater.UpdateResult.FAIL_DOWNLOAD;
+            this.result = UpdateResult.FAIL_DOWNLOAD;
         } finally {
             this.fileIOOrError(fSourceZip, fSourceZip.delete(), false);
         }
@@ -592,7 +592,7 @@ public class DeadChestUpdater {
 
                 if (this.hasTag(localVersion) || !this.shouldUpdate(localVersion, remoteVersion)) {
                     // We already have the latest version, or this build is tagged for no-update
-                    this.result = DeadChestUpdater.UpdateResult.NO_UPDATE;
+                    this.result = UpdateResult.NO_UPDATE;
                     return false;
                 }
             } else {
@@ -601,7 +601,7 @@ public class DeadChestUpdater {
                 this.plugin.getLogger().warning("The author of this plugin" + authorInfo + " has misconfigured their Auto Update system");
                 this.plugin.getLogger().warning("File versions should follow the format 'PluginName vVERSION'");
                 this.plugin.getLogger().warning("Please notify the author of this error.");
-                this.result = DeadChestUpdater.UpdateResult.FAIL_NOVERSION;
+                this.result = UpdateResult.FAIL_NOVERSION;
                 return false;
             }
         }
@@ -639,13 +639,12 @@ public class DeadChestUpdater {
     public boolean shouldUpdate(String localVersion, String remoteVersion) {
         int localVersionInt = Integer.parseInt(localVersion.replace(".", ""));
         int remoteVersionInt = Integer.parseInt(remoteVersion.replace(".", ""));
-
         if (localVersion.charAt(0) < remoteVersion.charAt(0)) {
             this.plugin.getLogger().warning("New major version (" + remoteVersion + ") is available for " + this.plugin.getName());
             this.plugin.getLogger().warning("To prevent any breaking change, this update is not downloaded automatically");
             this.plugin.getLogger().warning("Please download it manually on Bukkit/Spigot");
             return false;
-        } else if (localVersionInt > remoteVersionInt) {
+        } else if (localVersion.charAt(0) > remoteVersion.charAt(0) || localVersionInt > remoteVersionInt) {
             this.plugin.getLogger().warning("-------------------");
             this.plugin.getLogger().warning("This version (" + localVersion + ") of " + this.plugin.getName() + " is not released yet");
             this.plugin.getLogger().warning("Auto update is disabled");

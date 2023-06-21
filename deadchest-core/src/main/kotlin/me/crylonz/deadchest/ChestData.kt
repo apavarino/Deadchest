@@ -73,7 +73,7 @@ data class ChestData(
                 chestLocation.world!!.isChunkLoaded(chestLocation.blockX shr 4, chestLocation.blockZ shr 4)
     }
 
-    fun isChunkForceLoaded(): Boolean {
+    private fun isChunkForceLoaded(): Boolean {
         return chestLocation.world == null ||
                 chestLocation.world!!.isChunkForceLoaded(chestLocation.blockX shr 4, chestLocation.blockZ shr 4)
     }

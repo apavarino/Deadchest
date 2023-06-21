@@ -7,7 +7,7 @@ import com.sk89q.worldguard.protection.flags.BooleanFlag
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException
 import me.crylonz.Utils
 import me.crylonz.deadchest.DeadChest.Companion.dcConfig
-import me.crylonz.utils.ConfigKey.WORLD_GUARD_DETECTION
+import me.crylonz.deadchest.utils.ConfigKey.WORLD_GUARD_DETECTION
 import org.bukkit.entity.Player
 
 class WorldGuardSoftDependenciesChecker {
