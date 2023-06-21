@@ -1,7 +1,7 @@
 package me.crylonz.deadchest.commands
 
-import me.crylonz.Permission
-import me.crylonz.Permission.ADMIN
+import me.crylonz.deadchest.Permission
+import me.crylonz.deadchest.Permission.ADMIN
 import me.crylonz.deadchest.PermissionUtils
 import me.crylonz.deadchest.PermissionUtils.hasAdminOr
 import me.crylonz.deadchest.PermissionUtils.hasAdminOrOneOf

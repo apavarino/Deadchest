@@ -1,7 +1,5 @@
 package me.crylonz.deadchest
 
-import me.crylonz.Permission
-import me.crylonz.Permission.ADMIN
 import org.bukkit.entity.Player
 
 object PermissionUtils {
@@ -18,15 +16,15 @@ object PermissionUtils {
     }
 
     fun hasAdminOrAllOf(player: Player, permissions: List<Permission>): Boolean {
-        return if (player.hasPermission(ADMIN.label)) true else hasAllOf(player, permissions)
+        return if (player.hasPermission(Permission.ADMIN.label)) true else hasAllOf(player, permissions)
     }
 
     fun hasAdminOrOneOf(player: Player, permissions: List<Permission>): Boolean {
-        return if (player.hasPermission(ADMIN.label)) true else hasOneOf(player, permissions)
+        return if (player.hasPermission(Permission.ADMIN.label)) true else hasOneOf(player, permissions)
     }
 
     fun hasAdminOr(player: Player, permission: Permission): Boolean {
-        return if (player.hasPermission(ADMIN.label)) true else player.hasPermission(permission.label)
+        return if (player.hasPermission(Permission.ADMIN.label)) true else player.hasPermission(permission.label)
     }
 }
 

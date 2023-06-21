@@ -1,14 +1,14 @@
 package me.crylonz.deadchest.commands
 
 import me.crylonz.DeadChestManager
-import me.crylonz.Permission
-import me.crylonz.Permission.*
 import me.crylonz.deadchest.ChestData
 import me.crylonz.deadchest.DeadChest
 import me.crylonz.deadchest.DeadChest.Companion.chestData
 import me.crylonz.deadchest.DeadChest.Companion.dcConfig
 import me.crylonz.deadchest.DeadChest.Companion.fileManager
 import me.crylonz.deadchest.DeadChest.Companion.local
+import me.crylonz.deadchest.Permission
+import me.crylonz.deadchest.Permission.*
 import me.crylonz.deadchest.utils.ConfigKey.DEADCHEST_DURATION
 import me.crylonz.deadchest.utils.ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN
 import org.bukkit.Bukkit

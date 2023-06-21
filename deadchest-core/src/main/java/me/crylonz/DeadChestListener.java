@@ -2,6 +2,7 @@ package me.crylonz;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChest;
+import me.crylonz.deadchest.Permission;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.*;
@@ -31,9 +32,9 @@ import java.util.Objects;
 
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
-import static me.crylonz.Permission.GENERATE;
 import static me.crylonz.Utils.*;
 import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.Permission.GENERATE;
 import static me.crylonz.deadchest.utils.ConfigKey.*;
 
 public class DeadChestListener implements Listener {
@@ -64,7 +65,7 @@ public class DeadChestListener implements Listener {
             return;
         }
 
-        if (worldGuardCheck(p) && (p.hasPermission(GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
+        if (worldGuardCheck(p) && (p.hasPermission(GENERATE.getLabel()) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
             if (((playerDeadChestAmount(p) < getConfig().getInt(MAX_DEAD_CHEST_PER_PLAYER)) ||
                     (getConfig().getInt(MAX_DEAD_CHEST_PER_PLAYER) == 0)) && p.getMetadata("NPC").isEmpty()) {
 
@@ -221,7 +222,7 @@ public class DeadChestListener implements Listener {
                                     p.getInventory(),
                                     b.getLocation(),
                                     p,
-                                    p.hasPermission(Permission.INFINITY_CHEST.label),
+                                    p.hasPermission(Permission.INFINITY_CHEST.getLabel()),
                                     holoTime,
                                     holoName,
                                     computeXpToStore(p)
@@ -270,7 +271,7 @@ public class DeadChestListener implements Listener {
         if (block != null && isGraveBlock(block.getType())) {
             final Player player = e.getPlayer();
             final String playerUUID = player.getUniqueId().toString();
-            final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
+            final boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.getLabel());
             final World playerWorld = player.getWorld();
             // if block is a dead chest
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
@@ -280,7 +281,7 @@ public class DeadChestListener implements Listener {
                         // if everybody can open chest or if the chest is the chest of the current player
                         if (!getConfig().getBoolean(ConfigKey.ONLY_OWNER_CAN_OPEN_CHEST) || playerUUID.equals(cd.getPlayerUUID()) || playerHasPermission) {
 
-                            if (!player.hasPermission(Permission.GET.label) && getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GET_CHEST)) {
+                            if (!player.hasPermission(Permission.GET.getLabel()) && getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GET_CHEST)) {
                                 generateLog(String.format("Player [%s] need to have deadchest.get permission to generate", player.getName()));
                                 player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
                                 e.setCancelled(true);

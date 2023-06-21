@@ -1,6 +1,6 @@
-package me.crylonz;
+package me.crylonz.deadchest
 
-public enum Permission {
+enum class Permission(val label: String) {
     CHESTPASS("deadchest.chestPass"),
     GET("deadchest.get"),
     GENERATE("deadchest.generate"),
@@ -10,11 +10,5 @@ public enum Permission {
     REMOVE_OTHER("deadchest.remove.other"),
     LIST_OWN("deadchest.list.own"),
     LIST_OTHER("deadchest.list.other"),
-    ADMIN("deadchest.admin");
-
-    public final String label;
-
-    private Permission(String label) {
-        this.label = label;
-    }
+    ADMIN("deadchest.admin")
 }

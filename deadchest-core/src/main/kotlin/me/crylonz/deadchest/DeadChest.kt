@@ -2,7 +2,6 @@ package me.crylonz.deadchest
 
 import me.crylonz.DeadChestListener
 import me.crylonz.DeadChestManager.*
-import me.crylonz.FileManager
 import me.crylonz.Utils.generateLog
 import me.crylonz.deadchest.DeadChestUpdater.UpdateType
 import me.crylonz.deadchest.commands.DCCommandExecutor
@@ -92,7 +91,7 @@ open class DeadChest : JavaPlugin() {
     override fun onDisable() {
 
         // chest data
-        if (fileManager.chestDataFile.exists()) {
+        if (fileManager.chestDataConfigFile.exists()) {
             fileManager.saveChestDataConfig()
         }
     }
@@ -133,7 +132,7 @@ open class DeadChest : JavaPlugin() {
         }
 
         // database (chestData.yml)
-        if (!fileManager.chestDataFile.exists()) {
+        if (!fileManager.chestDataConfigFile.exists()) {
             fileManager.saveChestDataConfig()
         } else {
             fileManager.chestDataConfig.getList("chestData")
