@@ -174,14 +174,5 @@ public class Utils {
                 b.setType(Material.CHEST);
         }
     }
-
-    public static int computeXpToStore(Player player) {
-
-        if (config.getBoolean(ConfigKey.STORE_XP)) {
-            return player.getTotalExperience();
-        }
-        return 0;
-    }
-
 }
 

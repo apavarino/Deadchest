@@ -31,6 +31,7 @@ import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.Utils.*;
+import static me.crylonz.utils.ExpUtils.getTotalExperienceToStore;
 
 public class DeadChestListener implements Listener {
 
@@ -221,7 +222,7 @@ public class DeadChestListener implements Listener {
                                     p.hasPermission(Permission.INFINITY_CHEST.label),
                                     holoTime,
                                     holoName,
-                                    computeXpToStore(p)
+                                    getTotalExperienceToStore(p)
                             )
                     );
 
