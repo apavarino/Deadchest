@@ -1,9 +1,11 @@
 package me.crylonz.deadchest
 
-import me.crylonz.DeadChestListener
-import me.crylonz.DeadChestManager.*
-import me.crylonz.Utils.generateLog
+import me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests
+import me.crylonz.deadchest.DeadChestManager.handleExpirateDeadChest
+import me.crylonz.deadchest.DeadChestManager.replaceDeadChestIfItDeseapears
+import me.crylonz.deadchest.DeadChestManager.updateTimer
 import me.crylonz.deadchest.DeadChestUpdater.UpdateType
+import me.crylonz.deadchest.Utils.generateLog
 import me.crylonz.deadchest.commands.DCCommandExecutor
 import me.crylonz.deadchest.commands.DCTabCompletion
 import me.crylonz.deadchest.utils.ConfigKey.*
@@ -26,7 +28,7 @@ open class DeadChest : JavaPlugin() {
         lateinit var local: Localization
         lateinit var dcConfig: DeadChestConfig
         lateinit var fileManager: FileManager
-        lateinit var worldGuardDependenciesChecker: WorldGuardSoftDependenciesChecker
+        var worldGuardDependenciesChecker: WorldGuardSoftDependenciesChecker? = null
         lateinit var graveBlocks: MutableList<Material>
     }
 
@@ -78,13 +80,13 @@ open class DeadChest : JavaPlugin() {
         if (this.config.getBoolean(WORLD_GUARD_DETECTION.toString())) {
             try {
                 worldGuardDependenciesChecker = WorldGuardSoftDependenciesChecker()
-                worldGuardDependenciesChecker.load()
-                logger.info("[DeadChest] Worldguard detected : Support is enabled")
+                worldGuardDependenciesChecker!!.load()
+                logger.info("[DeadChest] WorldGuard detected : Support is enabled")
             } catch (e: NoClassDefFoundError) {
-                logger.info("[DeadChest] Worldguard not detected : Support is disabled")
+                logger.info("[DeadChest] WorldGuard not detected : Support is disabled")
             }
         } else {
-            logger.info("[DeadChest] Worldguard support disabled by user")
+            logger.info("[DeadChest] WorldGuard support disabled by user")
         }
     }
 
@@ -196,7 +198,7 @@ open class DeadChest : JavaPlugin() {
         fileManager.saveLocalizationConfig()
     }
 
-    fun handleEvent() {
+    private fun handleEvent() {
         if (chestData.isNotEmpty()) {
 
             val now = Date()
@@ -204,7 +206,6 @@ open class DeadChest : JavaPlugin() {
             chestData.forEach {
                 it.chestLocation.world?.let { _ ->
                     updateTimer(it, now)
-
                     if (handleExpirateDeadChest(it, now)) {
                         isChangesNeedToBeSave = true
                         generateLog("Deadchest of  ${it.playerName}] has expired in ${it.chestLocation.world!!.name}")

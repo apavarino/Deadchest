@@ -3,7 +3,14 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     kotlin("jvm") version "1.8.21"
     id("java")
+    id("java-library")
     id("com.github.johnrengelman.shadow") version "8.1.1"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 repositories {
@@ -12,7 +19,7 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
 }
-
+  
 dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
