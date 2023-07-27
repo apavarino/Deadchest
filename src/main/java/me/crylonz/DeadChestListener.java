@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Edgeburn Media. All rights reserved.
+ */
+
 package me.crylonz;
 
 import me.crylonz.utils.ConfigKey;
@@ -8,13 +12,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -31,6 +35,7 @@ import static me.crylonz.DeadChest.*;
 import static me.crylonz.DeadChestManager.generateHologram;
 import static me.crylonz.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.Utils.*;
+import static me.crylonz.utils.ExpUtils.getTotalExperienceToStore;
 
 public class DeadChestListener implements Listener {
 
@@ -215,7 +220,22 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
-                    chestData.add(new ChestData(p.getInventory(), b.getLocation(), p, p.hasPermission(Permission.INFINITY_CHEST.label), holoTime, holoName));
+                    if (config.getBoolean(ConfigKey.STORE_XP)) {
+                        e.setDroppedExp(0);
+                    }
+
+
+                    chestData.add(
+                            new ChestData(
+                                    p.getInventory(),
+                                    b.getLocation(),
+                                    p,
+                                    p.hasPermission(Permission.INFINITY_CHEST.label),
+                                    holoTime,
+                                    holoName,
+                                    getTotalExperienceToStore(p)
+                            )
+                    );
 
                     ItemStack[] backupInv = p.getInventory().getContents();
                     e.getDrops().clear();
@@ -284,6 +304,7 @@ public class DeadChestListener implements Listener {
                                 // put all item on the inventory
                                 if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
+                                    player.giveExp(cd.getXpStored());
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
 
@@ -310,6 +331,9 @@ public class DeadChestListener implements Listener {
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
                                             playerWorld.dropItemNaturally(block.getLocation(), i);
+                                        }
+                                        if (cd.getXpStored() != 0) {
+                                            playerWorld.spawn(block.getLocation(), ExperienceOrb.class).setExperience(cd.getXpStored());
                                         }
                                     }
                                 }

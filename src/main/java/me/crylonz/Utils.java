@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Edgeburn Media. All rights reserved.
+ */
+
 package me.crylonz;
 
 
@@ -174,6 +178,5 @@ public class Utils {
                 b.setType(Material.CHEST);
         }
     }
-
 }
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Edgeburn Media. All rights reserved.
+ */
+
 package me.crylonz;
 
 import org.bukkit.Bukkit;
@@ -27,6 +31,8 @@ public final class ChestData implements ConfigurationSerializable {
     private UUID holographicOwnerId;
     private String worldName;
 
+    private int xpStored;
+
     public ChestData(ChestData chest) {
         this.inventory = chest.getInventory();
         this.chestLocation = chest.getChestLocation();
@@ -39,6 +45,7 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicTimerId = chest.getHolographicTimerId();
         this.holographicOwnerId = chest.getHolographicOwnerId();
         this.worldName = chest.getWorldName();
+        this.xpStored = chest.getXpStored();
     }
 
     ChestData(final Inventory inv,
@@ -46,7 +53,8 @@ public final class ChestData implements ConfigurationSerializable {
               final Player p,
               final boolean isInfinity,
               final ArmorStand asTimer,
-              final ArmorStand owner) {
+              final ArmorStand owner,
+              final int xpToStore) {
 
         if (p != null) {
             this.inventory = Arrays.asList(inv.getContents());
@@ -59,6 +67,7 @@ public final class ChestData implements ConfigurationSerializable {
             this.holographicTimer = asTimer.getLocation().clone();
             this.holographicTimerId = asTimer.getUniqueId();
             this.holographicOwnerId = owner.getUniqueId();
+            this.xpStored = xpToStore;
             if (chestLocation.getWorld() != null)
                 this.worldName = chestLocation.getWorld().getName();
         }
@@ -74,7 +83,8 @@ public final class ChestData implements ConfigurationSerializable {
                      final Location holographicTimer,
                      final UUID asTimerId,
                      final UUID asOwnerId,
-                     final String worldName) {
+                     final String worldName,
+                     final int xpStored) {
         this.inventory = inventory;
         this.chestLocation = chestLocation;
         this.playerName = playerName;
@@ -86,6 +96,7 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicTimerId = asTimerId;
         this.holographicOwnerId = asOwnerId;
         this.worldName = worldName;
+        this.xpStored = xpStored;
     }
 
     @SuppressWarnings({"unchecked", "unused"})
@@ -109,11 +120,12 @@ public final class ChestData implements ConfigurationSerializable {
                 (String) map.get("playerUUID"),
                 (Date) map.get("chestDate"),
                 (boolean) map.get("isInfinity"),
-                map.get("isRemovedBlock") != null && (boolean) map.get("isRemovedBlock"), // compatiblity 4.14 --> 4.14+
+                map.get("isRemovedBlock") != null && (boolean) map.get("isRemovedBlock"), // compatiblity under 4.14
                 mylocHolo,
                 UUID.fromString((String) map.get("as_timer_id")),
                 UUID.fromString((String) map.get("as_owner_id")),
-                (String) map.get("worldName")
+                (String) map.get("worldName"),
+                (int) (map.get("xpStored") != null ? map.get("xpStored") : 0)  // compatiblity under 4.15
         );
     }
 
@@ -242,7 +254,16 @@ public final class ChestData implements ConfigurationSerializable {
         map.put("worldName", worldName);
         map.put("as_timer_id", holographicTimerId.toString());
         map.put("as_owner_id", holographicOwnerId.toString());
+        map.put("xpStored", xpStored);
         return map;
+    }
+
+    public int getXpStored() {
+        return xpStored;
+    }
+
+    public void setXpStored(int xpStored) {
+        this.xpStored = xpStored;
     }
 
     enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Edgeburn Media. All rights reserved.
+ */
+
 package me.crylonz.utils;
 
 public enum ConfigKey {
@@ -23,7 +27,8 @@ public enum ConfigKey {
     GENERATE_IN_MINECART("GenerateInMinecart"),
     EXCLUDED_WORLDS("ExcludedWorld"),
     KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),
-    EXCLUDED_ITEMS("ExcludedItems");
+    EXCLUDED_ITEMS("ExcludedItems"),
+    STORE_XP("StoreXP");
     private final String text;
 
     ConfigKey(final String text) {
