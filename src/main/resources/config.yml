@@ -86,6 +86,11 @@ GenerateOnRails: true
 # Should generate a DeadChest in minecarts?
 GenerateInMinecart: true
 
+# Should players keep their inventory when they die to a player?
+#   > false - Deaths by players will not be treated specially.
+#   > true  - Deaths by players will always keep the players inventory.
+KeepInventoryOnPvpDeath: false
+
 # Should we check for WorldGuard regions when a player dies?
 #   > false - WorldGuard regions will NOT be checked for.
 #   > true  - WorldGuard regions WILL be checked for.

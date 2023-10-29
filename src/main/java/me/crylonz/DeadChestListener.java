@@ -48,7 +48,6 @@ public class DeadChestListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
-
         if (e.getKeepInventory()) {
             return;
         }
@@ -59,6 +58,14 @@ public class DeadChestListener implements Listener {
                 || config.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
                 || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
             return;
+        }
+
+        if (config.getBoolean(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH)) {
+            if (p.getKiller() != null) {
+                e.setKeepInventory(true);
+                e.getDrops().clear();
+                return;
+            }
         }
 
         if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {

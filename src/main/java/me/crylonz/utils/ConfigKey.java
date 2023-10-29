@@ -23,7 +23,8 @@ public enum ConfigKey {
     GENERATE_IN_MINECART("GenerateInMinecart"),
     EXCLUDED_WORLDS("ExcludedWorld"),
     EXCLUDED_ITEMS("ExcludedItems"),
-    STORE_XP("StoreXP");
+    STORE_XP("StoreXP"),
+    KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath");
     private final String text;
 
     ConfigKey(final String text) {
