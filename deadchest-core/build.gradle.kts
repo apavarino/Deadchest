@@ -50,9 +50,10 @@ publishing {
         maven {
             url = uri("https://maven.pkg.jetbrains.space/openbeam/p/minecraft-projects/plugins-artifacts")
             credentials {
-                username = "$" + "System.env.JB_SPACE_CLIENT_ID"
-                password = "$" + "System.env.JB_SPACE_CLIENT_SECRET"
+                username = "$System.env.JB_SPACE_CLIENT_ID"
+                password = "$System.env.JB_SPACE_CLIENT_SECRET"
             }
+
         }
     }
 }
