@@ -4,7 +4,6 @@
 
 <h2  align="center">
     <img src="http://cf.way2muchnoise.eu/full_322882_downloads.svg" alt="download"/> 
-    <img src="https://circleci.com/gh/apavarino/Deadchest.svg?style=shield" alt="CI"/>
     <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="licence"/>
     <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="commit"/>
 </h2>
