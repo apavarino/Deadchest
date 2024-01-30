@@ -42,3 +42,10 @@ hs_err_pid*
 /.gradle/buildOutputCleanup/outputFiles.bin
 /.gradle/vcs-1/gc.properties
 /.gradle/file-system.probe
+/.gradle/8.5/checksums/checksums.lock
+/.gradle/8.5/checksums/md5-checksums.bin
+/.gradle/8.5/checksums/sha1-checksums.bin
+/.gradle/8.5/dependencies-accessors/dependencies-accessors.lock
+/.gradle/8.5/executionHistory/executionHistory.lock
+/.gradle/8.5/fileHashes/fileHashes.lock
+/.gradle/

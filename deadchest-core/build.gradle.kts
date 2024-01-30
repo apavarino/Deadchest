@@ -4,11 +4,12 @@ plugins {
     id("java")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     `maven-publish`
+    `java-library`
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
