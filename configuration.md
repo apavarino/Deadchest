@@ -25,7 +25,8 @@ Option | Value | Default | Description
 `GenerateOnWater`  | boolean  | true | Enable Deadchest generation on water
 `GenerateOnRails`  | boolean  | true | Enable Deadchest generation on rails
 `GenerateInMinecart`  | boolean  | true | Enable Deadchest generation in minecart
-`EnableWorldGuardDetection`  | boolean  | false | Enable Worldguard integration. More info [here](https://apavarino.github.io/Deadchest/worldguard)
+`EnableWorldGuardDetection`  | boolean  | 0 | Percentage of stuff durability loss on death
+`item-durability-loss-on-death`  | number  | false | Enable Worldguard integration. More info [here](https://apavarino.github.io/Deadchest/worldguard)
 `ExcludedWorld`  | list of string  |  | List of worlds that DeadChests will NOT be generated in
 `ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests
 
