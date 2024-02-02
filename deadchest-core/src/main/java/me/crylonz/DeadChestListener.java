@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,6 +215,27 @@ public class DeadChestListener implements Listener {
                         if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
                             p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
                         }
+                    }
+
+                    /*
+                      Update durability of item to decrease it relatively to ITEM_DURABILITY_LOSS_ON_DEATH
+                     */
+                    if (config.getInt(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH) > 0) {
+                        Arrays.stream(p.getInventory().getContents())
+                                .filter(Objects::nonNull)
+                                .filter(itemStack -> itemStack.getItemMeta() instanceof Damageable)
+                                .forEach(itemStack -> {
+                                    Damageable itemData = ((Damageable) itemStack.getItemMeta());
+                                    int newDamage = itemData.getDamage() + (int) (itemStack.getType().getMaxDurability() * config.getInt(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH) / 100.0);
+                                    itemData.setDamage(newDamage);
+
+                                    if (newDamage > itemStack.getType().getMaxDurability()) {
+                                        p.getInventory().remove(itemStack);
+                                    } else {
+                                        itemStack.setItemMeta(itemData);
+
+                                    }
+                                });
                     }
 
                     if (config.getBoolean(ConfigKey.STORE_XP)) {

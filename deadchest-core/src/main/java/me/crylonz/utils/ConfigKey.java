@@ -24,7 +24,8 @@ public enum ConfigKey {
     EXCLUDED_WORLDS("ExcludedWorld"),
     EXCLUDED_ITEMS("ExcludedItems"),
     STORE_XP("StoreXP"),
-    KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath");
+    KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),
+    ITEM_DURABILITY_LOSS_ON_DEATH("item-durability-loss-on-death");
     private final String text;
 
     ConfigKey(final String text) {

@@ -96,6 +96,9 @@ KeepInventoryOnPvpDeath: false
 #   > true  - WorldGuard regions WILL be checked for.
 EnableWorldGuardDetection: false
 
+# Percentage of stuff durability loss on death
+item-durability-loss-on-death: 0
+
 # A list of worlds that DeadChests will NOT be generated in...
 ExcludedWorld:
   - 'excluded_world_example'

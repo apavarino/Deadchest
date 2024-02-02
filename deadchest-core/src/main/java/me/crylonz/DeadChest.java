@@ -58,7 +58,6 @@ public class DeadChest extends JavaPlugin {
         chestData = new ArrayList<>();
         local = new Localization();
 
-
         registerConfig();
         initializeConfig();
 
@@ -135,6 +134,7 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.WORLD_GUARD_DETECTION.toString(), false);
         config.register(ConfigKey.DROP_MODE.toString(), 1);
         config.register(ConfigKey.DROP_BLOCK.toString(), 1);
+        config.register(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH.toString(), 0);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);
         config.register(ConfigKey.GENERATE_ON_RAILS.toString(), true);
