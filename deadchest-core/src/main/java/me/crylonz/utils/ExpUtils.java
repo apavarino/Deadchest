@@ -99,7 +99,7 @@ public final class ExpUtils {
 
     public static int getTotalExperienceToStore(Player player) {
         if (config.getBoolean(ConfigKey.STORE_XP)) {
-            return getTotalExperience(player);
+            return getTotalExperience(player) * config.getInt(ConfigKey.STORE_XP_PERCENTAGE) / 100;
         }
         return 0;
     }

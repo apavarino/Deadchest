@@ -142,6 +142,7 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.EXCLUDED_WORLDS.toString(), Collections.emptyList());
         config.register(ConfigKey.EXCLUDED_ITEMS.toString(), Collections.emptyList());
         config.register(ConfigKey.STORE_XP.toString(), false);
+        config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 100);
         config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
     }
 
