@@ -72,6 +72,12 @@ DropBlock: 1
 # Store Player XP on Deadchest
 StoreXP: false
 
+# % of XP stored on the deadchest. Only works if StoreXP is true
+# If 0 is used the all the XP from the player vanishes, no XP orb gets dropped on death and no XP gets stored
+# If a value of 100 is used then all the XP is stored on the chest
+# Values higher than 100 are allowed but not recommended as they would duplicate XP
+StoreXPPercentage: 100
+
 # Should we drop DeadChest contents when the timer expires?
 #   > false - DeadChest contents are removed when the timer expires.
 #   > true  - DeadChest contents are dropped when the timer expires.
