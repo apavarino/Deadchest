@@ -1,11 +1,11 @@
-package me.crylonz.commands;
+package me.crylonz.deadchest.commands;
 
-import me.crylonz.DeadChest;
+import me.crylonz.deadchest.DeadChest;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.DeadChest.local;
+import static me.crylonz.deadchest.DeadChest.local;
 
 abstract class DCCommandRegistration {
     protected final DeadChest plugin;

@@ -1,12 +1,12 @@
-package me.crylonz.commands;
+package me.crylonz.deadchest.commands;
 
-import me.crylonz.DeadChest;
+import me.crylonz.deadchest.DeadChest;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import static me.crylonz.DeadChest.local;
+import static me.crylonz.deadchest.DeadChest.local;
 
 public class DCCommandExecutor implements CommandExecutor {
 

@@ -1,9 +1,9 @@
-package me.crylonz.commands;
+package me.crylonz.deadchest.commands;
 
-import me.crylonz.ChestData;
-import me.crylonz.DeadChest;
-import me.crylonz.Permission;
-import me.crylonz.utils.ConfigKey;
+import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChest;
+import me.crylonz.deadchest.Permission;
+import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,8 +16,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-import static me.crylonz.DeadChest.*;
-import static me.crylonz.DeadChestManager.cleanAllDeadChests;
+import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
 

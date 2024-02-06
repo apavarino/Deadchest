@@ -1,4 +1,4 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -10,11 +10,11 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import me.crylonz.utils.ConfigKey;
+import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.DeadChest.config;
-import static me.crylonz.Utils.*;
+import static me.crylonz.deadchest.DeadChest.config;
+import static me.crylonz.deadchest.Utils.*;
 
 public class WorldGuardSoftDependenciesChecker {
 

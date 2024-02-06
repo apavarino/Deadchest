@@ -1,4 +1,4 @@
-package me.crylonz.utils;
+package me.crylonz.deadchest.utils;
 
 public enum ConfigKey {
     AUTO_UPDATE("auto-update"),

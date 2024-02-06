@@ -1,4 +1,4 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.crylonz.DeadChest.chestData;
+import static me.crylonz.deadchest.DeadChest.chestData;
 
 public class DeadChestAPI {
 

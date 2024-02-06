@@ -1,11 +1,11 @@
-package me.crylonz.utils;
+package me.crylonz.deadchest.utils;
 
 
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
 
-import static me.crylonz.DeadChest.config;
+import static me.crylonz.deadchest.DeadChest.config;
 
 public final class ExpUtils {
 

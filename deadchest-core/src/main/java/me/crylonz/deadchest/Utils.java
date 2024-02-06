@@ -1,8 +1,8 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
-import me.crylonz.utils.ConfigKey;
+import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static me.crylonz.DeadChest.*;
+import static me.crylonz.deadchest.DeadChest.*;
 
 public class Utils {
 

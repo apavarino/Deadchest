@@ -1,10 +1,10 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
-import me.crylonz.commands.DCCommandExecutor;
-import me.crylonz.commands.DCTabCompletion;
-import me.crylonz.utils.ConfigKey;
-import me.crylonz.utils.DeadChestConfig;
-import me.crylonz.utils.DeadChestUpdater;
+import me.crylonz.deadchest.commands.DCCommandExecutor;
+import me.crylonz.deadchest.commands.DCTabCompletion;
+import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.utils.DeadChestConfig;
+import me.crylonz.deadchest.utils.DeadChestUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,8 +19,8 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static me.crylonz.DeadChestManager.*;
-import static me.crylonz.Utils.generateLog;
+import static me.crylonz.deadchest.DeadChestManager.*;
+import static me.crylonz.deadchest.Utils.generateLog;
 
 public class DeadChest extends JavaPlugin {
 

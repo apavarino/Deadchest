@@ -1,4 +1,4 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 public enum Permission {
     CHESTPASS("deadchest.chestPass"),

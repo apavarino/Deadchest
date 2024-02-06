@@ -40,9 +40,9 @@ val spacePassword: String by project
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "me.crylonz"
+            groupId = "me.crylonz.deadchest"
             artifactId = "dead-chest"
-            version = "4.18.0-SNAPSHOT"
+            version = "4.19.0-SNAPSHOT"
             from(components["java"])
         }
     }

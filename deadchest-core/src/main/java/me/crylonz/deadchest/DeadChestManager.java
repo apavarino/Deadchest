@@ -1,6 +1,6 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
-import me.crylonz.utils.ConfigKey;
+import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +18,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import static me.crylonz.DeadChest.*;
-import static me.crylonz.Utils.computeChestType;
-import static me.crylonz.Utils.isGraveBlock;
+import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.Utils.computeChestType;
+import static me.crylonz.deadchest.Utils.isGraveBlock;
 
 public class DeadChestManager {
 

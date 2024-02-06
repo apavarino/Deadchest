@@ -1,4 +1,4 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 import org.bukkit.entity.Player;
 

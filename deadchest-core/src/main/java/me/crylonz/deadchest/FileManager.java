@@ -1,4 +1,4 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 
-import static me.crylonz.DeadChest.chestData;
+import static me.crylonz.deadchest.DeadChest.chestData;
 
 public class FileManager {
 

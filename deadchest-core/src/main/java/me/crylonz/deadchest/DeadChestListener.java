@@ -1,7 +1,7 @@
-package me.crylonz;
+package me.crylonz.deadchest;
 
-import me.crylonz.utils.ConfigKey;
-import me.crylonz.utils.DeadChestConfig;
+import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -28,11 +28,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static me.crylonz.DeadChest.*;
-import static me.crylonz.DeadChestManager.generateHologram;
-import static me.crylonz.DeadChestManager.playerDeadChestAmount;
-import static me.crylonz.Utils.*;
-import static me.crylonz.utils.ExpUtils.getTotalExperienceToStore;
+import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestManager.generateHologram;
+import static me.crylonz.deadchest.DeadChestManager.playerDeadChestAmount;
+import static me.crylonz.deadchest.Utils.*;
+import static me.crylonz.deadchest.utils.ExpUtils.getTotalExperienceToStore;
 
 public class DeadChestListener implements Listener {
 

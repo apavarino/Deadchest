@@ -1,4 +1,4 @@
-package me.crylonz.utils;
+package me.crylonz.deadchest.utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
