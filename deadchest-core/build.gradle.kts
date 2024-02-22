@@ -13,6 +13,17 @@ java {
 }
 
 
+val pluginDir: String by lazy {
+    project.findProperty("pluginDir") as? String ?: "Missing plugins folder path"
+}
+
+val targetDir: String by project.extra
+tasks.register("copyJar", Copy::class) {
+    dependsOn("shadowJar")
+    from(tasks.shadowJar)
+    into(pluginDir)
+}
+
 repositories {
     mavenCentral()
     gradlePluginPortal()
