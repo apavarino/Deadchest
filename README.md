@@ -13,20 +13,63 @@
 
 Java Edition required. Deadchest is mainly compatible with Bukkit, Spigot and Paper.
 
-## Download & Info
+## Download
 
-* Curseforge: https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest
-* Bukkit : https://dev.bukkit.org/projects/dead-chest
+* [Curseforge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
+* [Bukkit](https://dev.bukkit.org/projects/dead-chest)
 
 ## Documentation
 
 Official Deadchest Documentation is available [here](https://apavarino.github.io/Deadchest/)
 
-## Changelog
-
-You can see changelog [here](changelog.md)
-
 ## Statistics
+
 <img align="center" src="https://bstats.org/signatures/bukkit/Deadchest.svg" alt="stats"/> 
 
 More stats [here](https://bstats.org/plugin/bukkit/DeadChest/11385)
+
+## Contribution
+
+Feel free to contribute to the project if you want it. here is some information to help you
+
+The project is built with Gradle. Use the included gradle wrapper to build the project.
+
+### Build
+
+To build the project on linux/macOS, from the root folder of the project type
+
+```
+./gradlew build
+```
+
+On Windows
+
+```
+gradlew.bat build
+```
+
+### Generate jar
+
+To generate the .jar file use
+
+```
+./gradlew shadowJar
+```
+
+The jar file will be generated on `/build/libs`
+
+### Testing
+
+To simplify testing of the plugin you can configure on your `gradle.properties` the following configuration
+
+```
+pluginDir=<path_to_your_plugin_folder_of_your_server>
+```
+
+After that, you can use
+
+```
+./gradlew copyJar --continuous
+```
+
+That will automatically rebuild the jar on each modification and copy it directly to the plugin folder of your server.
