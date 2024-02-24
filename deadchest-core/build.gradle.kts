@@ -12,6 +12,13 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks {
+    compileTestJava {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
+}
+
 
 val pluginDir: String by lazy {
     project.findProperty("pluginDir") as? String ?: "Missing plugins folder path"
@@ -29,6 +36,7 @@ repositories {
     gradlePluginPortal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.papermc.io/repository/maven-public/") // MockBukkit
 }
 
 dependencies {
@@ -37,7 +45,19 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:2.2.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.70.0")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
+    }
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
 tasks.withType<ShadowJar> {
