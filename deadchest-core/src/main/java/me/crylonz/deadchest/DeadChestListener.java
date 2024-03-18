@@ -284,7 +284,7 @@ public class DeadChestListener implements Listener {
     public void onClick(PlayerInteractEvent e) {
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             for (ChestData cd : chestData) {
-                if (cd.getChestLocation().getWorld() == e.getPlayer().getWorld() &&
+                if (cd.getChestLocation().getWorld() == e.getPlayer().getWorld() && e.getPlayer().getWorld() == e.getClickedBlock().getWorld() &&
                         cd.getChestLocation().distance(e.getClickedBlock().getLocation()) <= 1) {
                     e.setCancelled(true);
                     break;
