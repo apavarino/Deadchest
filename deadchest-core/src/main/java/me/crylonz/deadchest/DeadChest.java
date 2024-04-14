@@ -139,6 +139,7 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);
         config.register(ConfigKey.GENERATE_ON_RAILS.toString(), true);
         config.register(ConfigKey.GENERATE_IN_MINECART.toString(), true);
+        config.register(ConfigKey.GENERATE_IN_THE_END.toString(), true);
         config.register(ConfigKey.EXCLUDED_WORLDS.toString(), Collections.emptyList());
         config.register(ConfigKey.EXCLUDED_ITEMS.toString(), Collections.emptyList());
         config.register(ConfigKey.STORE_XP.toString(), false);

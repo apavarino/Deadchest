@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -147,6 +148,11 @@ public class Utils {
         } else {
             return -64;
         }
+    }
+
+    public static boolean checkTheEndGeneration(Entity player, DeadChest deadChest) {
+        return player.getWorld().getEnvironment().equals(World.Environment.THE_END) &&
+                !deadChest.getConfig().getBoolean(ConfigKey.GENERATE_IN_THE_END.toString());
     }
 
     public static void computeChestType(Block b, Player p) {

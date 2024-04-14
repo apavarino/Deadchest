@@ -32,6 +32,8 @@ import static me.crylonz.deadchest.DeadChest.*;
 import static me.crylonz.deadchest.DeadChestManager.generateHologram;
 import static me.crylonz.deadchest.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.deadchest.Utils.*;
+import static me.crylonz.deadchest.utils.ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE;
+import static me.crylonz.deadchest.utils.ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH;
 import static me.crylonz.deadchest.utils.ExpUtils.getTotalExperienceToStore;
 
 public class DeadChestListener implements Listener {
@@ -50,6 +52,12 @@ public class DeadChestListener implements Listener {
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
         if (e.getKeepInventory()) {
+            generateLog("Keep Inventory is set to ON. No Deadchest generated");
+            return;
+        }
+
+        if (checkTheEndGeneration(e.getEntity(), plugin)) {
+            generateLog("Player dies in the end and " + ConfigKey.GENERATE_IN_THE_END + " is set to false. No Deadchest generated");
             return;
         }
 
@@ -57,14 +65,16 @@ public class DeadChestListener implements Listener {
 
         if (p == null
                 || config.getArray(ConfigKey.EXCLUDED_WORLDS).contains(p.getWorld().getName())
-                || (!getConfig().getBoolean(ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
+                || (!getConfig().getBoolean(GENERATE_DEADCHEST_IN_CREATIVE)) && p.getGameMode().equals(GameMode.CREATIVE)) {
+            generateLog("Player dies in an excluded world or dies in creative with " + GENERATE_DEADCHEST_IN_CREATIVE + " set to false. No Deadchest generated");
             return;
         }
 
-        if (config.getBoolean(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH)) {
+        if (config.getBoolean(KEEP_INVENTORY_ON_PVP_DEATH)) {
             if (p.getKiller() != null) {
                 e.setKeepInventory(true);
                 e.getDrops().clear();
+                generateLog("Player dies in PVP and " + KEEP_INVENTORY_ON_PVP_DEATH + " set to true. No Deadchest generated");
                 return;
             }
         }

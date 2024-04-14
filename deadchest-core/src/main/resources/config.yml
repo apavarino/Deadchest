@@ -92,6 +92,9 @@ GenerateOnRails: true
 # Should generate a DeadChest in minecarts?
 GenerateInMinecart: true
 
+# Should generate in the end worlds ? if set to false no stuff will be kept
+GenerateInTheEnd: true
+
 # Should players keep their inventory when they die to a player?
 #   > false - Deaths by players will not be treated specially.
 #   > true  - Deaths by players will always keep the players inventory.

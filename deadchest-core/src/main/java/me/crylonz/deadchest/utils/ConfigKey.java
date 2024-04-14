@@ -21,6 +21,7 @@ public enum ConfigKey {
     GENERATE_ON_WATER("GenerateOnWater"),
     GENERATE_ON_RAILS("GenerateOnRails"),
     GENERATE_IN_MINECART("GenerateInMinecart"),
+    GENERATE_IN_THE_END("GenerateInTheEnd"),
     EXCLUDED_WORLDS("ExcludedWorld"),
     EXCLUDED_ITEMS("ExcludedItems"),
     STORE_XP("StoreXP"),
