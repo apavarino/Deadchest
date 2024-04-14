@@ -19,7 +19,6 @@ tasks {
     }
 }
 
-
 val pluginDir: String by lazy {
     project.findProperty("pluginDir") as? String ?: "Missing plugins folder path"
 }
@@ -73,7 +72,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "me.crylonz.deadchest"
             artifactId = "dead-chest"
-            version = "4.19.0-SNAPSHOT"
+            version = "4.19.1-SNAPSHOT"
             from(components["java"])
         }
     }
