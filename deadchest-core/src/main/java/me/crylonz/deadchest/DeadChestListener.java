@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static me.crylonz.deadchest.DeadChest.*;
 import static me.crylonz.deadchest.DeadChestManager.generateHologram;
@@ -252,6 +253,15 @@ public class DeadChestListener implements Listener {
                         e.setDroppedExp(0);
                     }
 
+                    ItemStack[] playerInv = p.getInventory().getContents();
+                    ItemStack[] itemsToStore = Arrays.stream(p.getInventory().getContents())
+                            .filter(Objects::nonNull)
+                            .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
+                            .toArray(ItemStack[]::new);
+
+                    // Update player inv just to update chest data after that we reset it back
+                    // There is no way to instance Inventory
+                    p.getInventory().setContents(itemsToStore);
 
                     chestData.add(
                             new ChestData(
@@ -264,10 +274,20 @@ public class DeadChestListener implements Listener {
                                     getTotalExperienceToStore(p)
                             )
                     );
+                    p.getInventory().setContents(playerInv);
 
-                    ItemStack[] backupInv = p.getInventory().getContents();
-                    e.getDrops().clear();
-                    p.getInventory().clear();
+                    List<ItemStack> dropDestroy = e.getDrops().stream()
+                            .filter(Objects::nonNull)
+                            .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
+                            .collect(Collectors.toList());
+
+                    e.getDrops().removeIf(dropDestroy::contains);
+
+                    for (ItemStack item : p.getInventory().getContents()) {
+                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())) {
+                            p.getInventory().removeItem(item);
+                        }
+                    }
 
                     if (getConfig().getBoolean(ConfigKey.DISPLAY_POSITION_ON_DEATH)) {
                         p.sendMessage(local.get("loc_prefix") + local.get("loc_chestPos") + " X: " +
@@ -279,7 +299,7 @@ public class DeadChestListener implements Listener {
                     fileManager.saveModification();
 
                     generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
-                    generateLog("Chest content : " + Arrays.asList(backupInv));
+                    generateLog("Chest content : " + Arrays.asList(itemsToStore));
 
                     if (getConfig().getBoolean(ConfigKey.LOG_DEADCHEST_ON_CONSOLE))
                         log.info("New deadchest for [" + p.getName() + "] at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());

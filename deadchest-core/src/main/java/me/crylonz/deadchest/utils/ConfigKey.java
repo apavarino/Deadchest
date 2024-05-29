@@ -24,6 +24,7 @@ public enum ConfigKey {
     GENERATE_IN_THE_END("GenerateInTheEnd"),
     EXCLUDED_WORLDS("ExcludedWorld"),
     EXCLUDED_ITEMS("ExcludedItems"),
+    IGNORED_ITEMS("IgnoredItems"),
     STORE_XP("StoreXP"),
     STORE_XP_PERCENTAGE("StoreXPPercentage"),
     KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),

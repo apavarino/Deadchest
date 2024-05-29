@@ -114,6 +114,14 @@ ExcludedWorld:
   - 'another_excluded_world_example'
 
 # A list of items that will be excluded from DeadChests...
+# Items on this list will not be kept on die
 ExcludedItems:
   - 'EXCLUDED_ITEM_EXAMPLE'
   - 'HEROBRINE'
+
+# A list of items that will be ignored from DeadChests...
+# Items on this list will not be processed by Deadchest (not stored, not clear from the inventory)
+# Could be useful to provide support for customs items managed by other plugins
+IgnoredItems:
+  - 'IGNORED_ITEM_EXAMPLE'
+
