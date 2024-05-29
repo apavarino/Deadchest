@@ -31,7 +31,8 @@ Option | Value | Default | Description
 `EnableWorldGuardDetection` | boolean  | false | Enable Worldguard integration. More info [here](https://apavarino.github.io/Deadchest/worldguard)
 `item-durability-loss-on-death` | number  | 100 | Percentage of stuff durability loss on death
 `ExcludedWorld`  | list of string  |  | List of worlds that DeadChests will NOT be generated in
-`ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests
+`ExcludedItems`  | list of string  |  | List of items that will be excluded from DeadChests. Items on this list will not be kept on die
+`IgnoredItems`  | list of string  |  | List of items that will be ignored from DeadChests. Items on this list will not be processed by Deadchest (not stored, not clear from the inventory). Could be useful to provide support for customs items managed by other plugins
 
 ### Next step
 See [commands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go to [home page](https://apavarino.github.io/Deadchest)
