@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
     compileOnly("com.googlecode.json-simple:json-simple:1.1.1")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:2.2.1")
@@ -72,7 +72,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "me.crylonz.deadchest"
             artifactId = "dead-chest"
-            version = "4.20.0-SNAPSHOT"
+            version = "4.21.1-SNAPSHOT"
             from(components["java"])
         }
     }
