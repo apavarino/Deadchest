@@ -98,10 +98,14 @@ public class DeadChestListener implements Listener {
                 }
 
                 if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS) &&
-                        loc.getBlock().getType().equals(Material.RAIL) ||
-                        loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
-                        loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
-                        loc.getBlock().getType().equals(Material.POWERED_RAIL)) {
+                        (loc.getBlock().getType().equals(Material.RAIL) ||
+                                loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
+                                loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
+                                loc.getBlock().getType().equals(Material.POWERED_RAIL))
+                ) {
+                    log.warning(loc.getBlock().getType().toString());
+                    log.warning(getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS).toString());
+
                     generateLog("Player dies on rails : No deadchest generated");
                     return;
                 }
