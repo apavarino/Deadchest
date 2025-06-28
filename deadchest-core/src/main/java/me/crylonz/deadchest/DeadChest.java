@@ -165,6 +165,7 @@ public class DeadChest extends JavaPlugin {
             ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
 
             if (tmp != null) {
+                checkChestDataIsSet(tmp);
                 chestData = tmp;
             }
         }
@@ -225,6 +226,10 @@ public class DeadChest extends JavaPlugin {
         fileManager.saveLocalizationConfig();
     }
 
+    private static void checkChestDataIsSet(ArrayList<ChestData> tmp) {
+        tmp.removeIf(Objects::isNull);
+    }
+
     public static void handleEvent() {
         if (chestData != null && !chestData.isEmpty()) {
 
@@ -233,6 +238,11 @@ public class DeadChest extends JavaPlugin {
 
             while (chestDataIt.hasNext()) {
                 ChestData chestData = chestDataIt.next();
+                if(chestData == null) {
+                    generateLog("Deadchest of [null] has no invalid data set. Get removed.");
+                    chestDataIt.remove();
+                    continue;
+                }
                 World world = chestData.getChestLocation().getWorld();
 
                 if (world != null) {

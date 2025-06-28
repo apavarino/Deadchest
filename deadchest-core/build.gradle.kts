@@ -51,7 +51,7 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
+        force("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     }
 }
 
