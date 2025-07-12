@@ -30,6 +30,8 @@ More stats [here](https://bstats.org/plugin/bukkit/DeadChest/11385)
 
 ## Contribution
 
+Modified by @kittycraft0 on 7/12/2025 to add inventory return upon chest timer expiration
+
 Feel free to contribute to the project if you want it. here is some information to help you
 
 The project is built with Gradle. Use the included gradle wrapper to build the project.

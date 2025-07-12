@@ -146,6 +146,8 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.STORE_XP.toString(), false);
         config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 100);
         config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
+        config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
+        config.register(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE);
     }
 
     private void initializeConfig() {
