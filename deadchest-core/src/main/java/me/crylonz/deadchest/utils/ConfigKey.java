@@ -28,7 +28,9 @@ public enum ConfigKey {
     STORE_XP("StoreXP"),
     STORE_XP_PERCENTAGE("StoreXPPercentage"),
     KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),
-    ITEM_DURABILITY_LOSS_ON_DEATH("item-durability-loss-on-death");
+    ITEM_DURABILITY_LOSS_ON_DEATH("item-durability-loss-on-death"),
+    SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE("SuspendCountdownsWhenPlayerIsOffline"),
+    EXPIRE_ACTION("ExpireAction");
     private final String text;
 
     ConfigKey(final String text) {

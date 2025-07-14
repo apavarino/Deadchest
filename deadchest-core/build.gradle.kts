@@ -8,14 +8,14 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks {
     compileTestJava {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
+        sourceCompatibility = JavaVersion.VERSION_21.toString()
+        targetCompatibility = JavaVersion.VERSION_21.toString()
     }
 }
 
@@ -36,6 +36,14 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.papermc.io/repository/maven-public/") // MockBukkit
+    // Modify the JitPack entry
+    maven {
+        url = uri("https://jitpack.io")
+        credentials {
+            username = "x-access-token"
+            password = findProperty("github.token") as? String ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -46,14 +54,15 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.70.0")
+    // In your dependencies block
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.21:3.133.2")
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
-    }
-}
+//configurations.all {
+//    resolutionStrategy {
+//        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
+//    }
+//}
 
 tasks.named<Test>("test") {
     useJUnitPlatform()

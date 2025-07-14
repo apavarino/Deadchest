@@ -219,6 +219,14 @@ public class DeadChestUpdater {
      * @param announce True if the program should announce the progress of new updates in console.
      */
     public DeadChestUpdater(Plugin plugin, int id, File file, UpdateType type, UpdateCallback callback, boolean announce) {
+        /*int one=1;
+        for(int i=0;i<4;i++){
+            one+=1;
+            one-=1; //stuff to make the software not yell at me
+        }
+        if(one==1) {
+            return; //disable updater, don't want my changes overwritten
+        }*/
         this.plugin = plugin;
         this.type = type;
         this.announce = announce;

@@ -5,11 +5,13 @@
 #   > https://dev.bukkit.org/projects/dead-chest                                                                               #
 # If you need any support, feel free to ask for it on our Discord server:                                                      #
 #   > https://discordapp.com/invite/jCsvJxS                                                                                    #
+# Alternatively, if you want to ask the individual who forked this plugin questions, here is their discord:                    #
+#   > iwbmo                                                                                                                    #
 #                                                                                                                              #
 # If you make any changes in this file, please run the command '/dc reload' to apply the changes!                              #
 ################################################################################################################################
 
-auto-update: true
+auto-update: false
 
 # Should DeadChests be openable by other players or just the owner?
 #   > false - DeadChests can be opened by anyone.
@@ -18,7 +20,22 @@ OnlyOwnerCanOpenDeadChest: true
 
 # The amount of time a DeadChest will be active for (in seconds)...
 #   You can disable this limit by setting the value to 0.
-DeadChestDuration: 300
+DeadChestDuration: 1800
+
+# Suspends DeadChest countdown when the owner is offline
+# Disincentivizes death as a reason to go and take a break
+# Also makes the plugin work; the player should be online when their items are returned
+#   > false - DeadChest timers will continue to tick down when the player is offline.
+#   > true - DeadChest timers will NOT tick down when the player is offline.
+SuspendCountdownsWhenPlayerIsOffline: true
+
+# What should the DeadChest
+# How should we handle DeadChest items upon timer expiration?
+#   > 0 - Items are deleted.
+#   > 2 - All items are dropped on the ground at the DeadChest's location.
+#   > 1 - Items are added directly to the players inventory until it's full, excess gets dropped by player.
+#   > 2 - All items are dropped on the ground at the player's location.
+ExpireAction: 3
 
 # Should DeadChests be protected from explosions and other players?
 #   > false - DeadChests will not be protected and can be broken.
@@ -27,7 +44,8 @@ IndestructibleChest: true
 
 # The maximum number of DeadChests a player can have active at a time...
 #   You can disable this limit by setting the value to 0.
-maxDeadChestPerPlayer: 15
+#   Might bug out if not 0
+maxDeadChestPerPlayer: 0
 
 # Should we notify the console when and where a DeadChest is created?
 logDeadChestOnConsole: false
@@ -67,16 +85,19 @@ DropMode: 1
 #   > 3 - BARREL
 #   > 4 - SHULKER BOX
 #   > 5 - ENDER CHEST
-DropBlock: 1
+DropBlock: 2
 
-# Store Player XP on Deadchest
-StoreXP: false
+# DeadChest Player XP storage mode
+#   > 0 - Do not store XP
+#   > 1 - Store fixed percentage of XP as defined below
+#   > 2 - Store amount of XP as defined from Vanilla
+StoreXP: 2
 
-# % of XP stored on the deadchest. Only works if StoreXP is true
+# % of XP stored on the deadchest. Only works if StoreXP is 1
 # If 0 is used the all the XP from the player vanishes, no XP orb gets dropped on death and no XP gets stored
 # If a value of 100 is used then all the XP is stored on the chest
 # Values higher than 100 are allowed but not recommended as they would duplicate XP
-StoreXPPercentage: 100
+StoreXPPercentage: 10
 
 # Should we drop DeadChest contents when the timer expires?
 #   > false - DeadChest contents are removed when the timer expires.

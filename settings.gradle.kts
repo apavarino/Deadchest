@@ -1,3 +1,3 @@
-rootProject.name = "DeadChest"
+rootProject.name = " DeadChest-OnlineReturn"
 
 include("deadchest-core")

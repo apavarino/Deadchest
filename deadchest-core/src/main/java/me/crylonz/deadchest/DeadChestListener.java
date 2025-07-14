@@ -80,6 +80,16 @@ public class DeadChestListener implements Listener {
             }
         }
 
+        int experienceToStore = 0;
+        // Check the config to see if we should be storing XP at all.
+        if (config.getInt(ConfigKey.STORE_XP) > 0) {
+            // This is the key: get the amount of XP the game was about to drop.
+            experienceToStore = e.getDroppedExp();
+
+            // Now, prevent the original orbs from dropping.
+            e.setDroppedExp(0);
+        }
+
         if (worldGuardCheck(p) && (p.hasPermission(Permission.GENERATE.label) || !getConfig().getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))) {
             if ((playerDeadChestAmount(p) < getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) ||
                     getConfig().getInt(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER) == 0) && p.getMetadata("NPC").isEmpty()) {
@@ -226,9 +236,11 @@ public class DeadChestListener implements Listener {
                         p.getInventory().setItemInOffHand(null);
                     }
 
+                    // In DeadChestListener.java, inside onPlayerDeathEvent
                     for (String item : config.getArray(ConfigKey.EXCLUDED_ITEMS)) {
-                        if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
-                            p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
+                        Material material = Material.getMaterial(item.toUpperCase()); // Get the material first
+                        if (item != null && material != null) { // Then check if it's valid
+                            p.getInventory().remove(material);
                         }
                     }
 
@@ -253,10 +265,6 @@ public class DeadChestListener implements Listener {
                                 });
                     }
 
-                    if (config.getBoolean(ConfigKey.STORE_XP)) {
-                        e.setDroppedExp(0);
-                    }
-
                     ItemStack[] playerInv = p.getInventory().getContents();
                     ItemStack[] itemsToStore = Arrays.stream(p.getInventory().getContents())
                             .filter(Objects::nonNull)
@@ -275,7 +283,7 @@ public class DeadChestListener implements Listener {
                                     p.hasPermission(Permission.INFINITY_CHEST.label),
                                     holoTime,
                                     holoName,
-                                    getTotalExperienceToStore(p)
+                                    experienceToStore
                             )
                     );
                     p.getInventory().setContents(playerInv);

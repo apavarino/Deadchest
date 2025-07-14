@@ -13,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import org.bukkit.Sound;
+import java.util.UUID;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -136,31 +139,61 @@ public class DeadChestManager {
         return false;
     }
 
+    // Inside DeadChestManager.java
     public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
+        // This part of the method stays the same
         if (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
                 && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
 
             Location loc = chestData.getChestLocation();
+            World world = loc.getWorld();
 
-            if (loc.getWorld() != null) {
-                if (!chestData.isRemovedBlock()) {
-                    chestData.setRemovedBlock(true);
-                    loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-                }
-                if (config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
-                    for (ItemStack itemStack : chestData.getInventory()) {
-                        if (itemStack != null) {
-                            loc.getWorld().dropItemNaturally(loc, itemStack);
+            if (world != null) {
+
+                // --- NEW LOGIC START ---
+                int expireAction = config.getInt(ConfigKey.EXPIRE_ACTION);
+                Player player = Bukkit.getPlayer(UUID.fromString(chestData.getPlayerUUID()));
+
+                // Only try to return items if the player is online
+                if (player != null && player.isOnline()) {
+                    world.getBlockAt(loc).setType(Material.AIR); // Remove the grave block
+
+                    if (expireAction == 1 || expireAction == 3) { // Actions for returning items to inventory
+                        player.giveExp(chestData.getXpStored());
+                        for (ItemStack item : chestData.getInventory()) {
+                            if (item != null) {
+                                // This checks for empty slots and adds the item. If the inventory is full, it drops the item at the player's feet.
+                                if (player.getInventory().firstEmpty() == -1) {
+                                    player.getWorld().dropItemNaturally(player.getLocation(), item);
+                                } else {
+                                    player.getInventory().addItem(item);
+                                }
+                            }
+                        }
+                        player.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+
+                    } else if (expireAction == 2) { // Action for dropping items on the ground at the chest
+                        for (ItemStack itemStack : chestData.getInventory()) {
+                            if (itemStack != null) {
+                                world.dropItemNaturally(loc, itemStack);
+                            }
                         }
                     }
-                    chestData.cleanInventory();
-                }
-            }
-            if (chestData.removeArmorStand()) {
-                chestDataIt.remove();
-            }
+                    // If expireAction is 0, we do nothing, and the items are deleted below.
 
-            return true;
+                    chestData.removeArmorStand();
+                    chestDataIt.remove(); // Remove the chest from the list
+                    return true; // The chest has been handled
+
+                } else {
+                    // If the player is offline, we do NOT expire the chest. The timer will just continue the next time they log in.
+                    // This is the intended behavior with SuspendCountdownsWhenPlayerIsOffline = true
+                    return false;
+
+                }
+                // --- NEW LOGIC END ---
+            }
         }
         return false;
     }

@@ -1,4 +1,4 @@
-name: DeadChest
+name: DeadChest-OnlineReturn
 main: me.crylonz.deadchest.DeadChest
 softdepend: [Multiverse-Core, WorldGuard]
 author: Crylonz
@@ -38,5 +38,5 @@ permissions:
     default: op
 commands:
   dc:
-    usage: /dc reload | repair | remove [PlayerName] | removeinfinite | removeall | list [PlayerName] | list all
-    description: List of commands
+    usage: /dc reload | ... | list [PlayerName]
+    description: List of commands. Use '/dc list' to see your chest locations and expiration times.

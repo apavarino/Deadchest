@@ -42,6 +42,9 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicOwnerId = chest.getHolographicOwnerId();
         this.worldName = chest.getWorldName();
         this.xpStored = chest.getXpStored();
+        // ADD THESE TWO LINES
+        this.hasPlayed30sWarning = chest.hasPlayed30sWarning();
+        this.hasPlayed5sWarning = chest.hasPlayed5sWarning();
     }
 
     ChestData(final Inventory inv,
@@ -109,7 +112,7 @@ public final class ChestData implements ConfigurationSerializable {
                 Double.parseDouble(locHolo[Indexes.LOC_X.ordinal()]), Double.parseDouble(locHolo[Indexes.LOC_Y.ordinal()]),
                 Double.parseDouble(locHolo[Indexes.LOC_Z.ordinal()]));
 
-        return new ChestData(
+        ChestData newChestData = new ChestData( // Create the object first
                 (List<ItemStack>) map.get("inventory"),
                 myloc,
                 (String) map.get("playerName"),
@@ -123,6 +126,11 @@ public final class ChestData implements ConfigurationSerializable {
                 (String) map.get("worldName"),
                 (int) (map.get("xpStored") != null ? map.get("xpStored") : 0)  // compatiblity under 4.15
         );
+        // Load the warning flags, defaulting to false if they don't exist (for old chests)
+        newChestData.setPlayed30sWarning(map.get("hasPlayed30sWarning") != null && (boolean) map.get("hasPlayed30sWarning"));
+        newChestData.setPlayed5sWarning(map.get("hasPlayed5sWarning") != null && (boolean) map.get("hasPlayed5sWarning"));
+
+        return newChestData;
     }
 
     public UUID getHolographicTimerId() {
@@ -251,6 +259,8 @@ public final class ChestData implements ConfigurationSerializable {
         map.put("as_timer_id", holographicTimerId.toString());
         map.put("as_owner_id", holographicOwnerId.toString());
         map.put("xpStored", xpStored);
+        map.put("hasPlayed30sWarning", hasPlayed30sWarning);
+        map.put("hasPlayed5sWarning", hasPlayed5sWarning);
         return map;
     }
 
@@ -263,4 +273,14 @@ public final class ChestData implements ConfigurationSerializable {
     }
 
     enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
+
+    // Inside ChestData.java
+    private boolean hasPlayed30sWarning = false;
+    private boolean hasPlayed5sWarning = false;
+
+    public boolean hasPlayed30sWarning() { return hasPlayed30sWarning; }
+    public void setPlayed30sWarning(boolean hasPlayed30sWarning) { this.hasPlayed30sWarning = hasPlayed30sWarning; }
+
+    public boolean hasPlayed5sWarning() { return hasPlayed5sWarning; }
+    public void setPlayed5sWarning(boolean hasPlayed5sWarning) { this.hasPlayed5sWarning = hasPlayed5sWarning; }
 }
