@@ -97,3 +97,19 @@ publishing {
         }
     }
 }
+
+/*tasks.build {
+    dependsOn("shadowJar") // Refer to the task by its name as a string
+}
+
+tasks.jar {
+    enabled = false
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.ow2.asm") {
+            useVersion("9.6")
+        }
+    }
+}*/
