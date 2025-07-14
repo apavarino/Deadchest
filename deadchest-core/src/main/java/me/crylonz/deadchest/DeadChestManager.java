@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.inventory.PlayerInventory;
 import java.util.UUID;
 
 import java.util.ArrayList;
@@ -139,63 +141,92 @@ public class DeadChestManager {
         return false;
     }
 
-    // Inside DeadChestManager.java
-    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
-        // This part of the method stays the same
-        if (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
-                && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
-
-            Location loc = chestData.getChestLocation();
-            World world = loc.getWorld();
-
-            if (world != null) {
-
-                // --- NEW LOGIC START ---
-                int expireAction = config.getInt(ConfigKey.EXPIRE_ACTION);
-                Player player = Bukkit.getPlayer(UUID.fromString(chestData.getPlayerUUID()));
-
-                // Only try to return items if the player is online
-                if (player != null && player.isOnline()) {
-                    world.getBlockAt(loc).setType(Material.AIR); // Remove the grave block
-
-                    if (expireAction == 1 || expireAction == 3) { // Actions for returning items to inventory
-                        player.giveExp(chestData.getXpStored());
-                        for (ItemStack item : chestData.getInventory()) {
-                            if (item != null) {
-                                // This checks for empty slots and adds the item. If the inventory is full, it drops the item at the player's feet.
-                                if (player.getInventory().firstEmpty() == -1) {
-                                    player.getWorld().dropItemNaturally(player.getLocation(), item);
-                                } else {
-                                    player.getInventory().addItem(item);
-                                }
-                            }
-                        }
-                        player.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
-                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-
-                    } else if (expireAction == 2) { // Action for dropping items on the ground at the chest
-                        for (ItemStack itemStack : chestData.getInventory()) {
-                            if (itemStack != null) {
-                                world.dropItemNaturally(loc, itemStack);
-                            }
-                        }
-                    }
-                    // If expireAction is 0, we do nothing, and the items are deleted below.
-
-                    chestData.removeArmorStand();
-                    chestDataIt.remove(); // Remove the chest from the list
-                    return true; // The chest has been handled
-
-                } else {
-                    // If the player is offline, we do NOT expire the chest. The timer will just continue the next time they log in.
-                    // This is the intended behavior with SuspendCountdownsWhenPlayerIsOffline = true
-                    return false;
-
+    // In DeadChestManager.java, add this new public static method
+    public static void giveItemsToPlayer(Player player, ChestData chestData) {
+        // Check DropMode from config, default to 1 (inventory) if not present
+        if (config.getInt(ConfigKey.DROP_MODE) == 1) {
+            final PlayerInventory playerInventory = player.getInventory();
+            player.giveExp(chestData.getXpStored());
+            for (ItemStack i : chestData.getInventory()) {
+                if (i != null) {
+                    if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
+                        playerInventory.setHelmet(i);
+                    else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
+                        playerInventory.setBoots(i);
+                    else if (Utils.isChestplate(i) && playerInventory.getChestplate() == null)
+                        playerInventory.setChestplate(i);
+                    else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
+                        playerInventory.setLeggings(i);
+                    else if (playerInventory.firstEmpty() != -1)
+                        playerInventory.addItem(i);
+                    else
+                        player.getWorld().dropItemNaturally(player.getLocation(), i);
                 }
-                // --- NEW LOGIC END ---
+            }
+        } else {
+            // DropMode 2: Drop all items on the ground at the player's location
+            player.giveExp(chestData.getXpStored());
+            for (ItemStack i : chestData.getInventory()) {
+                if (i != null) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), i);
+                }
             }
         }
-        return false;
+    }
+
+    // Inside DeadChestManager.java
+    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt) {
+        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
+            return false; // Never expires
+        }
+
+        if (chestData.getTimeRemaining() <= 0) {
+            Player player = Bukkit.getPlayer(UUID.fromString(chestData.getPlayerUUID()));
+
+            // Expiration only happens if the player is online
+            if (player != null && player.isOnline()) {
+                Location loc = chestData.getChestLocation();
+                World world = loc.getWorld();
+                if (world == null) return false;
+
+                int expireAction = config.getInt(ConfigKey.EXPIRE_ACTION);
+
+                // Remove the physical grave block
+                world.getBlockAt(loc).setType(Material.AIR);
+
+                switch (expireAction) {
+                    case 1: // Drop items at the grave
+                        for (ItemStack item : chestData.getInventory()) {
+                            if (item != null) world.dropItemNaturally(loc, item);
+                        }
+                        break;
+                    case 2: // Return items to inventory (respecting DropMode)
+                    case 3: // Drop items at the player (respecting DropMode)
+                        giveItemsToPlayer(player, chestData); // Use the new helper method
+                        break;
+                    // Case 0 (delete items) is the default, do nothing.
+                }
+
+                // Play final retrieval sound/message if items weren't just deleted
+                if (expireAction > 0) {
+                    try {
+                        String soundName = plugin.getConfig().getString("warnings.retrieval.sound", "ENTITY_PLAYER_LEVELUP");
+                        player.playSound(player.getLocation(), Sound.valueOf(soundName.toUpperCase()), 1.0f, 1.0f);
+                        String message = plugin.getConfig().getString("warnings.retrieval.message");
+                        if (message != null && !message.isEmpty()) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        plugin.getLogger().warning("Invalid sound name in config.yml for retrieval.");
+                    }
+                }
+
+                chestData.removeArmorStand();
+                chestDataIt.remove(); // Remove the chest from the list
+                return true; // The chest has been handled
+            }
+        }
+        return false; // Not expired or player is offline
     }
 
     public static void updateTimer(ChestData chestData, Date date) {
@@ -210,15 +241,20 @@ public class DeadChestManager {
                         reloadMetaData();
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                        long diff = date.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
-                        long diffSeconds = Math.abs(diff / 1000 % 60);
-                        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
-                        long diffHours = Math.abs(diff / (60 * 60 * 1000));
-
-                        if (!chestData.isInfinity() && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
-                            entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
-                        } else {
+                        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                             entity.setCustomName(local.get("loc_infinityChest"));
+                        } else if (config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE) && !Bukkit.getOfflinePlayer(UUID.fromString(chestData.getPlayerUUID())).isOnline()) {
+                            entity.setCustomName("§7(Paused)");
+                        } else {
+                            long remainingSeconds = chestData.getTimeRemaining();
+                            if (remainingSeconds > 0) {
+                                long diffHours = remainingSeconds / 3600;
+                                long diffMinutes = (remainingSeconds % 3600) / 60;
+                                long diffSecs = remainingSeconds % 60;
+                                entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSecs));
+                            } else {
+                                entity.setCustomName("§cExpired");
+                            }
                         }
                     }
                 }

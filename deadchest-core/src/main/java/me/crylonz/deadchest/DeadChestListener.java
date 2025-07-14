@@ -390,7 +390,7 @@ public class DeadChestListener implements Listener {
                                     // pushed item on the ground
                                     for (ItemStack i : cd.getInventory()) {
                                         if (i != null) {
-                                            playerWorld.dropItemNaturally(block.getLocation(), i);
+                                            playerWorld.dropItemNaturally(player.getLocation(), i);
                                         }
                                         if (cd.getXpStored() != 0) {
                                             playerWorld.spawn(block.getLocation(), ExperienceOrb.class).setExperience(cd.getXpStored());

@@ -4,6 +4,7 @@ import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChest;
 import me.crylonz.deadchest.Permission;
 import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.DeadChestManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -253,32 +254,42 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
 
     public void registerGiveBack() {
         registerCommand("dc giveback {0}", Permission.GIVEBACK.label, () -> {
-            Player targetPlayer = null;
+            Player targetPlayer = Bukkit.getPlayer(args[1]);
+
+            // 1. First, check if the player is online
+            if (targetPlayer == null || !targetPlayer.isOnline()) {
+                sender.sendMessage(local.get("loc_prefix") + "§cThat player is not online.");
+                return;
+            }
+
+            // 2. Now, find the oldest chest for that player
+            ChestData chestToGive = null;
             for (ChestData data : chestData) {
-                if (data.getPlayerName().equalsIgnoreCase(args[1])) {
-
-                    targetPlayer = Bukkit.getPlayer(UUID.fromString(data.getPlayerUUID()));
-
-                    if (targetPlayer != null && player.isOnline()) {
-                        for (ItemStack itemStack : data.getInventory()) {
-                            if (itemStack != null) {
-                                targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), itemStack);
-                            }
-                        }
-
-                        // Remove chest and hologram
-                        targetPlayer.getWorld().getBlockAt(data.getChestLocation()).setType(Material.AIR);
-                        data.removeArmorStand();
-                        chestData.remove(data);
-                    }
+                if (data.getPlayerUUID().equals(targetPlayer.getUniqueId().toString())) {
+                    chestToGive = data; // Found the oldest chest, stop looking
                     break;
                 }
             }
-            if (targetPlayer != null) {
+
+            // 3. Check if a chest was actually found
+            if (chestToGive != null) {
+                // Use the new helper method to give items
+                DeadChestManager.giveItemsToPlayer(targetPlayer, chestToGive);
+
+                // Remove chest and hologram
+                targetPlayer.getWorld().getBlockAt(chestToGive.getChestLocation()).setType(Material.AIR);
+                chestToGive.removeArmorStand();
+                chestData.remove(chestToGive); // Remove it from the list
+
+                // Send success messages
                 sender.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess"));
                 targetPlayer.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
+
+                // Save the change to file to prevent duping
+                fileManager.saveModification();
             } else {
-                sender.sendMessage(local.get("loc_prefix") + local.get("loc_givebackInfo"));
+                // If we get here, the player was online but no chest was found
+                sender.sendMessage(local.get("loc_prefix") + "§cThat player has no active deadchests.");
             }
         });
     }

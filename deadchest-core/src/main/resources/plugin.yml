@@ -1,7 +1,9 @@
 name: DeadChest-OnlineReturn
 main: me.crylonz.deadchest.DeadChest
 softdepend: [Multiverse-Core, WorldGuard]
-author: Crylonz
+authors:
+  - Kittycraft0/iwbmo
+  - Crylonz
 version: 4.21.1
 description: Keep your inventory in a chest when you die
 api-version: "1.13"

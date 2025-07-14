@@ -20,6 +20,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 // You don't strictly need this one for the sounds, but it's good practice
 import org.bukkit.Location;
+import org.bukkit.ChatColor;
+import java.util.Comparator;
 
 import java.io.File;
 import java.util.*;
@@ -42,6 +44,8 @@ public class DeadChest extends JavaPlugin {
     public static boolean isChangesNeedToBeSave = false;
 
     public static DeadChestConfig config;
+
+    public List<Warning> timedWarnings;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -66,18 +70,7 @@ public class DeadChest extends JavaPlugin {
 
         registerConfig();
         initializeConfig();
-
-        // --- NEW CONFIG CHECK ---
-        if ((config.getInt(ConfigKey.EXPIRE_ACTION) == 1 || config.getInt(ConfigKey.EXPIRE_ACTION) == 3) && !config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE)) {
-            getLogger().severe("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            getLogger().severe("WARNING: 'ExpireAction' is set to return items to a player,");
-            getLogger().severe("but 'SuspendCountdownsWhenPlayerIsOffline' is 'false'.");
-            getLogger().severe("This is not a supported configuration and may cause item loss if a");
-            getLogger().severe("player's inventory is returned while they are offline.");
-            getLogger().severe("It is highly recommended to set 'SuspendCountdownsWhenPlayerIsOffline' to 'true'.");
-            getLogger().severe("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        }
-        // --- END CONFIG CHECK ---
+        loadWarnings();
 
         //if (config.getBoolean(ConfigKey.AUTO_UPDATE)) {
         //    DeadChestUpdater updater = new DeadChestUpdater(this, 322882, this.getFile(), DeadChestUpdater.UpdateType.DEFAULT, true);
@@ -103,11 +96,28 @@ public class DeadChest extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
 
-        if (bstats) {
-            Metrics metrics = new Metrics(this, 11385);
-        }
+        //if (bstats) {
+        //    Metrics metrics = new Metrics(this, 11385);
+        //}
 
         launchRepeatingTask();
+    }
+
+    private void loadWarnings() {
+        timedWarnings = new ArrayList<>();
+        List<Map<?, ?>> warningMaps = getConfig().getMapList("warnings.timed");
+        if (warningMaps == null) return;
+
+        for (Map<?, ?> map : warningMaps) {
+            if (map.containsKey("time") && map.containsKey("sound") && map.containsKey("message")) {
+                int time = (int) map.get("time");
+                String sound = (String) map.get("sound");
+                String message = (String) map.get("message");
+                timedWarnings.add(new Warning(time, sound, message));
+            }
+        }
+        // Sort warnings from highest time to lowest
+        timedWarnings.sort(Comparator.comparingInt(Warning::time).reversed());
     }
 
     @Override
@@ -163,7 +173,6 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.IGNORED_ITEMS.toString(), Collections.emptyList());
         config.register(ConfigKey.STORE_XP.toString(), 2);
         config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 10);
-        config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
         config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
         config.register(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE.toString(), true);
         config.register(ConfigKey.EXPIRE_ACTION.toString(), 3);
@@ -246,68 +255,72 @@ public class DeadChest extends JavaPlugin {
         fileManager.saveLocalizationConfig();
     }
 
-    public static void handleEvent() {
-        if (chestData != null && !chestData.isEmpty()) { //
+    public void handleEvent() {
+        if (chestData == null || chestData.isEmpty() || timedWarnings == null) {
+            return;
+        }
 
-            Date now = new Date(); //
-            Iterator<ChestData> chestDataIt = chestData.iterator(); //
+        Date now = new Date();
+        Iterator<ChestData> chestDataIt = chestData.iterator();
 
-            while (chestDataIt.hasNext()) { //
-                ChestData chestData = chestDataIt.next(); //
-                World world = chestData.getChestLocation().getWorld(); //
+        while (chestDataIt.hasNext()) {
+            ChestData chest = chestDataIt.next();
+            if (chest.getChestLocation().getWorld() == null) continue;
 
-                if (world != null) { //
-                    updateTimer(chestData, now); //
+            Player player = Bukkit.getPlayer(UUID.fromString(chest.getPlayerUUID()));
+            boolean isPlayerOnline = (player != null && player.isOnline());
+            boolean suspend = config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE);
 
-                    // --- FINALIZED WARNING LOGIC ---
-                    if (!chestData.isInfinity() && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) { //
-                        // We only check if the countdown is NOT suspended.
-                        if (config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE)) {
-                            Player player = Bukkit.getPlayer(UUID.fromString(chestData.getPlayerUUID())); //
+            // Core Timer Logic
+            if (suspend && isPlayerOnline) {
+                // Pausable Timer: Only ticks down by 1 second if player is online
+                chest.setTimeRemaining(chest.getTimeRemaining() - 1);
+            } else if (!suspend) {
+                // Real-Time Timer: Recalculate based on real-world time elapsed
+                long timeSinceCreation = (now.getTime() - chest.getChestDate().getTime()) / 1000;
+                chest.setTimeRemaining(config.getInt(ConfigKey.DEADCHEST_DURATION) - timeSinceCreation);
+            }
 
-                            // Only proceed if the player is actually online to hear the sound
-                            if (player != null && player.isOnline()) { //
-                                long timeUntilExpiration = (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L) - now.getTime(); //
-                                long secondsLeft = timeUntilExpiration / 1000; //
+            // Update the visual hologram
+            updateTimer(chest, now);
 
-                                // 30-second warning check
-                                if (secondsLeft == 30 && !chestData.hasPlayed30sWarning()) { //
-                                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.5f); //
-                                    chestData.setPlayed30sWarning(true); //
-                                    isChangesNeedToBeSave = true;
-                                }
-
-                                // 5-second warning check
-                                if (secondsLeft == 5 && !chestData.hasPlayed5sWarning()) { //
-                                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f); //
-                                    chestData.setPlayed5sWarning(true); //
-                                    isChangesNeedToBeSave = true;
-                                }
+            // Handle Warnings
+            if (isPlayerOnline) {
+                for (Warning warning : timedWarnings) {
+                    if (chest.getTimeRemaining() <= warning.time() && !chest.getTriggeredWarnings().contains(warning.time())) {
+                        try {
+                            player.playSound(player.getLocation(), Sound.valueOf(warning.sound().toUpperCase()), 1.0f, 1.0f);
+                            if (!warning.message().isEmpty()) {
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', warning.message()));
                             }
+                        } catch (IllegalArgumentException ex) {
+                            getLogger().warning("Invalid sound name in config for warning at " + warning.time() + "s: " + warning.sound());
                         }
+                        chest.getTriggeredWarnings().add(warning.time());
+                        isChangesNeedToBeSave = true;
                     }
-                    // --- END WARNING LOGIC ---
+                }
+            }
 
-                    if (handleExpirateDeadChest(chestData, chestDataIt, now)) { //
-                        isChangesNeedToBeSave = true; //
-                        generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName()); //
-                    } else {
-                        if (chestData.isChunkLoaded()) { //
-                            isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chestData); //
-                        }
-                    }
+            // Handle Expiration
+            if (handleExpirateDeadChest(chest, chestDataIt)) {
+                isChangesNeedToBeSave = true;
+                generateLog("Deadchest of [" + chest.getPlayerName() + "] has expired in " + Objects.requireNonNull(chest.getChestLocation().getWorld()).getName());
+            } else {
+                if (chest.isChunkLoaded()) {
+                    isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chest);
                 }
             }
         }
 
-        if (isChangesNeedToBeSave) { //
-            fileManager.saveModification(); //
-            isChangesNeedToBeSave = false; //
+        if (isChangesNeedToBeSave) {
+            fileManager.saveModification();
+            isChangesNeedToBeSave = false;
         }
     }
 
     private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, DeadChest::handleEvent, 20, 20);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, this::handleEvent, 20, 20);
     }
 
     public DeadChestConfig getDataConfig() {

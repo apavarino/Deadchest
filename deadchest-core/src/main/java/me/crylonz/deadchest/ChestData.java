@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+import me.crylonz.deadchest.utils.ConfigKey;
+
 @SerializableAs("ChestData")
 public final class ChestData implements ConfigurationSerializable {
 
@@ -28,6 +30,9 @@ public final class ChestData implements ConfigurationSerializable {
     private String worldName;
 
     private int xpStored;
+    // REMOVE the old hasPlayed... booleans
+    // ADD this new list:
+    private List<Integer> triggeredWarnings;
 
     public ChestData(ChestData chest) {
         this.inventory = chest.getInventory();
@@ -42,10 +47,24 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicOwnerId = chest.getHolographicOwnerId();
         this.worldName = chest.getWorldName();
         this.xpStored = chest.getXpStored();
-        // ADD THESE TWO LINES
-        this.hasPlayed30sWarning = chest.hasPlayed30sWarning();
-        this.hasPlayed5sWarning = chest.hasPlayed5sWarning();
+        this.timeRemaining = chest.getTimeRemaining();
+        this.triggeredWarnings = new ArrayList<>(chest.getTriggeredWarnings()); // Safely copy the list
     }
+
+    // Add a getter for the list
+    public List<Integer> getTriggeredWarnings() {
+        return triggeredWarnings;
+    }
+
+    // Add this new field near the top with the others
+    private long timeRemaining; // Time in seconds
+
+    // Add this getter
+    public long getTimeRemaining() { return timeRemaining; }
+
+    // Add this setter
+    public void setTimeRemaining(long timeRemaining) { this.timeRemaining = timeRemaining; }
+
 
     ChestData(final Inventory inv,
               final Location chestLocation,
@@ -67,8 +86,10 @@ public final class ChestData implements ConfigurationSerializable {
             this.holographicTimerId = asTimer.getUniqueId();
             this.holographicOwnerId = owner.getUniqueId();
             this.xpStored = xpToStore;
+            this.timeRemaining = DeadChest.config.getInt(ConfigKey.DEADCHEST_DURATION);
             if (chestLocation.getWorld() != null)
                 this.worldName = chestLocation.getWorld().getName();
+            this.triggeredWarnings = new ArrayList<>();
         }
     }
 
@@ -96,6 +117,7 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicOwnerId = asOwnerId;
         this.worldName = worldName;
         this.xpStored = xpStored;
+        this.triggeredWarnings = new ArrayList<>(); // Initialize as an empty list
     }
 
     @SuppressWarnings({"unchecked", "unused"})
@@ -127,8 +149,18 @@ public final class ChestData implements ConfigurationSerializable {
                 (int) (map.get("xpStored") != null ? map.get("xpStored") : 0)  // compatiblity under 4.15
         );
         // Load the warning flags, defaulting to false if they don't exist (for old chests)
-        newChestData.setPlayed30sWarning(map.get("hasPlayed30sWarning") != null && (boolean) map.get("hasPlayed30sWarning"));
-        newChestData.setPlayed5sWarning(map.get("hasPlayed5sWarning") != null && (boolean) map.get("hasPlayed5sWarning"));
+        if (map.containsKey("timeRemaining")) {
+            newChestData.timeRemaining = ((Number) map.get("timeRemaining")).longValue();
+        } else {
+            // For backwards compatibility with chests saved before this update
+            long timeSinceCreation = (new Date().getTime() - newChestData.getChestDate().getTime()) / 1000;
+            newChestData.timeRemaining = DeadChest.config.getInt(ConfigKey.DEADCHEST_DURATION) - timeSinceCreation;
+        }
+        if (map.containsKey("triggeredWarnings")) {
+            newChestData.triggeredWarnings = (List<Integer>) map.get("triggeredWarnings");
+        } else {
+            newChestData.triggeredWarnings = new ArrayList<>(); // For compatibility with old chests
+        }
 
         return newChestData;
     }
@@ -259,8 +291,8 @@ public final class ChestData implements ConfigurationSerializable {
         map.put("as_timer_id", holographicTimerId.toString());
         map.put("as_owner_id", holographicOwnerId.toString());
         map.put("xpStored", xpStored);
-        map.put("hasPlayed30sWarning", hasPlayed30sWarning);
-        map.put("hasPlayed5sWarning", hasPlayed5sWarning);
+        map.put("triggeredWarnings", triggeredWarnings);
+        map.put("timeRemaining", timeRemaining);
         return map;
     }
 
@@ -273,14 +305,4 @@ public final class ChestData implements ConfigurationSerializable {
     }
 
     enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
-
-    // Inside ChestData.java
-    private boolean hasPlayed30sWarning = false;
-    private boolean hasPlayed5sWarning = false;
-
-    public boolean hasPlayed30sWarning() { return hasPlayed30sWarning; }
-    public void setPlayed30sWarning(boolean hasPlayed30sWarning) { this.hasPlayed30sWarning = hasPlayed30sWarning; }
-
-    public boolean hasPlayed5sWarning() { return hasPlayed5sWarning; }
-    public void setPlayed5sWarning(boolean hasPlayed5sWarning) { this.hasPlayed5sWarning = hasPlayed5sWarning; }
 }

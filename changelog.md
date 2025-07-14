@@ -1,3 +1,9 @@
+## Deadchest-OnlineReturn 1.0
++ Added real vanilla experience storage, so the value follows that of which normally occurs upon death
++ Added option to allow timer to only tick down while player is online
++ Added option for inventory to be returned to player when player returns; setting only works if the above is enabled
+
+
 ## Deadchest 4.11
 
 + Adding auto-updater

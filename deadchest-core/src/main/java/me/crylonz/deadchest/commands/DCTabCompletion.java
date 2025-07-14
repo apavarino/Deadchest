@@ -63,7 +63,7 @@ public class DCTabCompletion implements TabCompleter {
                             }
                         }
                     }
-                    if (args[0].equals("giveback")) {
+                    if (args[0].equalsIgnoreCase("giveback")) {
                         if (PermissionUtils.hasAdminOr(player, Permission.GIVEBACK)) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 list.add(p.getName());

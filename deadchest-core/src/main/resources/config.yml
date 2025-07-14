@@ -24,18 +24,16 @@ DeadChestDuration: 1800
 
 # Suspends DeadChest countdown when the owner is offline
 # Disincentivizes death as a reason to go and take a break
-# Also makes the plugin work; the player should be online when their items are returned
 #   > false - DeadChest timers will continue to tick down when the player is offline.
 #   > true - DeadChest timers will NOT tick down when the player is offline.
 SuspendCountdownsWhenPlayerIsOffline: true
 
-# What should the DeadChest
 # How should we handle DeadChest items upon timer expiration?
 #   > 0 - Items are deleted.
-#   > 2 - All items are dropped on the ground at the DeadChest's location.
-#   > 1 - Items are added directly to the players inventory until it's full, excess gets dropped by player.
-#   > 2 - All items are dropped on the ground at the player's location.
-ExpireAction: 3
+#   > 1 - All items are dropped on the ground at the DeadChest's location.
+#   > 2 - Items are added directly to the players inventory until it's full, excess gets dropped by player.
+#   > 3 - All items are dropped on the ground at the player's location.
+ExpireAction: 2
 
 # Should DeadChests be protected from explosions and other players?
 #   > false - DeadChests will not be protected and can be broken.
@@ -146,3 +144,37 @@ ExcludedItems:
 IgnoredItems:
   - 'IGNORED_ITEM_EXAMPLE'
 
+
+
+# A list of timed warnings to send to the player before their grave is returned.
+# You can add as many as you want, or remove them all.
+warnings:
+  timed:
+    - time: 60
+      sound: "BLOCK_NOTE_BLOCK_PLING"
+      message: "&e[!] Your oldest grave will be returned in 1 minute!"
+    - time: 30
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&6[!] Your oldest grave will be returned in 30 seconds!"
+    - time: 10
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] Your oldest grave will be returned in 10 seconds!"
+    - time: 5
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 5..."
+    - time: 4
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 4..."
+    - time: 3
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 3..."
+    - time: 2
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 2..."
+    - time: 1
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 1..."
+  # Sound and message for when items are actually returned
+  retrieval:
+    sound: "ENTITY_PLAYER_LEVELUP"
+    message: "&a[!] The contents of your oldest grave have been returned to you!"
