@@ -258,10 +258,15 @@ public class DeadChestListener implements Listener {
                     }
 
                     ItemStack[] playerInv = p.getInventory().getContents();
-                    ItemStack[] itemsToStore = Arrays.stream(p.getInventory().getContents())
-                            .filter(Objects::nonNull)
-                            .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
-                            .toArray(ItemStack[]::new);
+
+                    ItemStack[] itemsToStore = new ItemStack[playerInv.length];
+                    for (int i = 0; i < playerInv.length; i++) {
+                        ItemStack item = playerInv[i];
+                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())) {
+                            itemsToStore[i] = item;
+                        }
+                        // Keep null for filtered/empty slots to preserve positions
+                    }
 
                     // Update player inv just to update chest data after that we reset it back
                     // There is no way to instance Inventory
@@ -284,6 +289,25 @@ public class DeadChestListener implements Listener {
                             .filter(Objects::nonNull)
                             .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
                             .collect(Collectors.toList());
+
+                    // Handle MinePacks backpack duplication
+                    if (Bukkit.getServer().getPluginManager().getPlugin("MinePacks") != null) {
+                        // Look for MinePacks backpacks in drops and remove them to prevent duplication
+                        List<ItemStack> minePacksBackpacks = new ArrayList<>();
+                        for (ItemStack drop : e.getDrops()) {
+                            if (drop != null && drop.hasItemMeta() && drop.getItemMeta().hasDisplayName()) {
+                                String displayName = drop.getItemMeta().getDisplayName();
+                                if (displayName.toLowerCase().contains("backpack") ||
+                                        (drop.getItemMeta().hasLore() &&
+                                                drop.getItemMeta().getLore().toString().toLowerCase()
+                                                        .contains("backpack"))) {
+                                    minePacksBackpacks.add(drop);
+                                }
+                            }
+                        }
+                        // Remove MinePacks backpacks from drops to prevent duplication
+                        e.getDrops().removeAll(minePacksBackpacks);
+                    }
 
                     e.getDrops().removeIf(dropDestroy::contains);
 
@@ -357,25 +381,68 @@ public class DeadChestListener implements Listener {
                                 if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
                                     player.giveExp(cd.getXpStored());
-                                    for (ItemStack i : cd.getInventory()) {
-                                        if (i != null) {
 
-                                            if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
-                                                playerInventory.setHelmet(i);
+                                    // Store the original death inventory layout for position restoration
+                                    ItemStack[] originalContents = cd.getInventory().toArray(new ItemStack[0]);
 
-                                            else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
-                                                playerInventory.setBoots(i);
+                                    // First pass: Auto-equip armor and shield from their original equipped slots
+                                    // Minecraft PlayerInventory slots: 0-35 = main inventory, 36=boots, 37=leggings, 38=chestplate, 39=helmet, 40=offhand
+                                    for (int i = 0; i < originalContents.length; i++) {
+                                        ItemStack item = originalContents[i];
+                                        if (item != null) {
+                                            // Auto-equip helmet from helmet slot (39)
+                                            if (Utils.isHelmet(item) && i == 39 && (playerInventory.getHelmet() == null
+                                                    || playerInventory.getHelmet().getType() == Material.AIR)) {
+                                                playerInventory.setHelmet(item);
+                                                originalContents[i] = null;
+                                            }
+                                            // Auto-equip chestplate from chestplate slot (38)
+                                            else if (Utils.isChestplate(item) && i == 38
+                                                    && (playerInventory.getChestplate() == null || playerInventory
+                                                            .getChestplate().getType() == Material.AIR)) {
+                                                playerInventory.setChestplate(item);
+                                                originalContents[i] = null;
+                                            }
+                                            // Auto-equip leggings from leggings slot (37)
+                                            else if (Utils.isLeggings(item) && i == 37
+                                                    && (playerInventory.getLeggings() == null
+                                                            || playerInventory.getLeggings()
+                                                                    .getType() == Material.AIR)) {
+                                                playerInventory.setLeggings(item);
+                                                originalContents[i] = null;
+                                            }
+                                            // Auto-equip boots from boots slot (36)
+                                            else if (Utils.isBoots(item) && i == 36
+                                                    && (playerInventory.getBoots() == null
+                                                            || playerInventory.getBoots().getType() == Material.AIR)) {
+                                                playerInventory.setBoots(item);
+                                                originalContents[i] = null;
+                                            }
+                                            // Auto-equip shield to offhand ONLY if it was originally in offhand (slot 40)
+                                            else if (item.getType() == Material.SHIELD && i == 40 &&
+                                                    (playerInventory.getItemInOffHand() == null || playerInventory
+                                                            .getItemInOffHand().getType() == Material.AIR)) {
+                                                playerInventory.setItemInOffHand(item);
+                                                originalContents[i] = null;
+                                            }
+                                        }
+                                    }
 
-                                            else if (Utils.isChestplate(i) && playerInventory.getChestplate() == null)
-                                                playerInventory.setChestplate(i);
-
-                                            else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
-                                                playerInventory.setLeggings(i);
-
-                                            else if (playerInventory.firstEmpty() != -1)
-                                                playerInventory.addItem(i);
-                                            else
-                                                playerWorld.dropItemNaturally(block.getLocation(), i);
+                                    // Second pass: Restore items to their original inventory positions
+                                    // Only main inventory slots (0-35)
+                                    for (int i = 0; i < originalContents.length && i < 36; i++) {
+                                        ItemStack item = originalContents[i];
+                                        if (item != null) {
+                                            if (i < playerInventory.getSize()) {
+                                                playerInventory.setItem(i, item);
+                                            } else {
+                                                // If slot doesn't exist, add to first available slot or drop
+                                                if (playerInventory.firstEmpty() != -1) {
+                                                    playerInventory.addItem(item);
+                                                } else {
+                                                    playerWorld.dropItemNaturally(block.getLocation(), item);
+                                                }
+                                            }
                                         }
                                     }
                                 } else {
