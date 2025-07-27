@@ -98,9 +98,17 @@ public final class ExpUtils {
     }
 
     public static int getTotalExperienceToStore(Player player) {
-        if (config.getBoolean(ConfigKey.STORE_XP)) {
-            return getTotalExperience(player) * config.getInt(ConfigKey.STORE_XP_PERCENTAGE) / 100;
+        int storeMode = config.getInt(ConfigKey.STORE_XP); //
+
+        if (storeMode == 1) {
+            // Mode 1: Store a fixed percentage of XP.
+            return getTotalExperience(player) * config.getInt(ConfigKey.STORE_XP_PERCENTAGE) / 100; //
+        } else if (storeMode == 2) {
+            // Mode 2: Store the full vanilla amount of XP.
+            return getTotalExperience(player);
         }
+
+        // Mode 0 or invalid: Do not store any XP.
         return 0;
     }
 }

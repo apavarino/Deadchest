@@ -42,13 +42,21 @@ public class Utils {
     }
 
     static void generateLog(String message) {
-        File log = new File("plugins/DeadChest/deadchest.log");
         try {
+            // Define the plugin's data folder
+            File dataFolder = DeadChest.plugin.getDataFolder();
+            // Ensure the data folder exists
+            if (!dataFolder.exists()) {
+                dataFolder.mkdirs();
+            }
+            // Define the log file inside the data folder
+            File log = new File(dataFolder, "deadchest.log");
+
             log.createNewFile();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date(System.currentTimeMillis());
             String finalMsg = "[" + formatter.format(date) + "] " + message + "\n";
-            Files.write(Paths.get("plugins/DeadChest/deadchest.log"), finalMsg.getBytes(), StandardOpenOption.APPEND);
+            Files.write(log.toPath(), finalMsg.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             DeadChest.log.warning("Can't write log for Deadchest : " + e);
         }

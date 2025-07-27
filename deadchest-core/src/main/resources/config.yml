@@ -5,11 +5,35 @@
 #   > https://dev.bukkit.org/projects/dead-chest                                                                               #
 # If you need any support, feel free to ask for it on our Discord server:                                                      #
 #   > https://discordapp.com/invite/jCsvJxS                                                                                    #
+# Alternatively, if you want to ask the individual who forked this plugin questions, here is their discord:                    #
+#   > iwbmo                                                                                                                    #
 #                                                                                                                              #
 # If you make any changes in this file, please run the command '/dc reload' to apply the changes!                              #
 ################################################################################################################################
 
-auto-update: true
+# If true, the plugin will attempt to re-equip armor and off-hand items into their
+# original slots if those slots are empty. If false, it will just fill the main inventory.
+# This applies to all forms of item return (click, expire, /dc giveback).
+AttemptReEquip: true
+
+# How should we return items when a player CLICKS their grave?
+#   > 1 - Items are added directly to the player's inventory.
+#   > 2 - All items are dropped on the ground at the grave's location.
+ClickRetrievalMode: 1
+
+# If ClickRetrievalMode is 1, where should items that don't fit in the inventory go?
+#   > 1 - Overflow items are dropped at the GRAVE's location.
+#   > 2 - Overflow items are dropped at the PLAYER's current location.
+ClickOverflowDropLocation: 1
+
+# How should we handle DeadChest items upon timer EXPIRATION?
+#   > 0 - Items are deleted.
+#   > 1 - All items are dropped on the ground at the DeadChest's location.
+#   > 2 - Items are added to inventory. Overflow is dropped at the GRAVE's location.
+#   > 3 - Items are added to inventory. Overflow is dropped at the PLAYER's location.
+ExpireAction: 3
+
+auto-update: false
 
 # Should DeadChests be openable by other players or just the owner?
 #   > false - DeadChests can be opened by anyone.
@@ -18,7 +42,14 @@ OnlyOwnerCanOpenDeadChest: true
 
 # The amount of time a DeadChest will be active for (in seconds)...
 #   You can disable this limit by setting the value to 0.
-DeadChestDuration: 300
+DeadChestDuration: 1800
+
+# Suspends DeadChest countdown when the owner is offline
+# Disincentivizes death as a reason to go and take a break
+# Also makes the plugin work; the player should be online when their items are returned
+#   > false - DeadChest timers will continue to tick down when the player is offline.
+#   > true - DeadChest timers will NOT tick down when the player is offline.
+SuspendCountdownsWhenPlayerIsOffline: true
 
 # Should DeadChests be protected from explosions and other players?
 #   > false - DeadChests will not be protected and can be broken.
@@ -27,7 +58,8 @@ IndestructibleChest: true
 
 # The maximum number of DeadChests a player can have active at a time...
 #   You can disable this limit by setting the value to 0.
-maxDeadChestPerPlayer: 15
+#   Might bug out if not 0
+maxDeadChestPerPlayer: 0
 
 # Should we notify the console when and where a DeadChest is created?
 logDeadChestOnConsole: false
@@ -56,27 +88,25 @@ GenerateDeadChestInCreative: true
 # Should we tell the player where their DeadChest is located when they die?
 DisplayDeadChestPositionOnDeath: true
 
-# How should we return the items to the player when they claim their DeadChest?
-#   > 1 - Items are added directly to the players inventory until it's full, excess gets dropped.
-#   > 2 - All items are dropped on the ground.
-DropMode: 1
-
 # What block should we use for the DeadChest?
 #   > 1 - CHEST
 #   > 2 - PLAYER HEAD
 #   > 3 - BARREL
 #   > 4 - SHULKER BOX
 #   > 5 - ENDER CHEST
-DropBlock: 1
+DropBlock: 2
 
-# Store Player XP on Deadchest
-StoreXP: false
+# DeadChest Player XP storage mode
+#   > 0 - Do not store XP
+#   > 1 - Store fixed percentage of XP as defined below
+#   > 2 - Store amount of XP as defined from Vanilla
+StoreXP: 2
 
-# % of XP stored on the deadchest. Only works if StoreXP is true
+# % of XP stored on the deadchest. Only works if StoreXP is 1
 # If 0 is used the all the XP from the player vanishes, no XP orb gets dropped on death and no XP gets stored
 # If a value of 100 is used then all the XP is stored on the chest
 # Values higher than 100 are allowed but not recommended as they would duplicate XP
-StoreXPPercentage: 100
+StoreXPPercentage: 10
 
 # Should we drop DeadChest contents when the timer expires?
 #   > false - DeadChest contents are removed when the timer expires.
@@ -125,3 +155,35 @@ ExcludedItems:
 IgnoredItems:
   - 'IGNORED_ITEM_EXAMPLE'
 
+# A list of timed warnings to send to the player before their grave is returned.
+# You can add as many as you want, or remove them all.
+warnings:
+  timed:
+    - time: 60
+      sound: "BLOCK_NOTE_BLOCK_PLING"
+      message: "&e[!] Your oldest grave will be returned in 1 minute!"
+    - time: 30
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&6[!] Your oldest grave will be returned in 30 seconds!"
+    - time: 10
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] Your oldest grave will be returned in 10 seconds!"
+    - time: 5
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 5..."
+    - time: 4
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 4..."
+    - time: 3
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 3..."
+    - time: 2
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 2..."
+    - time: 1
+      sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      message: "&c[!] 1..."
+  # Sound and message for when items are actually returned
+  retrieval:
+    sound: "ENTITY_PLAYER_LEVELUP"
+    message: "&a[!] The contents of your oldest grave have been returned to you!"

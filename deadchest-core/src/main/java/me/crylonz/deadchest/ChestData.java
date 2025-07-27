@@ -12,23 +12,29 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+import me.crylonz.deadchest.utils.ConfigKey;
+
 @SerializableAs("ChestData")
 public final class ChestData implements ConfigurationSerializable {
 
-    private List<ItemStack> inventory;
-    private Location chestLocation;
-    private String playerName;
-    private String playerUUID;
-    private Date chestDate;
-    private boolean isInfinity;
+    private final ItemStack[] inventory;
+    private final Location chestLocation;
+    private final String playerName;
+    private final String playerUUID;
+    private final Date chestDate;
+    private final boolean isInfinity;
     private boolean isRemovedBlock;
-    private Location holographicTimer;
+    private final Location holographicTimer;
     private UUID holographicTimerId;
     private UUID holographicOwnerId;
-    private String worldName;
+    private final String worldName;
 
     private int xpStored;
+    private List<Integer> triggeredWarnings;
 
+    private long timeRemaining;
+
+    // RESTORED COPY CONSTRUCTOR
     public ChestData(ChestData chest) {
         this.inventory = chest.getInventory();
         this.chestLocation = chest.getChestLocation();
@@ -42,7 +48,17 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicOwnerId = chest.getHolographicOwnerId();
         this.worldName = chest.getWorldName();
         this.xpStored = chest.getXpStored();
+        this.timeRemaining = chest.getTimeRemaining();
+        this.triggeredWarnings = new ArrayList<>(chest.getTriggeredWarnings());
     }
+
+    public List<Integer> getTriggeredWarnings() {
+        return triggeredWarnings;
+    }
+
+    public long getTimeRemaining() { return timeRemaining; }
+
+    public void setTimeRemaining(long timeRemaining) { this.timeRemaining = timeRemaining; }
 
     ChestData(final Inventory inv,
               final Location chestLocation,
@@ -52,78 +68,65 @@ public final class ChestData implements ConfigurationSerializable {
               final ArmorStand owner,
               final int xpToStore) {
 
-        if (p != null) {
-            this.inventory = Arrays.asList(inv.getContents());
-            this.chestLocation = chestLocation.clone();
-            this.playerName = p.getName();
-            this.playerUUID = String.valueOf(p.getUniqueId());
-            this.chestDate = new Date();
-            this.isInfinity = isInfinity;
-            this.isRemovedBlock = false;
-            this.holographicTimer = asTimer.getLocation().clone();
-            this.holographicTimerId = asTimer.getUniqueId();
-            this.holographicOwnerId = owner.getUniqueId();
-            this.xpStored = xpToStore;
-            if (chestLocation.getWorld() != null)
-                this.worldName = chestLocation.getWorld().getName();
-        }
+        this.inventory = inv.getContents();
+        this.chestLocation = chestLocation;
+        this.playerName = p.getName();
+        this.playerUUID = String.valueOf(p.getUniqueId());
+        this.chestDate = new Date();
+        this.isInfinity = isInfinity;
+        this.isRemovedBlock = false;
+        this.holographicTimer = asTimer.getLocation();
+        this.holographicTimerId = asTimer.getUniqueId();
+        this.holographicOwnerId = owner.getUniqueId();
+        this.worldName = p.getWorld().getName();
+        this.xpStored = xpToStore;
+        this.timeRemaining = DeadChest.config.getInt(ConfigKey.DEADCHEST_DURATION);
+        this.triggeredWarnings = new ArrayList<>();
     }
 
-    public ChestData(final List<ItemStack> inventory,
-                     final Location chestLocation,
-                     final String playerName,
-                     final String playerUUID,
-                     final Date chestDate,
-                     final boolean isInfinity,
-                     final boolean isRemovedBlock,
-                     final Location holographicTimer,
-                     final UUID asTimerId,
-                     final UUID asOwnerId,
-                     final String worldName,
-                     final int xpStored) {
+
+    @SuppressWarnings("unchecked")
+    public static ChestData deserialize(final Map<String, Object> map) {
+        return new ChestData(
+                ((List<ItemStack>) map.get("inventory")).toArray(new ItemStack[0]),
+                Location.deserialize((Map<String, Object>) map.get("chestLocation")),
+                (String) map.get("playerName"),
+                (String) map.get("playerUUID"),
+                (Date) map.get("chestDate"),
+                (boolean) map.get("isInfinity"),
+                (Location) map.get("holographicTimer"),
+                UUID.fromString((String) map.get("as_timer_id")),
+                UUID.fromString((String) map.get("as_owner_id")),
+                (int) map.get("xpStored"),
+                (List<Integer>) map.get("triggeredWarnings"),
+                map.containsKey("timeRemaining") ? ((Number) map.get("timeRemaining")).longValue() : -1
+        );
+    }
+
+    private ChestData(ItemStack[] inventory, Location chestLocation, String playerName, String playerUUID, Date chestDate,
+                      boolean isInfinity, Location holographicTimer, UUID asTimerId, UUID asOwnerId, int xpStored,
+                      List<Integer> triggeredWarnings, long timeRemaining) {
         this.inventory = inventory;
         this.chestLocation = chestLocation;
         this.playerName = playerName;
         this.playerUUID = playerUUID;
         this.chestDate = chestDate;
-        this.isRemovedBlock = isRemovedBlock;
         this.isInfinity = isInfinity;
         this.holographicTimer = holographicTimer;
         this.holographicTimerId = asTimerId;
         this.holographicOwnerId = asOwnerId;
-        this.worldName = worldName;
         this.xpStored = xpStored;
+        this.worldName = chestLocation.getWorld().getName();
+        this.triggeredWarnings = triggeredWarnings;
+
+        if (timeRemaining == -1) {
+            long timeSinceCreation = (new Date().getTime() - this.getChestDate().getTime()) / 1000;
+            this.timeRemaining = DeadChest.config.getInt(ConfigKey.DEADCHEST_DURATION) - timeSinceCreation;
+        } else {
+            this.timeRemaining = timeRemaining;
+        }
     }
 
-    @SuppressWarnings({"unchecked", "unused"})
-    public static ChestData deserialize(final Map<String, Object> map) {
-
-        String[] loc = ((String) map.get("chestLocation")).split(";");
-        String[] locHolo = ((String) map.get("holographicTimer")).split(";");
-
-        Location myloc = new Location(Bukkit.getWorld(loc[Indexes.WORLD_NAME.ordinal()]),
-                Double.parseDouble(loc[Indexes.LOC_X.ordinal()]), Double.parseDouble(loc[Indexes.LOC_Y.ordinal()]),
-                Double.parseDouble(loc[Indexes.LOC_Z.ordinal()]));
-
-        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[Indexes.WORLD_NAME.ordinal()]),
-                Double.parseDouble(locHolo[Indexes.LOC_X.ordinal()]), Double.parseDouble(locHolo[Indexes.LOC_Y.ordinal()]),
-                Double.parseDouble(locHolo[Indexes.LOC_Z.ordinal()]));
-
-        return new ChestData(
-                (List<ItemStack>) map.get("inventory"),
-                myloc,
-                (String) map.get("playerName"),
-                (String) map.get("playerUUID"),
-                (Date) map.get("chestDate"),
-                (boolean) map.get("isInfinity"),
-                map.get("isRemovedBlock") != null && (boolean) map.get("isRemovedBlock"), // compatiblity under 4.14
-                mylocHolo,
-                UUID.fromString((String) map.get("as_timer_id")),
-                UUID.fromString((String) map.get("as_owner_id")),
-                (String) map.get("worldName"),
-                (int) (map.get("xpStored") != null ? map.get("xpStored") : 0)  // compatiblity under 4.15
-        );
-    }
 
     public UUID getHolographicTimerId() {
         return holographicTimerId;
@@ -137,20 +140,12 @@ public final class ChestData implements ConfigurationSerializable {
         this.holographicOwnerId = holographicOwnerId;
     }
 
-    public List<ItemStack> getInventory() {
+    public ItemStack[] getInventory() {
         return inventory;
     }
 
-    public void cleanInventory() {
-        inventory = new ArrayList<>();
-    }
-
-    public void setInventory(List<ItemStack> inventory) {
-        this.inventory = inventory;
-    }
-
-    public void setRemovedBlock(final boolean removedBlock) {
-        this.isRemovedBlock = removedBlock;
+    public boolean isRemovedBlock() {
+        return isRemovedBlock;
     }
 
     public Location getChestLocation() {
@@ -169,10 +164,6 @@ public final class ChestData implements ConfigurationSerializable {
         return chestDate;
     }
 
-    public boolean isRemovedBlock() {
-        return isRemovedBlock;
-    }
-
     public boolean isInfinity() {
         return isInfinity;
     }
@@ -185,13 +176,12 @@ public final class ChestData implements ConfigurationSerializable {
         return worldName;
     }
 
-    public boolean removeArmorStand() {
+    public void removeArmorStand() {
+
         final int radius = 1;
         final int armorStandShiftY = 1;
 
         if (chestLocation.getWorld() != null) {
-
-            chestLocation.getChunk().setForceLoaded(true);
 
             Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
                     new Location(
@@ -201,34 +191,18 @@ public final class ChestData implements ConfigurationSerializable {
                             chestLocation.getZ()
                     ), radius, radius, radius);
 
-            boolean isEmpty = entities.size() > 0;
             for (Entity entity : entities) {
                 if (entity.getUniqueId().equals(holographicOwnerId) || entity.getUniqueId().equals(holographicTimerId)) {
                     entity.remove();
                 }
             }
 
-            if (isChunkForceLoaded()) {
-                chestLocation.getWorld().unloadChunk(chestLocation.getBlockX() >> 4, chestLocation.getBlockZ() >> 4);
-                chestLocation.getChunk().setForceLoaded(false);
-            }
-
-            return isEmpty;
         }
-        return false;
     }
 
     public boolean isChunkLoaded() {
-        return chestLocation.getWorld() == null ||
+        return chestLocation.getWorld() != null &&
                 chestLocation.getWorld().isChunkLoaded(
-                        chestLocation.getBlockX() >> 4,
-                        chestLocation.getBlockZ() >> 4
-                );
-    }
-
-    public boolean isChunkForceLoaded() {
-        return chestLocation.getWorld() == null ||
-                chestLocation.getWorld().isChunkForceLoaded(
                         chestLocation.getBlockX() >> 4,
                         chestLocation.getBlockZ() >> 4
                 );
@@ -237,30 +211,22 @@ public final class ChestData implements ConfigurationSerializable {
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
-        map.put("inventory", inventory);
-        map.put("chestLocation", worldName + ";" + chestLocation.getX() + ";" + chestLocation.getY() + ";"
-                + chestLocation.getZ());
+        map.put("inventory", Arrays.asList(inventory));
+        map.put("chestLocation", chestLocation.serialize());
         map.put("playerName", playerName);
         map.put("playerUUID", playerUUID);
         map.put("chestDate", chestDate);
-        map.put("isRemovedBlock", isRemovedBlock);
         map.put("isInfinity", isInfinity);
-        map.put("holographicTimer", worldName + ";" + holographicTimer.getX() + ";" + holographicTimer.getY()
-                + ";" + holographicTimer.getZ());
-        map.put("worldName", worldName);
+        map.put("holographicTimer", holographicTimer);
         map.put("as_timer_id", holographicTimerId.toString());
         map.put("as_owner_id", holographicOwnerId.toString());
         map.put("xpStored", xpStored);
+        map.put("triggeredWarnings", triggeredWarnings);
+        map.put("timeRemaining", timeRemaining);
         return map;
     }
 
     public int getXpStored() {
         return xpStored;
     }
-
-    public void setXpStored(int xpStored) {
-        this.xpStored = xpStored;
-    }
-
-    enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
 }

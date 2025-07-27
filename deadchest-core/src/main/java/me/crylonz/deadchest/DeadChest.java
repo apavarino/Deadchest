@@ -4,7 +4,7 @@ import me.crylonz.deadchest.commands.DCCommandExecutor;
 import me.crylonz.deadchest.commands.DCTabCompletion;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
-import me.crylonz.deadchest.utils.DeadChestUpdater;
+//import me.crylonz.deadchest.utils.DeadChestUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,6 +14,14 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+// You don't strictly need this one for the sounds, but it's good practice
+import org.bukkit.Location;
+import org.bukkit.ChatColor;
+import java.util.Comparator;
 
 import java.io.File;
 import java.util.*;
@@ -36,6 +44,8 @@ public class DeadChest extends JavaPlugin {
     public static boolean isChangesNeedToBeSave = false;
 
     public static DeadChestConfig config;
+
+    public List<Warning> timedWarnings;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -60,10 +70,11 @@ public class DeadChest extends JavaPlugin {
 
         registerConfig();
         initializeConfig();
+        loadWarnings();
 
-        if (config.getBoolean(ConfigKey.AUTO_UPDATE)) {
-            DeadChestUpdater updater = new DeadChestUpdater(this, 322882, this.getFile(), DeadChestUpdater.UpdateType.DEFAULT, true);
-        }
+        //if (config.getBoolean(ConfigKey.AUTO_UPDATE)) {
+        //    DeadChestUpdater updater = new DeadChestUpdater(this, 322882, this.getFile(), DeadChestUpdater.UpdateType.DEFAULT, true);
+        //}
 
         if (config.getBoolean(ConfigKey.AUTO_CLEANUP_ON_START)) {
             cleanAllDeadChests();
@@ -85,11 +96,28 @@ public class DeadChest extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
 
-        if (bstats) {
-            Metrics metrics = new Metrics(this, 11385);
-        }
+        //if (bstats) {
+        //    Metrics metrics = new Metrics(this, 11385);
+        //}
 
         launchRepeatingTask();
+    }
+
+    private void loadWarnings() {
+        timedWarnings = new ArrayList<>();
+        List<Map<?, ?>> warningMaps = getConfig().getMapList("warnings.timed");
+        if (warningMaps == null) return;
+
+        for (Map<?, ?> map : warningMaps) {
+            if (map.containsKey("time") && map.containsKey("sound") && map.containsKey("message")) {
+                int time = (int) map.get("time");
+                String sound = (String) map.get("sound");
+                String message = (String) map.get("message");
+                timedWarnings.add(new Warning(time, sound, message));
+            }
+        }
+        // Sort warnings from highest time to lowest
+        timedWarnings.sort(Comparator.comparingInt(Warning::time).reversed());
     }
 
     @Override
@@ -118,11 +146,14 @@ public class DeadChest extends JavaPlugin {
     }
 
     public void registerConfig() {
-        config.register(ConfigKey.AUTO_UPDATE.toString(), true);
+        config.register(ConfigKey.ATTEMPT_RE_EQUIP.toString(), true);
+        config.register(ConfigKey.CLICK_RETRIEVAL_MODE.toString(), 1);
+        config.register(ConfigKey.CLICK_OVERFLOW_DROP_LOCATION.toString(), 1);
+        config.register(ConfigKey.AUTO_UPDATE.toString(), false);
         config.register(ConfigKey.INDESTRUCTIBLE_CHEST.toString(), true);
         config.register(ConfigKey.ONLY_OWNER_CAN_OPEN_CHEST.toString(), true);
-        config.register(ConfigKey.DEADCHEST_DURATION.toString(), 300);
-        config.register(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER.toString(), 15);
+        config.register(ConfigKey.DEADCHEST_DURATION.toString(), 1800);
+        config.register(ConfigKey.MAX_DEAD_CHEST_PER_PLAYER.toString(), 0);
         config.register(ConfigKey.LOG_DEADCHEST_ON_CONSOLE.toString(), false);
         config.register(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE.toString(), false);
         config.register(ConfigKey.REQUIRE_PERMISSION_TO_GET_CHEST.toString(), false);
@@ -132,8 +163,7 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.DISPLAY_POSITION_ON_DEATH.toString(), true);
         config.register(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT.toString(), false);
         config.register(ConfigKey.WORLD_GUARD_DETECTION.toString(), false);
-        config.register(ConfigKey.DROP_MODE.toString(), 1);
-        config.register(ConfigKey.DROP_BLOCK.toString(), 1);
+        config.register(ConfigKey.DROP_BLOCK.toString(), 2);
         config.register(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH.toString(), 0);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);
@@ -143,21 +173,20 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.EXCLUDED_WORLDS.toString(), Collections.emptyList());
         config.register(ConfigKey.EXCLUDED_ITEMS.toString(), Collections.emptyList());
         config.register(ConfigKey.IGNORED_ITEMS.toString(), Collections.emptyList());
-        config.register(ConfigKey.STORE_XP.toString(), false);
-        config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 100);
+        config.register(ConfigKey.STORE_XP.toString(), 2);
+        config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 10);
         config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
+        config.register(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE.toString(), true);
+        config.register(ConfigKey.EXPIRE_ACTION.toString(), 3);
     }
 
     private void initializeConfig() {
-
-        // plugin config file
         if (!fileManager.getConfigFile().exists()) {
             saveDefaultConfig();
         } else {
-            config.updateConfig();
+            getConfig().options().copyDefaults(true);
+            saveConfig();
         }
-
-        // database (chestData.yml)
         if (!fileManager.getChestDataFile().exists()) {
             fileManager.saveChestDataConfig();
         } else {
@@ -168,84 +197,56 @@ public class DeadChest extends JavaPlugin {
                 chestData = tmp;
             }
         }
-
-        // locale file for translation
-        if (!fileManager.getLocalizationConfigFile().exists()) {
-            fileManager.saveLocalizationConfig();
-            fileManager.getLocalizationConfig().options().header(
-                    "+--------------------------------------------------------------+\n" +
-                            "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
-                            "+--------------------------------------------------------------+\n" +
-                            "You can add colors on texts :\n" +
-                            "Example '§cHello' will print Hello in red\n" +
-                            "§4 : DARK_RED\n" +
-                            "§c : RED\n" +
-                            "§6 : GOLD\n" +
-                            "§e : YELLOW\n" +
-                            "§2 : DARK_GREEN\n" +
-                            "§a : GREEN\n" +
-                            "§b : AQUA\n" +
-                            "§3 : DARK_AQUA\n" +
-                            "§1 : DARK_BLUE\n" +
-                            "§9 : BLUE\n" +
-                            "§d : LIGHT_PURPLE\n" +
-                            "§5 : DARK_PURPLE\n" +
-                            "§f : WHITE\n" +
-                            "§7 : GRAY\n" +
-                            "§8 : DARK_GRAY\n" +
-                            "§0 : BLACK\n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "You can also add some styling options :\n" +
-                            "§l : Text in bold\n" +
-                            "§o : Text in italic\n" +
-                            "§n : Underline text\n" +
-                            "§m : Strike text\n" +
-                            "§k : Magic \n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "Need help ? Join the discord support :\n" +
-                            "https://discord.com/invite/jCsvJxS\n" +
-                            "+---------------------------------------------------------------+\n"
-            );
-        } else {
-            // if file exist
-            // we verify if the file have all translation
-            // and add missing if needed
-
-            Map<String, Object> localTmp =
-                    Objects.requireNonNull(fileManager.getLocalizationConfig().
-                            getConfigurationSection("localisation")).getValues(true);
-
-            for (Map.Entry<String, Object> entry : local.get().entrySet()) {
-                localTmp.computeIfAbsent(entry.getKey(), k -> entry.getValue());
-            }
-            local.set(localTmp);
-        }
-
-        fileManager.getLocalizationConfig().createSection("localisation", local.get());
-        fileManager.saveLocalizationConfig();
     }
 
-    public static void handleEvent() {
-        if (chestData != null && !chestData.isEmpty()) {
+    public void handleEvent() {
+        if (chestData == null || chestData.isEmpty() || timedWarnings == null) {
+            return;
+        }
 
-            Date now = new Date();
-            Iterator<ChestData> chestDataIt = chestData.iterator();
+        Date now = new Date();
+        Iterator<ChestData> chestDataIt = chestData.iterator();
 
-            while (chestDataIt.hasNext()) {
-                ChestData chestData = chestDataIt.next();
-                World world = chestData.getChestLocation().getWorld();
+        while (chestDataIt.hasNext()) {
+            ChestData chest = chestDataIt.next();
+            if (chest.getChestLocation().getWorld() == null) continue;
 
-                if (world != null) {
-                    updateTimer(chestData, now);
+            Player player = Bukkit.getPlayer(UUID.fromString(chest.getPlayerUUID()));
+            boolean isPlayerOnline = (player != null && player.isOnline());
+            boolean suspend = config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE);
 
-                    if (handleExpirateDeadChest(chestData, chestDataIt, now)) {
-                        isChangesNeedToBeSave = true;
-                        generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
-                    } else {
-                        if (chestData.isChunkLoaded()) {
-                            isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chestData);
+            if (suspend && isPlayerOnline) {
+                chest.setTimeRemaining(chest.getTimeRemaining() - 1);
+            } else if (!suspend) {
+                long timeSinceCreation = (now.getTime() - chest.getChestDate().getTime()) / 1000;
+                chest.setTimeRemaining(config.getInt(ConfigKey.DEADCHEST_DURATION) - timeSinceCreation);
+            }
+
+            updateTimer(chest, now);
+
+            if (isPlayerOnline) {
+                for (Warning warning : timedWarnings) {
+                    if (chest.getTimeRemaining() <= warning.time() && !chest.getTriggeredWarnings().contains(warning.time())) {
+                        try {
+                            player.playSound(player.getLocation(), Sound.valueOf(warning.sound().toUpperCase()), 1.0f, 1.0f);
+                            if (!warning.message().isEmpty()) {
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', warning.message()));
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            getLogger().warning("Invalid sound name in config for warning at " + warning.time() + "s: " + warning.sound());
                         }
+                        chest.getTriggeredWarnings().add(warning.time());
+                        isChangesNeedToBeSave = true;
                     }
+                }
+            }
+
+            if (handleExpirateDeadChest(chest, chestDataIt)) {
+                isChangesNeedToBeSave = true;
+                generateLog("Deadchest of [" + chest.getPlayerName() + "] has expired in " + Objects.requireNonNull(chest.getChestLocation().getWorld()).getName());
+            } else {
+                if (chest.isChunkLoaded()) {
+                    isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chest);
                 }
             }
         }
@@ -257,7 +258,7 @@ public class DeadChest extends JavaPlugin {
     }
 
     private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, DeadChest::handleEvent, 20, 20);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, this::handleEvent, 20, 20);
     }
 
     public DeadChestConfig getDataConfig() {

@@ -12,11 +12,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.inventory.PlayerInventory;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
 import static me.crylonz.deadchest.DeadChest.*;
 import static me.crylonz.deadchest.Utils.computeChestType;
@@ -24,11 +30,6 @@ import static me.crylonz.deadchest.Utils.isGraveBlock;
 
 public class DeadChestManager {
 
-    /**
-     * Remove all active deadchests
-     *
-     * @return number of deadchests removed
-     */
     public static int cleanAllDeadChests() {
 
         int chestDataRemoved = 0;
@@ -51,16 +52,6 @@ public class DeadChestManager {
         return chestDataRemoved;
     }
 
-    /**
-     * Generate a hologram at the given position
-     *
-     * @param location position to place
-     * @param text     text to display
-     * @param shiftX   x shifting
-     * @param shiftY   y shifting
-     * @param shiftZ   z shifting
-     * @return the generated armorstand
-     */
     public static ArmorStand generateHologram(Location location, String text, float shiftX, float shiftY, float shiftZ, boolean isTimer) {
         if (location != null && location.getWorld() != null) {
             Location holoLoc = new Location(location.getWorld(),
@@ -86,12 +77,6 @@ public class DeadChestManager {
         return null;
     }
 
-    /**
-     * get the number of deadchest for a player
-     *
-     * @param p player
-     * @return number of deadchests
-     */
     static int playerDeadChestAmount(Player p) {
         int count = 0;
         if (p != null) {
@@ -103,9 +88,6 @@ public class DeadChestManager {
         return count;
     }
 
-    /**
-     * Regeneration of metaData for holos
-     */
     static void reloadMetaData() {
 
         for (ChestData cdata : chestData) {
@@ -136,31 +118,111 @@ public class DeadChestManager {
         return false;
     }
 
-    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
-        if (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()
-                && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
+    public static void giveItemsToPlayer(Player player, ChestData chestData, Location dropLocation, boolean useSmartEquip) {
+        PlayerInventory playerInventory = player.getInventory();
+        ItemStack[] itemsToGive = chestData.getInventory();
+        ArrayList<ItemStack> overflow = new ArrayList<>();
 
-            Location loc = chestData.getChestLocation();
+        if (chestData.getXpStored() > 0) {
+            player.giveExp(chestData.getXpStored());
+        }
 
-            if (loc.getWorld() != null) {
-                if (!chestData.isRemovedBlock()) {
-                    chestData.setRemovedBlock(true);
-                    loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+        boolean[] itemHandled = new boolean[itemsToGive.length];
+
+        if (useSmartEquip) {
+            for (int i = 0; i < itemsToGive.length; i++) {
+                ItemStack item = itemsToGive[i];
+                if (item == null || item.getType() == Material.AIR) {
+                    itemHandled[i] = true;
+                    continue;
                 }
-                if (config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)) {
-                    for (ItemStack itemStack : chestData.getInventory()) {
-                        if (itemStack != null) {
-                            loc.getWorld().dropItemNaturally(loc, itemStack);
+                if (i == 40 && (playerInventory.getItemInOffHand() == null || playerInventory.getItemInOffHand().getType() == Material.AIR)) {
+                    playerInventory.setItemInOffHand(item);
+                    itemHandled[i] = true;
+                } else if (i == 39 && (playerInventory.getHelmet() == null || playerInventory.getHelmet().getType() == Material.AIR)) {
+                    playerInventory.setHelmet(item);
+                    itemHandled[i] = true;
+                } else if (i == 38 && (playerInventory.getChestplate() == null || playerInventory.getChestplate().getType() == Material.AIR)) {
+                    playerInventory.setChestplate(item);
+                    itemHandled[i] = true;
+                } else if (i == 37 && (playerInventory.getLeggings() == null || playerInventory.getLeggings().getType() == Material.AIR)) {
+                    playerInventory.setLeggings(item);
+                    itemHandled[i] = true;
+                } else if (i == 36 && (playerInventory.getBoots() == null || playerInventory.getBoots().getType() == Material.AIR)) {
+                    playerInventory.setBoots(item);
+                    itemHandled[i] = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < itemsToGive.length; i++) {
+            if (!itemHandled[i]) {
+                ItemStack item = itemsToGive[i];
+                if (item == null) continue;
+                HashMap<Integer, ItemStack> didNotFit = playerInventory.addItem(item);
+                if (!didNotFit.isEmpty()) {
+                    overflow.addAll(didNotFit.values());
+                }
+            }
+        }
+
+        if (!overflow.isEmpty()) {
+            for (ItemStack item : overflow) {
+                player.getWorld().dropItemNaturally(dropLocation, item);
+            }
+        }
+    }
+
+    public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt) {
+        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
+            return false; // Never expires
+        }
+
+        if (chestData.getTimeRemaining() <= 0) {
+            Player player = Bukkit.getPlayer(UUID.fromString(chestData.getPlayerUUID()));
+
+            if (player != null && player.isOnline()) {
+                Location loc = chestData.getChestLocation();
+                World world = loc.getWorld();
+                if (world == null) return false;
+
+                int expireAction = config.getInt(ConfigKey.EXPIRE_ACTION);
+                world.getBlockAt(loc).setType(Material.AIR);
+                boolean useSmartEquip = config.getBoolean(ConfigKey.ATTEMPT_RE_EQUIP);
+
+                switch (expireAction) {
+                    case 1:
+                        for (ItemStack item : chestData.getInventory()) {
+                            if (item != null && item.getType() != Material.AIR) {
+                                world.dropItemNaturally(loc, item);
+                            }
                         }
-                    }
-                    chestData.cleanInventory();
+                        break;
+                    case 2:
+                        giveItemsToPlayer(player, chestData, loc, useSmartEquip);
+                        break;
+                    case 3:
+                        giveItemsToPlayer(player, chestData, player.getLocation(), useSmartEquip);
+                        break;
                 }
-            }
-            if (chestData.removeArmorStand()) {
-                chestDataIt.remove();
-            }
 
-            return true;
+                if (expireAction > 0) {
+                    try {
+                        String soundName = plugin.getConfig().getString("warnings.retrieval.sound", "ENTITY_PLAYER_LEVELUP");
+                        player.playSound(player.getLocation(), Sound.valueOf(soundName.toUpperCase()), 1.0f, 1.0f);
+                        String message = plugin.getConfig().getString("warnings.retrieval.message");
+                        if (message != null && !message.isEmpty()) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        plugin.getLogger().warning("Invalid sound name in config.yml for retrieval.");
+                    }
+                }
+
+                chestData.removeArmorStand();
+                chestDataIt.remove();
+                return true;
+            }
         }
         return false;
     }
@@ -177,15 +239,20 @@ public class DeadChestManager {
                         reloadMetaData();
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
-                        long diff = date.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
-                        long diffSeconds = Math.abs(diff / 1000 % 60);
-                        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
-                        long diffHours = Math.abs(diff / (60 * 60 * 1000));
-
-                        if (!chestData.isInfinity() && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
-                            entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
-                        } else {
+                        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
                             entity.setCustomName(local.get("loc_infinityChest"));
+                        } else if (config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE) && !Bukkit.getOfflinePlayer(UUID.fromString(chestData.getPlayerUUID())).isOnline()) {
+                            entity.setCustomName("§7(Paused)");
+                        } else {
+                            long remainingSeconds = chestData.getTimeRemaining();
+                            if (remainingSeconds > 0) {
+                                long diffHours = remainingSeconds / 3600;
+                                long diffMinutes = (remainingSeconds % 3600) / 60;
+                                long diffSecs = remainingSeconds % 60;
+                                entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSecs));
+                            } else {
+                                entity.setCustomName("§cExpired");
+                            }
                         }
                     }
                 }
