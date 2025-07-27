@@ -71,7 +71,7 @@ tasks.named<Test>("test") {
 tasks.withType<ShadowJar> {
     relocate("org.bstats", "me.crylonz.deadchest")
     // Change the name inside the quotes here
-    archiveFileName.set("DeadChest-OnlineReturn-1.21.7-1.0.jar")
+    archiveFileName.set("DeadChest-OnlineReturn-1.21.7-1.1.jar")
 }
 
 val spaceUsername: String by project

@@ -146,6 +146,9 @@ public class DeadChest extends JavaPlugin {
     }
 
     public void registerConfig() {
+        config.register(ConfigKey.ATTEMPT_RE_EQUIP.toString(), true);
+        config.register(ConfigKey.CLICK_RETRIEVAL_MODE.toString(), 1);
+        config.register(ConfigKey.CLICK_OVERFLOW_DROP_LOCATION.toString(), 1);
         config.register(ConfigKey.AUTO_UPDATE.toString(), false);
         config.register(ConfigKey.INDESTRUCTIBLE_CHEST.toString(), true);
         config.register(ConfigKey.ONLY_OWNER_CAN_OPEN_CHEST.toString(), true);
@@ -160,7 +163,6 @@ public class DeadChest extends JavaPlugin {
         config.register(ConfigKey.DISPLAY_POSITION_ON_DEATH.toString(), true);
         config.register(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT.toString(), false);
         config.register(ConfigKey.WORLD_GUARD_DETECTION.toString(), false);
-        config.register(ConfigKey.DROP_MODE.toString(), 1);
         config.register(ConfigKey.DROP_BLOCK.toString(), 2);
         config.register(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH.toString(), 0);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
@@ -179,15 +181,12 @@ public class DeadChest extends JavaPlugin {
     }
 
     private void initializeConfig() {
-
-        // plugin config file
         if (!fileManager.getConfigFile().exists()) {
             saveDefaultConfig();
         } else {
-            config.updateConfig();
+            getConfig().options().copyDefaults(true);
+            saveConfig();
         }
-
-        // database (chestData.yml)
         if (!fileManager.getChestDataFile().exists()) {
             fileManager.saveChestDataConfig();
         } else {
@@ -198,61 +197,6 @@ public class DeadChest extends JavaPlugin {
                 chestData = tmp;
             }
         }
-
-        // locale file for translation
-        if (!fileManager.getLocalizationConfigFile().exists()) {
-            fileManager.saveLocalizationConfig();
-            fileManager.getLocalizationConfig().options().header(
-                    "+--------------------------------------------------------------+\n" +
-                            "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
-                            "+--------------------------------------------------------------+\n" +
-                            "You can add colors on texts :\n" +
-                            "Example '§cHello' will print Hello in red\n" +
-                            "§4 : DARK_RED\n" +
-                            "§c : RED\n" +
-                            "§6 : GOLD\n" +
-                            "§e : YELLOW\n" +
-                            "§2 : DARK_GREEN\n" +
-                            "§a : GREEN\n" +
-                            "§b : AQUA\n" +
-                            "§3 : DARK_AQUA\n" +
-                            "§1 : DARK_BLUE\n" +
-                            "§9 : BLUE\n" +
-                            "§d : LIGHT_PURPLE\n" +
-                            "§5 : DARK_PURPLE\n" +
-                            "§f : WHITE\n" +
-                            "§7 : GRAY\n" +
-                            "§8 : DARK_GRAY\n" +
-                            "§0 : BLACK\n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "You can also add some styling options :\n" +
-                            "§l : Text in bold\n" +
-                            "§o : Text in italic\n" +
-                            "§n : Underline text\n" +
-                            "§m : Strike text\n" +
-                            "§k : Magic \n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "Need help ? Join the discord support :\n" +
-                            "https://discord.com/invite/jCsvJxS\n" +
-                            "+---------------------------------------------------------------+\n"
-            );
-        } else {
-            // if file exist
-            // we verify if the file have all translation
-            // and add missing if needed
-
-            Map<String, Object> localTmp =
-                    Objects.requireNonNull(fileManager.getLocalizationConfig().
-                            getConfigurationSection("localisation")).getValues(true);
-
-            for (Map.Entry<String, Object> entry : local.get().entrySet()) {
-                localTmp.computeIfAbsent(entry.getKey(), k -> entry.getValue());
-            }
-            local.set(localTmp);
-        }
-
-        fileManager.getLocalizationConfig().createSection("localisation", local.get());
-        fileManager.saveLocalizationConfig();
     }
 
     public void handleEvent() {
@@ -271,20 +215,15 @@ public class DeadChest extends JavaPlugin {
             boolean isPlayerOnline = (player != null && player.isOnline());
             boolean suspend = config.getBoolean(ConfigKey.SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE);
 
-            // Core Timer Logic
             if (suspend && isPlayerOnline) {
-                // Pausable Timer: Only ticks down by 1 second if player is online
                 chest.setTimeRemaining(chest.getTimeRemaining() - 1);
             } else if (!suspend) {
-                // Real-Time Timer: Recalculate based on real-world time elapsed
                 long timeSinceCreation = (now.getTime() - chest.getChestDate().getTime()) / 1000;
                 chest.setTimeRemaining(config.getInt(ConfigKey.DEADCHEST_DURATION) - timeSinceCreation);
             }
 
-            // Update the visual hologram
             updateTimer(chest, now);
 
-            // Handle Warnings
             if (isPlayerOnline) {
                 for (Warning warning : timedWarnings) {
                     if (chest.getTimeRemaining() <= warning.time() && !chest.getTriggeredWarnings().contains(warning.time())) {
@@ -302,7 +241,6 @@ public class DeadChest extends JavaPlugin {
                 }
             }
 
-            // Handle Expiration
             if (handleExpirateDeadChest(chest, chestDataIt)) {
                 isChangesNeedToBeSave = true;
                 generateLog("Deadchest of [" + chest.getPlayerName() + "] has expired in " + Objects.requireNonNull(chest.getChestLocation().getWorld()).getName());

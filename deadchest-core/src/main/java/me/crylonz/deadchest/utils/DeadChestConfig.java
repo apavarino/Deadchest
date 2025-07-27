@@ -35,6 +35,7 @@ public class DeadChestConfig {
         return (int) configData.get(key.toString());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<String> getArray(ConfigKey key) {
         return (ArrayList<String>) configData.get(key.toString());
     }

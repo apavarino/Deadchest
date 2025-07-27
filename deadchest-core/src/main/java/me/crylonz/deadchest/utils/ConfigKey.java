@@ -15,7 +15,6 @@ public enum ConfigKey {
     DISPLAY_POSITION_ON_DEATH("DisplayDeadChestPositionOnDeath"),
     ITEMS_DROPPED_AFTER_TIMEOUT("ItemsDroppedAfterTimeOut"),
     WORLD_GUARD_DETECTION("EnableWorldGuardDetection"),
-    DROP_MODE("DropMode"),
     DROP_BLOCK("DropBlock"),
     GENERATE_ON_LAVA("GenerateOnLava"),
     GENERATE_ON_WATER("GenerateOnWater"),
@@ -30,7 +29,12 @@ public enum ConfigKey {
     KEEP_INVENTORY_ON_PVP_DEATH("KeepInventoryOnPvpDeath"),
     ITEM_DURABILITY_LOSS_ON_DEATH("item-durability-loss-on-death"),
     SUSPEND_COUNTDOWNS_WHEN_PLAYER_IS_OFFLINE("SuspendCountdownsWhenPlayerIsOffline"),
-    EXPIRE_ACTION("ExpireAction");
+    EXPIRE_ACTION("ExpireAction"),
+
+    ATTEMPT_RE_EQUIP("AttemptReEquip"),
+    CLICK_RETRIEVAL_MODE("ClickRetrievalMode"),
+    CLICK_OVERFLOW_DROP_LOCATION("ClickOverflowDropLocation");
+
     private final String text;
 
     ConfigKey(final String text) {
