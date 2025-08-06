@@ -469,6 +469,9 @@ public class DeadChestListener implements Listener {
                                             }
                                         }
                                     }
+
+                                    // Third pass: Restore items that would have replaced existing items
+                                    // Into empty slots or drop them if there are no available slots.
                                     for (ItemStack i : slotReplacedItems) {
                                         if (playerInventory.firstEmpty() != -1)
                                             playerInventory.addItem(i);
