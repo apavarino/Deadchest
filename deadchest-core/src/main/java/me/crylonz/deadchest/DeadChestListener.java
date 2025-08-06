@@ -262,7 +262,8 @@ public class DeadChestListener implements Listener {
                     ItemStack[] itemsToStore = new ItemStack[playerInv.length];
                     for (int i = 0; i < playerInv.length; i++) {
                         ItemStack item = playerInv[i];
-                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())) {
+                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())
+                            && !isMinePackBackpack(item)) { // MinePacks compatibility: Ignore backpacks
                             itemsToStore[i] = item;
                         }
                         // Keep null for filtered/empty slots to preserve positions
@@ -529,6 +530,21 @@ public class DeadChestListener implements Listener {
                     }
                 }
         }
+    }
+
+    // Used for MinePacks compatibility
+    private boolean isMinePackBackpack(ItemStack item) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("MinePacks") == null)
+            return false; // MinePack not installed
+
+        // All the following logic in this method is taken from MinePack to determine if an item is a backpack.
+        String mpItemName = ChatColor.translateAlternateColorCodes('&',
+            Bukkit.getServer().getPluginManager().getPlugin("MinePacks").getConfig().getString("ItemShortcut.ItemName"));
+        String mpItemNameNoReset = mpItemName.replace(ChatColor.RESET.toString(), "");
+
+        if (item == null || item.getType() != Material.PLAYER_HEAD || !item.hasItemMeta()) return false;
+        String itemDisplayName = item.getItemMeta().getDisplayName();
+        return itemDisplayName != null && mpItemNameNoReset.equals(itemDisplayName.replace(ChatColor.RESET.toString(), ""));
     }
 }
 
