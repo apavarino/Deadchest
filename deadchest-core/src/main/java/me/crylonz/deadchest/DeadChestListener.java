@@ -290,25 +290,6 @@ public class DeadChestListener implements Listener {
                             .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
                             .collect(Collectors.toList());
 
-                    // Handle MinePacks backpack duplication
-                    if (Bukkit.getServer().getPluginManager().getPlugin("MinePacks") != null) {
-                        // Look for MinePacks backpacks in drops and remove them to prevent duplication
-                        List<ItemStack> minePacksBackpacks = new ArrayList<>();
-                        for (ItemStack drop : e.getDrops()) {
-                            if (drop != null && drop.hasItemMeta() && drop.getItemMeta().hasDisplayName()) {
-                                String displayName = drop.getItemMeta().getDisplayName();
-                                if (displayName.toLowerCase().contains("backpack") ||
-                                        (drop.getItemMeta().hasLore() &&
-                                                drop.getItemMeta().getLore().toString().toLowerCase()
-                                                        .contains("backpack"))) {
-                                    minePacksBackpacks.add(drop);
-                                }
-                            }
-                        }
-                        // Remove MinePacks backpacks from drops to prevent duplication
-                        e.getDrops().removeAll(minePacksBackpacks);
-                    }
-
                     e.getDrops().removeIf(dropDestroy::contains);
 
                     for (ItemStack item : p.getInventory().getContents()) {
@@ -389,7 +370,8 @@ public class DeadChestListener implements Listener {
 
                                     // First pass: Auto-equip armor and shield from their original equipped slots
                                     // Minecraft PlayerInventory slots: 0-35 = main inventory, 36=boots, 37=leggings, 38=chestplate, 39=helmet, 40=offhand
-                                    for (int i = 0; i < originalContents.length; i++) {
+                                    // Don't bother checking main inventory in first pass.
+                                    for (int i = 36; i <= 40; i++) {
                                         ItemStack item = originalContents[i];
                                         if (item != null) {
                                             // Auto-equip helmet from helmet slot (39)
@@ -460,7 +442,8 @@ public class DeadChestListener implements Listener {
                                     for (int i = 0; i < originalContents.length && i < 36; i++) {
                                         ItemStack item = originalContents[i];
                                         if (item != null) {
-                                            if (i < playerInventory.getSize() && playerInventory.getItem(i) == null) {
+                                            if (i < playerInventory.getSize() && (playerInventory.getItem(i) == null
+                                                || playerInventory.getItem(i).getType() == Material.AIR)) {
                                                 playerInventory.setItem(i, item);
                                             } else {
                                                 // If slot doesn't exist or is occupied, add to slotReplacedItems to be
