@@ -384,6 +384,8 @@ public class DeadChestListener implements Listener {
 
                                     // Store the original death inventory layout for position restoration
                                     ItemStack[] originalContents = cd.getInventory().toArray(new ItemStack[0]);
+                                    // This will store items whose slots have been replaced with new items since death, so that no items are lost.
+                                    List<ItemStack> slotReplacedItems = new ArrayList<>();
 
                                     // First pass: Auto-equip armor and shield from their original equipped slots
                                     // Minecraft PlayerInventory slots: 0-35 = main inventory, 36=boots, 37=leggings, 38=chestplate, 39=helmet, 40=offhand
@@ -391,38 +393,63 @@ public class DeadChestListener implements Listener {
                                         ItemStack item = originalContents[i];
                                         if (item != null) {
                                             // Auto-equip helmet from helmet slot (39)
-                                            if (Utils.isHelmet(item) && i == 39 && (playerInventory.getHelmet() == null
-                                                    || playerInventory.getHelmet().getType() == Material.AIR)) {
-                                                playerInventory.setHelmet(item);
+                                            if (Utils.isHelmet(item) && i == 39) {
+                                                // If helmet slot is empty, restore helmet
+                                                if (playerInventory.getHelmet() == null
+                                                        || playerInventory.getHelmet().getType() == Material.AIR) {
+                                                    playerInventory.setHelmet(item);
+                                                }
+                                                else { // if it wasn't empty, add to inventory later
+                                                    slotReplacedItems.add(item);
+                                                }
                                                 originalContents[i] = null;
                                             }
                                             // Auto-equip chestplate from chestplate slot (38)
-                                            else if (Utils.isChestplate(item) && i == 38
-                                                    && (playerInventory.getChestplate() == null || playerInventory
-                                                            .getChestplate().getType() == Material.AIR)) {
-                                                playerInventory.setChestplate(item);
+                                            else if (Utils.isChestplate(item) && i == 38) {
+                                                // If chestplate slot is empty, restore chestplate
+                                                if (playerInventory.getChestplate() == null
+                                                        || playerInventory.getChestplate().getType() == Material.AIR) {
+                                                    playerInventory.setChestplate(item);
+                                                }
+                                                else { // if it wasn't empty, add to inventory later
+                                                    slotReplacedItems.add(item);
+                                                }
                                                 originalContents[i] = null;
                                             }
                                             // Auto-equip leggings from leggings slot (37)
-                                            else if (Utils.isLeggings(item) && i == 37
-                                                    && (playerInventory.getLeggings() == null
-                                                            || playerInventory.getLeggings()
-                                                                    .getType() == Material.AIR)) {
-                                                playerInventory.setLeggings(item);
+                                            else if (Utils.isLeggings(item) && i == 37) {
+                                                // If leggings slot is empty, restore leggings
+                                                if (playerInventory.getLeggings() == null
+                                                        || playerInventory.getLeggings().getType() == Material.AIR) {
+                                                    playerInventory.setLeggings(item);
+                                                }
+                                                else { // if it wasn't empty, add to inventory later
+                                                    slotReplacedItems.add(item);
+                                                }
                                                 originalContents[i] = null;
                                             }
                                             // Auto-equip boots from boots slot (36)
-                                            else if (Utils.isBoots(item) && i == 36
-                                                    && (playerInventory.getBoots() == null
-                                                            || playerInventory.getBoots().getType() == Material.AIR)) {
-                                                playerInventory.setBoots(item);
+                                            else if (Utils.isBoots(item) && i == 36) {
+                                                // If boots slot is empty, restore boots
+                                                if (playerInventory.getBoots() == null
+                                                        || playerInventory.getBoots().getType() == Material.AIR) {
+                                                    playerInventory.setBoots(item);
+                                                }
+                                                else { // if it wasn't empty, add to inventory later
+                                                    slotReplacedItems.add(item);
+                                                }
                                                 originalContents[i] = null;
                                             }
                                             // Auto-equip shield to offhand ONLY if it was originally in offhand (slot 40)
-                                            else if (item.getType() == Material.SHIELD && i == 40 &&
-                                                    (playerInventory.getItemInOffHand() == null || playerInventory
-                                                            .getItemInOffHand().getType() == Material.AIR)) {
-                                                playerInventory.setItemInOffHand(item);
+                                            else if (i == 40) {
+                                                // If offhand slot is empty, restore offhand
+                                                if (playerInventory.getItemInOffHand() == null
+                                                        || playerInventory.getItemInOffHand().getType() == Material.AIR) {
+                                                    playerInventory.setItemInOffHand(item);
+                                                }
+                                                else { // if it wasn't empty, add to inventory later
+                                                    slotReplacedItems.add(item);
+                                                }
                                                 originalContents[i] = null;
                                             }
                                         }
@@ -433,17 +460,20 @@ public class DeadChestListener implements Listener {
                                     for (int i = 0; i < originalContents.length && i < 36; i++) {
                                         ItemStack item = originalContents[i];
                                         if (item != null) {
-                                            if (i < playerInventory.getSize()) {
+                                            if (i < playerInventory.getSize() && playerInventory.getItem(i) == null) {
                                                 playerInventory.setItem(i, item);
                                             } else {
-                                                // If slot doesn't exist, add to first available slot or drop
-                                                if (playerInventory.firstEmpty() != -1) {
-                                                    playerInventory.addItem(item);
-                                                } else {
-                                                    playerWorld.dropItemNaturally(block.getLocation(), item);
-                                                }
+                                                // If slot doesn't exist or is occupied, add to slotReplacedItems to be
+                                                // added to first empty slot or dropped
+                                                slotReplacedItems.add(item);
                                             }
                                         }
+                                    }
+                                    for (ItemStack i : slotReplacedItems) {
+                                        if (playerInventory.firstEmpty() != -1)
+                                            playerInventory.addItem(i);
+                                        else
+                                            playerWorld.dropItemNaturally(block.getLocation(), i);
                                     }
                                 } else {
                                     // pushed item on the ground
