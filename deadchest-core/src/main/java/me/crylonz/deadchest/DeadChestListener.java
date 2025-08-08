@@ -258,10 +258,16 @@ public class DeadChestListener implements Listener {
                     }
 
                     ItemStack[] playerInv = p.getInventory().getContents();
-                    ItemStack[] itemsToStore = Arrays.stream(p.getInventory().getContents())
-                            .filter(Objects::nonNull)
-                            .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
-                            .toArray(ItemStack[]::new);
+
+                    ItemStack[] itemsToStore = new ItemStack[playerInv.length];
+                    for (int i = 0; i < playerInv.length; i++) {
+                        ItemStack item = playerInv[i];
+                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())
+                            && !isMinePackBackpack(item)) { // MinePacks compatibility: Ignore backpacks
+                            itemsToStore[i] = item;
+                        }
+                        // Keep null for filtered/empty slots to preserve positions
+                    }
 
                     // Update player inv just to update chest data after that we reset it back
                     // There is no way to instance Inventory
@@ -357,26 +363,33 @@ public class DeadChestListener implements Listener {
                                 if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
                                     player.giveExp(cd.getXpStored());
-                                    for (ItemStack i : cd.getInventory()) {
-                                        if (i != null) {
 
-                                            if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
-                                                playerInventory.setHelmet(i);
+                                    // Store the original death inventory layout for position restoration
+                                    ItemStack[] originalContents = cd.getInventory().toArray(new ItemStack[0]);
+                                    // This will store items whose slots have been replaced with new items since death, so that no items are lost.
+                                    List<ItemStack> slotReplacedItems = new ArrayList<>();
 
-                                            else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
-                                                playerInventory.setBoots(i);
-
-                                            else if (Utils.isChestplate(i) && playerInventory.getChestplate() == null)
-                                                playerInventory.setChestplate(i);
-
-                                            else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
-                                                playerInventory.setLeggings(i);
-
-                                            else if (playerInventory.firstEmpty() != -1)
-                                                playerInventory.addItem(i);
+                                    // First pass: Restore items to their original inventory positions
+                                    for (int i = 0; i < originalContents.length; i++) {
+                                        ItemStack item = originalContents[i];
+                                        if (item != null) {
+                                            if (i < playerInventory.getSize() && (playerInventory.getItem(i) == null
+                                                || playerInventory.getItem(i).getType() == Material.AIR))
+                                                playerInventory.setItem(i, item);
                                             else
-                                                playerWorld.dropItemNaturally(block.getLocation(), i);
+                                                // If slot doesn't exist or is occupied, add to slotReplacedItems to be
+                                                // added to first empty slot or dropped
+                                                slotReplacedItems.add(item);
                                         }
+                                    }
+
+                                    // Second pass: Restore items that would have replaced existing items
+                                    // into empty slots or drop them if there are no available slots.
+                                    for (ItemStack i : slotReplacedItems) {
+                                        if (playerInventory.firstEmpty() != -1)
+                                            playerInventory.addItem(i);
+                                        else
+                                            playerWorld.dropItemNaturally(block.getLocation(), i);
                                     }
                                 } else {
                                     // pushed item on the ground
@@ -517,6 +530,21 @@ public class DeadChestListener implements Listener {
                     }
                 }
         }
+    }
+
+    // Used for MinePacks compatibility
+    private boolean isMinePackBackpack(ItemStack item) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("MinePacks") == null)
+            return false; // MinePack not installed
+
+        // All the following logic in this method is taken from MinePack to determine if an item is a backpack.
+        String mpItemName = ChatColor.translateAlternateColorCodes('&',
+            Bukkit.getServer().getPluginManager().getPlugin("MinePacks").getConfig().getString("ItemShortcut.ItemName"));
+        String mpItemNameNoReset = mpItemName.replace(ChatColor.RESET.toString(), "");
+
+        if (item == null || item.getType() != Material.PLAYER_HEAD || !item.hasItemMeta()) return false;
+        String itemDisplayName = item.getItemMeta().getDisplayName();
+        return itemDisplayName != null && mpItemNameNoReset.equals(itemDisplayName.replace(ChatColor.RESET.toString(), ""));
     }
 }
 
