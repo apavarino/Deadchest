@@ -17,8 +17,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
@@ -36,6 +39,7 @@ import static me.crylonz.deadchest.Utils.*;
 import static me.crylonz.deadchest.utils.ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE;
 import static me.crylonz.deadchest.utils.ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH;
 import static me.crylonz.deadchest.utils.ExpUtils.getTotalExperienceToStore;
+import static me.crylonz.deadchest.utils.IgnoreItemListRepository.saveIgnoreIntoInventory;
 
 public class DeadChestListener implements Listener {
 
@@ -229,6 +233,12 @@ public class DeadChestListener implements Listener {
                     for (String item : config.getArray(ConfigKey.EXCLUDED_ITEMS)) {
                         if (item != null && Material.getMaterial(item.toUpperCase()) != null) {
                             p.getInventory().remove(Material.getMaterial(item.toUpperCase()));
+                        }
+                    }
+
+                    for (ItemStack itemStack : ignoreList.getContents()) {
+                        if (itemStack != null) {
+                            p.getInventory().remove(itemStack);
                         }
                     }
 
@@ -517,6 +527,58 @@ public class DeadChestListener implements Listener {
                     }
                 }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!isDeadchestGui(event.getView())) return;
+        if (!(event.getWhoClicked() instanceof Player)) return;
+
+        event.setCancelled(true);
+
+        final InventoryView view = event.getView();
+        final Inventory clickedInv = event.getClickedInventory();
+        final int slot = event.getSlot();
+
+        if (clickedInv == null) return;
+
+        // first case : removing item from ignore list
+        if (clickedInv == view.getTopInventory()) {
+            final ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType().isAir()) return;
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (clicked.getAmount() <= 1) {
+                    clickedInv.setItem(slot, null);
+                } else {
+                    ItemStack newStack = clicked.clone();
+                    newStack.setAmount(clicked.getAmount() - 1);
+                    clickedInv.setItem(slot, newStack);
+                }
+                saveIgnoreIntoInventory(ignoreList);
+            });
+            return;
+        }
+
+        // second case : adding item to ignore list
+        if (clickedInv == view.getBottomInventory()) {
+            final ItemStack src = event.getCurrentItem();
+            if (src == null || src.getType().isAir()) return;
+
+            if (!ignoreList.containsAtLeast(src, 1)) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    ItemStack item = src.clone();
+                    item.setAmount(1);
+                    ignoreList.addItem(item);
+                    saveIgnoreIntoInventory(ignoreList);
+                });
+            }
+        }
+    }
+
+
+    private boolean isDeadchestGui(InventoryView view) {
+        return view.getTopInventory().getHolder() instanceof IgnoreInventoryHolder;
     }
 }
 

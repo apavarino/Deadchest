@@ -34,6 +34,7 @@ public class DCCommandExecutor implements CommandExecutor {
         commandRegistration.registerListOwn();          // dc list
         commandRegistration.registerListOther();        // dc list all | <PlayerName>
         commandRegistration.registerGiveBack();         // dc giveback <PlayerName>
+        commandRegistration.registerIgnoreList();       // dc ignore
 
         if (!commandRegistration.isCommandSucceed()) {
             sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Unrecognized Command");

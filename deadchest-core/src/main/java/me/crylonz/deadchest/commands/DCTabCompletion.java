@@ -29,6 +29,7 @@ public class DCTabCompletion implements TabCompleter {
                         list.add("removeinfinite");
                         list.add("removeall");
                         list.add("repair");
+                        list.add("ignore");
                     }
 
                     if (PermissionUtils.hasAdminOrOneOf(player, PermissionUtils.LIST_ALL)) {

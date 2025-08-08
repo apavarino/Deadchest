@@ -6,9 +6,11 @@ import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import me.crylonz.deadchest.utils.DeadChestUpdater;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 
 import static me.crylonz.deadchest.DeadChestManager.*;
 import static me.crylonz.deadchest.Utils.generateLog;
+import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
 public class DeadChest extends JavaPlugin {
 
@@ -32,10 +35,14 @@ public class DeadChest extends JavaPlugin {
     public static Localization local;
     public static Plugin plugin;
 
+    public static Inventory ignoreList;
+
     public static boolean bstats = true;
     public static boolean isChangesNeedToBeSave = false;
 
     public static DeadChestConfig config;
+
+    public static SQLite db;
 
     static {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
@@ -50,7 +57,10 @@ public class DeadChest extends JavaPlugin {
     }
 
     public void onEnable() {
+        this.db = new SQLite(this);
+        db.init();
 
+        Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
         config = new DeadChestConfig(this);
         plugin = this;
         fileManager = new FileManager(this);
@@ -72,7 +82,7 @@ public class DeadChest extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new DeadChestListener(this), this);
 
-        // Wich block can be used as grave ?
+        // Which block can be used as grave ?
         graveBlocks.add(Material.CHEST);
         graveBlocks.add(Material.PLAYER_HEAD);
         graveBlocks.add(Material.ENDER_CHEST);
@@ -168,6 +178,9 @@ public class DeadChest extends JavaPlugin {
                 chestData = tmp;
             }
         }
+
+        // ignore list
+        loadIgnoreIntoInventory(ignoreList);
 
         // locale file for translation
         if (!fileManager.getLocalizationConfigFile().exists()) {
