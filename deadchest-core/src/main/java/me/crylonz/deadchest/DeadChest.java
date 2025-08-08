@@ -60,7 +60,7 @@ public class DeadChest extends JavaPlugin {
         this.db = new SQLite(this);
         db.init();
 
-        Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
+        ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
         config = new DeadChestConfig(this);
         plugin = this;
         fileManager = new FileManager(this);
