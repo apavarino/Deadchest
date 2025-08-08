@@ -53,7 +53,7 @@ public class DeadChestListener implements Listener {
         return plugin.config;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
         if (e.getKeepInventory()) {
