@@ -8,15 +8,26 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
-tasks {
-    compileTestJava {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
+// Keep compatibility for user with old java version
+tasks.named<JavaCompile>("compileJava") {
+    options.release.set(8)
+}
+
+tasks.named<JavaCompile>("compileTestJava") {
+    options.release.set(17)
+}
+
+
+tasks.test {
+    useJUnitPlatform()
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    })
 }
 
 val pluginDir: String by lazy {
@@ -49,11 +60,7 @@ dependencies {
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.70.0")
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
-    }
-}
+
 
 tasks.named<Test>("test") {
     useJUnitPlatform()

@@ -18,6 +18,7 @@ import java.util.*;
 
 import static me.crylonz.deadchest.DeadChest.*;
 import static me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests;
+import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
 
@@ -29,6 +30,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
         registerCommand("dc reload", Permission.ADMIN.label, () -> {
             fileManager.reloadChestDataConfig();
             fileManager.reloadLocalizationConfig();
+            loadIgnoreIntoInventory(ignoreList);
             plugin.reloadConfig();
             plugin.registerConfig();
 
@@ -280,6 +282,12 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             } else {
                 sender.sendMessage(local.get("loc_prefix") + local.get("loc_givebackInfo"));
             }
+        });
+    }
+
+    public void registerIgnoreList() {
+        registerCommand("dc ignore ", Permission.ADMIN.label, () -> {
+            player.openInventory(ignoreList);
         });
     }
 }

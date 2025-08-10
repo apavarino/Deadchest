@@ -1,8 +1,8 @@
 name: DeadChest
 main: me.crylonz.deadchest.DeadChest
-softdepend: [Multiverse-Core, WorldGuard]
+softdepend: [ Multiverse-Core, WorldGuard ]
 author: Crylonz
-version: 4.21.1
+version: 4.22.0
 description: Keep your inventory in a chest when you die
 api-version: "1.13"
 permissions:
@@ -16,13 +16,13 @@ permissions:
     description: Player can open all deadChest
     default: op
   deadchest.infinityChest:
-    description: Player dead chest never disappaear
+    description: Player dead chest never disappear
     default: false
   deadchest.giveBack:
     description: Allow a player to give back a deadchest to a player
     default: op
   deadchest.admin:
-    description: Player dead chest never disappaear
+    description: Player dead chest never disappear
     default: op
   deadchest.remove.own:
     description: Allow a player to remove his deadchest

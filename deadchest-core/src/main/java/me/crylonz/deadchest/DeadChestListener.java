@@ -17,8 +17,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
@@ -36,6 +39,7 @@ import static me.crylonz.deadchest.Utils.*;
 import static me.crylonz.deadchest.utils.ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE;
 import static me.crylonz.deadchest.utils.ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH;
 import static me.crylonz.deadchest.utils.ExpUtils.getTotalExperienceToStore;
+import static me.crylonz.deadchest.utils.IgnoreItemListRepository.saveIgnoreIntoInventory;
 
 public class DeadChestListener implements Listener {
 
@@ -49,7 +53,7 @@ public class DeadChestListener implements Listener {
         return plugin.config;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
 
         if (e.getKeepInventory()) {
@@ -232,6 +236,12 @@ public class DeadChestListener implements Listener {
                         }
                     }
 
+                    for (ItemStack itemStack : ignoreList.getContents()) {
+                        if (itemStack != null) {
+                            p.getInventory().remove(itemStack);
+                        }
+                    }
+
                     /*
                       Update durability of item to decrease it relatively to ITEM_DURABILITY_LOSS_ON_DEATH
                      */
@@ -258,10 +268,15 @@ public class DeadChestListener implements Listener {
                     }
 
                     ItemStack[] playerInv = p.getInventory().getContents();
-                    ItemStack[] itemsToStore = Arrays.stream(p.getInventory().getContents())
-                            .filter(Objects::nonNull)
-                            .filter(item -> !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString()))
-                            .toArray(ItemStack[]::new);
+
+                    ItemStack[] itemsToStore = new ItemStack[playerInv.length];
+                    for (int i = 0; i < playerInv.length; i++) {
+                        ItemStack item = playerInv[i];
+                        if (item != null && !config.getArray(ConfigKey.IGNORED_ITEMS).contains(item.getType().toString())) {
+                            itemsToStore[i] = item;
+                        }
+                        // Keep null for filtered/empty slots to preserve positions
+                    }
 
                     // Update player inv just to update chest data after that we reset it back
                     // There is no way to instance Inventory
@@ -357,26 +372,33 @@ public class DeadChestListener implements Listener {
                                 if (getConfig().getInt(ConfigKey.DROP_MODE) == 1) {
                                     final PlayerInventory playerInventory = player.getInventory();
                                     player.giveExp(cd.getXpStored());
-                                    for (ItemStack i : cd.getInventory()) {
-                                        if (i != null) {
 
-                                            if (Utils.isHelmet(i) && playerInventory.getHelmet() == null)
-                                                playerInventory.setHelmet(i);
+                                    // Store the original death inventory layout for position restoration
+                                    ItemStack[] originalContents = cd.getInventory().toArray(new ItemStack[0]);
+                                    // This will store items whose slots have been replaced with new items since death, so that no items are lost.
+                                    List<ItemStack> slotReplacedItems = new ArrayList<>();
 
-                                            else if (Utils.isBoots(i) && playerInventory.getBoots() == null)
-                                                playerInventory.setBoots(i);
-
-                                            else if (Utils.isChestplate(i) && playerInventory.getChestplate() == null)
-                                                playerInventory.setChestplate(i);
-
-                                            else if (Utils.isLeggings(i) && playerInventory.getLeggings() == null)
-                                                playerInventory.setLeggings(i);
-
-                                            else if (playerInventory.firstEmpty() != -1)
-                                                playerInventory.addItem(i);
+                                    // First pass: Restore items to their original inventory positions
+                                    for (int i = 0; i < originalContents.length; i++) {
+                                        ItemStack item = originalContents[i];
+                                        if (item != null) {
+                                            if (i < playerInventory.getSize() && (playerInventory.getItem(i) == null
+                                                || playerInventory.getItem(i).getType() == Material.AIR))
+                                                playerInventory.setItem(i, item);
                                             else
-                                                playerWorld.dropItemNaturally(block.getLocation(), i);
+                                                // If slot doesn't exist or is occupied, add to slotReplacedItems to be
+                                                // added to first empty slot or dropped
+                                                slotReplacedItems.add(item);
                                         }
+                                    }
+
+                                    // Second pass: Restore items that would have replaced existing items
+                                    // into empty slots or drop them if there are no available slots.
+                                    for (ItemStack i : slotReplacedItems) {
+                                        if (playerInventory.firstEmpty() != -1)
+                                            playerInventory.addItem(i);
+                                        else
+                                            playerWorld.dropItemNaturally(block.getLocation(), i);
                                     }
                                 } else {
                                     // pushed item on the ground
@@ -517,6 +539,58 @@ public class DeadChestListener implements Listener {
                     }
                 }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!isDeadchestGui(event.getView())) return;
+        if (!(event.getWhoClicked() instanceof Player)) return;
+
+        event.setCancelled(true);
+
+        final InventoryView view = event.getView();
+        final Inventory clickedInv = event.getClickedInventory();
+        final int slot = event.getSlot();
+
+        if (clickedInv == null) return;
+
+        // first case : removing item from ignore list
+        if (clickedInv == view.getTopInventory()) {
+            final ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType().isAir()) return;
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (clicked.getAmount() <= 1) {
+                    clickedInv.setItem(slot, null);
+                } else {
+                    ItemStack newStack = clicked.clone();
+                    newStack.setAmount(clicked.getAmount() - 1);
+                    clickedInv.setItem(slot, newStack);
+                }
+                saveIgnoreIntoInventory(ignoreList);
+            });
+            return;
+        }
+
+        // second case : adding item to ignore list
+        if (clickedInv == view.getBottomInventory()) {
+            final ItemStack src = event.getCurrentItem();
+            if (src == null || src.getType().isAir()) return;
+
+            if (!ignoreList.containsAtLeast(src, 1)) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    ItemStack item = src.clone();
+                    item.setAmount(1);
+                    ignoreList.addItem(item);
+                    saveIgnoreIntoInventory(ignoreList);
+                });
+            }
+        }
+    }
+
+
+    private boolean isDeadchestGui(InventoryView view) {
+        return view.getTopInventory().getHolder() instanceof IgnoreInventoryHolder;
     }
 }
 
