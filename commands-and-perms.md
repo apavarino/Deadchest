@@ -15,7 +15,7 @@ Command | Permission | Description
 `/dc list <PlayerName>` | `deadchest.list.other` | List all deadchest of a player
 `/dc giveBack <PlayerName>` | `deadchest.giveBack` | Return the oldest deadchest inventory of a player to him
 `/dc ignore` | `deadchest.admin` | Opens the ignore list inventory to add items Deadchest should ignore.
-deadchest.admin
+
  -- | `deadchest.generate` | Allow a player to generate deadchests
  -- | `deadchest.chestPass` | Allow a player to get all deadchests
  -- | `deadchest.infinityChest` |  Allow a player to have a infinity chest
