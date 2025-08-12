@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestLoader.*;
 
 public class Utils {
 
@@ -50,7 +51,7 @@ public class Utils {
             String finalMsg = "[" + formatter.format(date) + "] " + message + "\n";
             Files.write(Paths.get("plugins/DeadChest/deadchest.log"), finalMsg.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            DeadChest.log.warning("Can't write log for Deadchest : " + e);
+            DeadChestLoader.log.warning("Can't write log for Deadchest : " + e);
         }
     }
 
@@ -150,7 +151,7 @@ public class Utils {
         }
     }
 
-    public static boolean checkTheEndGeneration(Entity player, DeadChest deadChest) {
+    public static boolean checkTheEndGeneration(Entity player, Plugin deadChest) {
         return player.getWorld().getEnvironment().equals(World.Environment.THE_END) &&
                 !deadChest.getConfig().getBoolean(ConfigKey.GENERATE_IN_THE_END.toString());
     }

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Locale;
 
-import static me.crylonz.deadchest.DeadChest.config;
+import static me.crylonz.deadchest.DeadChestLoader.config;
 
 public final class ExpUtils {
 

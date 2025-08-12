@@ -17,7 +17,7 @@ public class UtilsTest {
 
     @BeforeAll
     public static void setup() {
-        DeadChest.bstats = false;
+        DeadChestLoader.bstats = false;
 
         server = MockBukkit.mock();
         world = server.addSimpleWorld("test");

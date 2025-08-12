@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 
-import static me.crylonz.deadchest.DeadChest.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestData;
 
 public class FileManager {
 
@@ -62,7 +62,7 @@ public class FileManager {
         try {
             getChestDataConfig().save(chestDataFile);
         } catch (IOException ex) {
-            DeadChest.log.severe("Could not save config to " + chestDataFile + ex);
+            DeadChestLoader.log.severe("Could not save config to " + chestDataFile + ex);
         }
     }
 
@@ -92,7 +92,7 @@ public class FileManager {
         try {
             getLocalizationConfig().save(localizationFile);
         } catch (IOException ex) {
-            DeadChest.log.severe("Could not save config to " + localizationFile + ex);
+            DeadChestLoader.log.severe("Could not save config to " + localizationFile + ex);
         }
     }
 

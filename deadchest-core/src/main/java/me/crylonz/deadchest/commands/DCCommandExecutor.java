@@ -1,19 +1,19 @@
 package me.crylonz.deadchest.commands;
 
-import me.crylonz.deadchest.DeadChest;
+import me.crylonz.deadchest.DeadChestLoader;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import static me.crylonz.deadchest.DeadChest.local;
+import static me.crylonz.deadchest.DeadChestLoader.local;
 
 public class DCCommandExecutor implements CommandExecutor {
 
-    private final DeadChest plugin;
+    private final DeadChestLoader plugin;
     private final DCCommandRegistrationService commandRegistration;
 
-    public DCCommandExecutor(DeadChest p) {
+    public DCCommandExecutor(DeadChestLoader p) {
         this.plugin = p;
         this.commandRegistration = new DCCommandRegistrationService(plugin);
     }

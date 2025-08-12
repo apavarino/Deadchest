@@ -4,20 +4,15 @@ import me.crylonz.deadchest.commands.DCCommandExecutor;
 import me.crylonz.deadchest.commands.DCTabCompletion;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
-import me.crylonz.deadchest.utils.DeadChestUpdater;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -25,7 +20,7 @@ import static me.crylonz.deadchest.DeadChestManager.*;
 import static me.crylonz.deadchest.Utils.generateLog;
 import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
-public class DeadChest extends JavaPlugin {
+public class DeadChestLoader {
 
     public final static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
@@ -33,6 +28,7 @@ public class DeadChest extends JavaPlugin {
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
     public static ArrayList<Material> graveBlocks = new ArrayList<>();
     public static Localization local;
+    public static JavaPlugin javaPlugin;
     public static Plugin plugin;
 
     public static Inventory ignoreList;
@@ -48,22 +44,19 @@ public class DeadChest extends JavaPlugin {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
     }
 
-    public DeadChest() {
+    public DeadChestLoader() {
         super();
     }
 
-    protected DeadChest(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
-    }
-
-    public void onEnable() {
-        this.db = new SQLite(this);
+    public void enable(Plugin dcPlugin, JavaPlugin dcjavaPlugin) {
+        javaPlugin = dcjavaPlugin;
+        db = new SQLite(dcPlugin);
         db.init();
 
         ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
-        config = new DeadChestConfig(this);
-        plugin = this;
-        fileManager = new FileManager(this);
+        config = new DeadChestConfig(dcPlugin);
+        plugin = dcPlugin;
+        fileManager = new FileManager(dcPlugin);
 
         chestData = new ArrayList<>();
         local = new Localization();
@@ -71,16 +64,12 @@ public class DeadChest extends JavaPlugin {
         registerConfig();
         initializeConfig();
 
-        if (config.getBoolean(ConfigKey.AUTO_UPDATE)) {
-            DeadChestUpdater updater = new DeadChestUpdater(this, 322882, this.getFile(), DeadChestUpdater.UpdateType.DEFAULT, true);
-        }
-
         if (config.getBoolean(ConfigKey.AUTO_CLEANUP_ON_START)) {
             cleanAllDeadChests();
         }
 
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(this), this);
+        PluginManager pm = plugin.getServer().getPluginManager();
+        pm.registerEvents(new DeadChestListener(this), plugin);
 
         // Which block can be used as grave ?
         graveBlocks.add(Material.CHEST);
@@ -90,22 +79,17 @@ public class DeadChest extends JavaPlugin {
         graveBlocks.add(Material.SHULKER_BOX);
 
 
-        Objects.requireNonNull(this.getCommand("dc"), "Command dc not found")
+        Objects.requireNonNull(javaPlugin.getCommand("dc"), "Command dc not found")
                 .setExecutor(new DCCommandExecutor(this));
 
-        Objects.requireNonNull(getCommand("dc")).setTabCompleter(new DCTabCompletion());
-
-        if (bstats) {
-            Metrics metrics = new Metrics(this, 11385);
-        }
+        Objects.requireNonNull(javaPlugin.getCommand("dc")).setTabCompleter(new DCTabCompletion());
 
         launchRepeatingTask();
     }
 
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        if (this.getConfig().getBoolean(ConfigKey.WORLD_GUARD_DETECTION.toString())) {
+
+    public void load() {
+        if (javaPlugin.getConfig().getBoolean(ConfigKey.WORLD_GUARD_DETECTION.toString())) {
             try {
                 wgsdc = new WorldGuardSoftDependenciesChecker();
                 wgsdc.load();
@@ -119,7 +103,7 @@ public class DeadChest extends JavaPlugin {
         }
     }
 
-    public void onDisable() {
+    public void disable() {
 
         // chest data
         if (fileManager.getChestDataFile().exists()) {
@@ -162,7 +146,7 @@ public class DeadChest extends JavaPlugin {
 
         // plugin config file
         if (!fileManager.getConfigFile().exists()) {
-            saveDefaultConfig();
+            plugin.saveDefaultConfig();
         } else {
             config.updateConfig();
         }
@@ -280,7 +264,7 @@ public class DeadChest extends JavaPlugin {
     }
 
     private void launchRepeatingTask() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, DeadChest::handleEvent, 20, 20);
+        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleEvent, 20, 20);
     }
 
     public DeadChestConfig getDataConfig() {

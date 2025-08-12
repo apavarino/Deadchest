@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.crylonz.deadchest.DeadChest.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestData;
 
 public class DeadChestAPI {
 
@@ -22,7 +22,7 @@ public class DeadChestAPI {
     public static List<ChestData> getChests(Player player) {
 
         List<ChestData> chestData = new ArrayList<>();
-        DeadChest.chestData.forEach(chest -> {
+        DeadChestLoader.chestData.forEach(chest -> {
             if (chest.getPlayerName().equalsIgnoreCase(player.getName())) {
                 chestData.add(new ChestData(chest));
             }

@@ -13,7 +13,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.deadchest.DeadChest.config;
+import static me.crylonz.deadchest.DeadChestLoader.config;
 import static me.crylonz.deadchest.Utils.*;
 
 public class WorldGuardSoftDependenciesChecker {
@@ -35,7 +35,7 @@ public class WorldGuardSoftDependenciesChecker {
 
         } catch (
                 FlagConflictException e) {
-            DeadChest.log.warning("Conflict in Deadchest flags");
+            DeadChestLoader.log.warning("Conflict in Deadchest flags");
         }
     }
 

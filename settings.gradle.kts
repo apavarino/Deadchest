@@ -1,3 +1,3 @@
 rootProject.name = "DeadChest"
 
-include("deadchest-core")
+include("deadchest-core", "deadchest-plugin")

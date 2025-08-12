@@ -5,8 +5,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
 
-import static me.crylonz.deadchest.DeadChest.db;
-import static me.crylonz.deadchest.DeadChest.log;
+import static me.crylonz.deadchest.DeadChestLoader.db;
+import static me.crylonz.deadchest.DeadChestLoader.log;
 
 
 public class IgnoreItemListRepository {

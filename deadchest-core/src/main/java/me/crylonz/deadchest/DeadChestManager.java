@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.Utils.computeChestType;
 import static me.crylonz.deadchest.Utils.isGraveBlock;
 
@@ -117,9 +117,9 @@ public class DeadChestManager {
 
                 for (Entity ne : nearbyEntities) {
                     if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, false));
+                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, false));
                     } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChest.plugin, true));
+                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, true));
                     }
                 }
             }

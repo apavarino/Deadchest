@@ -1,7 +1,7 @@
 package me.crylonz.deadchest.commands;
 
 import me.crylonz.deadchest.ChestData;
-import me.crylonz.deadchest.DeadChest;
+import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Permission;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
@@ -16,13 +16,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests;
 import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
 
-    public DCCommandRegistrationService(DeadChest plugin) {
+    public DCCommandRegistrationService(DeadChestLoader plugin) {
         super(plugin);
     }
 
@@ -31,7 +31,7 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             fileManager.reloadChestDataConfig();
             fileManager.reloadLocalizationConfig();
             loadIgnoreIntoInventory(ignoreList);
-            plugin.reloadConfig();
+            DeadChestLoader.plugin.reloadConfig();
             plugin.registerConfig();
 
             @SuppressWarnings("unchecked")

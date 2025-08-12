@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.crylonz.deadchest.DeadChest.*;
+import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.DeadChestManager.generateHologram;
 import static me.crylonz.deadchest.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.deadchest.Utils.*;
@@ -43,14 +43,14 @@ import static me.crylonz.deadchest.utils.IgnoreItemListRepository.saveIgnoreInto
 
 public class DeadChestListener implements Listener {
 
-    private final DeadChest plugin;
+    private final DeadChestLoader deadChestLoader;
 
-    public DeadChestListener(DeadChest plugin) {
-        this.plugin = plugin;
+    public DeadChestListener(DeadChestLoader plugin) {
+        this.deadChestLoader = plugin;
     }
 
     public DeadChestConfig getConfig() {
-        return plugin.config;
+        return config;
     }
 
     @EventHandler(priority = EventPriority.LOW)

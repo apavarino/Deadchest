@@ -1,14 +1,14 @@
 package me.crylonz.deadchest.commands;
 
-import me.crylonz.deadchest.DeadChest;
+import me.crylonz.deadchest.DeadChestLoader;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static me.crylonz.deadchest.DeadChest.local;
+import static me.crylonz.deadchest.DeadChestLoader.local;
 
 abstract class DCCommandRegistration {
-    protected final DeadChest plugin;
+    protected final DeadChestLoader plugin;
 
     // CommandSender params
     protected CommandSender sender = null;
@@ -17,7 +17,7 @@ abstract class DCCommandRegistration {
     protected Player player = null;
     protected boolean commandSucceed = false;
 
-    public DCCommandRegistration(DeadChest plugin) {
+    public DCCommandRegistration(DeadChestLoader plugin) {
         this.plugin = plugin;
     }
 
