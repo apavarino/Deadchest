@@ -1,5 +1,5 @@
 ################################################################################################################################
-# Welcome to the me.crylonz.deadchest.DeadChest configuration file!                                                                                 #
+# Welcome to the DeadChest configuration file!                                                                                 #
 #                                                                                                                              #
 # You can find more information about the plugin and this file on the plugin page:                                             #
 #   > https://dev.bukkit.org/projects/dead-chest                                                                               #
@@ -16,7 +16,7 @@ auto-update: true
 #   > true  - DeadChests can only be opened by the owner.
 OnlyOwnerCanOpenDeadChest: true
 
-# The amount of time a me.crylonz.deadchest.DeadChest will be active for (in seconds)...
+# The amount of time a DeadChest will be active for (in seconds)...
 #   You can disable this limit by setting the value to 0.
 DeadChestDuration: 300
 
@@ -29,17 +29,17 @@ IndestructibleChest: true
 #   You can disable this limit by setting the value to 0.
 maxDeadChestPerPlayer: 15
 
-# Should we notify the console when and where a me.crylonz.deadchest.DeadChest is created?
+# Should we notify the console when and where a DeadChest is created?
 logDeadChestOnConsole: false
 
-# Should players require permission ('deadchest.generate') to generate a me.crylonz.deadchest.DeadChest?
-#   > false - Players will NOT require permission to generate a me.crylonz.deadchest.DeadChest.
-#   > true  - Players WILL require permission to generate a me.crylonz.deadchest.DeadChest.
+# Should players require permission ('deadchest.generate') to generate a DeadChest?
+#   > false - Players will NOT require permission to generate a DeadChest.
+#   > true  - Players WILL require permission to generate a DeadChest.
 RequirePermissionToGenerate: false
 
-# Should players require permission ('deadchest.get') to retrieve their me.crylonz.deadchest.DeadChest?
-#   > false - Players will NOT require permission to retrieve their me.crylonz.deadchest.DeadChest.
-#   > true  - Players WILL require permission to retrieve their me.crylonz.deadchest.DeadChest.
+# Should players require permission ('deadchest.get') to retrieve their DeadChest?
+#   > false - Players will NOT require permission to retrieve their DeadChest.
+#   > true  - Players WILL require permission to retrieve their DeadChest.
 RequirePermissionToGetChest: false
 
 # Should players require permission ('deadchest.list.own') to view their DeadChests (using '/dc list')?
@@ -50,18 +50,18 @@ RequirePermissionToListOwn: false
 # Should we remove all DeadChests when the server starts?
 AutoCleanupOnStart: false
 
-# Should players in creative mode create a me.crylonz.deadchest.DeadChest when they die?
+# Should players in creative mode create a DeadChest when they die?
 GenerateDeadChestInCreative: true
 
-# Should we tell the player where their me.crylonz.deadchest.DeadChest is located when they die?
+# Should we tell the player where their DeadChest is located when they die?
 DisplayDeadChestPositionOnDeath: true
 
-# How should we return the items to the player when they claim their me.crylonz.deadchest.DeadChest?
+# How should we return the items to the player when they claim their DeadChest?
 #   > 1 - Items are added directly to the players inventory until it's full, excess gets dropped.
 #   > 2 - All items are dropped on the ground.
 DropMode: 1
 
-# What block should we use for the me.crylonz.deadchest.DeadChest?
+# What block should we use for the DeadChest?
 #   > 1 - CHEST
 #   > 2 - PLAYER HEAD
 #   > 3 - BARREL
@@ -78,18 +78,18 @@ StoreXP: false
 # Values higher than 100 are allowed but not recommended as they would duplicate XP
 StoreXPPercentage: 100
 
-# Should we drop me.crylonz.deadchest.DeadChest contents when the timer expires?
-#   > false - me.crylonz.deadchest.DeadChest contents are removed when the timer expires.
-#   > true  - me.crylonz.deadchest.DeadChest contents are dropped when the timer expires.
+# Should we drop DeadChest contents when the timer expires?
+#   > false - DeadChest contents are removed when the timer expires.
+#   > true  - DeadChest contents are dropped when the timer expires.
 ItemsDroppedAfterTimeOut: false
 
-# Should generate a me.crylonz.deadchest.DeadChest on lava?
+# Should generate a DeadChest on lava?
 GenerateOnLava: true
-# Should generate a me.crylonz.deadchest.DeadChest on water?
+# Should generate a DeadChest on water?
 GenerateOnWater: true
-# Should generate a me.crylonz.deadchest.DeadChest on rails?
+# Should generate a DeadChest on rails?
 GenerateOnRails: true
-# Should generate a me.crylonz.deadchest.DeadChest in minecarts?
+# Should generate a DeadChest in minecarts?
 GenerateInMinecart: true
 
 # Should generate in the end worlds ? if set to false no stuff will be kept
