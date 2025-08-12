@@ -91,23 +91,25 @@ public class DeadChestListener implements Listener {
                 World world = p.getWorld();
                 Location loc = p.getLocation();
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_LAVA) && loc.getBlock().getType().equals(Material.LAVA)) {
+                final Block block = loc.getBlock();
+                final Material blockType = block.getType();
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_LAVA) && blockType == Material.LAVA) {
                     generateLog("Player dies in lava : No deadchest generated");
                     return;
                 }
 
-                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_WATER) && loc.getBlock().getType().equals(Material.WATER)) {
+                if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_WATER) && blockType == Material.WATER) {
                     generateLog("Player dies in water : No deadchest generated");
                     return;
                 }
 
                 if (!getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS) &&
-                        (loc.getBlock().getType().equals(Material.RAIL) ||
-                                loc.getBlock().getType().equals(Material.ACTIVATOR_RAIL) ||
-                                loc.getBlock().getType().equals(Material.DETECTOR_RAIL) ||
-                                loc.getBlock().getType().equals(Material.POWERED_RAIL))
+                        blockType == Material.RAIL ||
+                        blockType == Material.ACTIVATOR_RAIL ||
+                        blockType == Material.DETECTOR_RAIL ||
+                        blockType == Material.POWERED_RAIL
                 ) {
-                    log.warning(loc.getBlock().getType().toString());
+                    log.warning(blockType.toString());
                     log.warning(getConfig().getBoolean(ConfigKey.GENERATE_ON_RAILS).toString());
 
                     generateLog("Player dies on rails : No deadchest generated");
@@ -149,29 +151,28 @@ public class DeadChestListener implements Listener {
                 // Handle standard case
                 else {
 
-                    if (world.getBlockAt(loc).getType() == Material.DARK_OAK_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.ACACIA_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.BIRCH_DOOR ||
-                            (!Utils.isBefore1_16() && world.getBlockAt(loc).getType() == Material.CRIMSON_DOOR) ||
-                            world.getBlockAt(loc).getType() == Material.IRON_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.JUNGLE_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.OAK_DOOR ||
-                            world.getBlockAt(loc).getType() == Material.SPRUCE_DOOR ||
-                            (!Utils.isBefore1_16() && world.getBlockAt(loc).getType() == Material.WARPED_DOOR) ||
-                            world.getBlockAt(loc).getType() == Material.VINE ||
-                            world.getBlockAt(loc).getType() == Material.LADDER) {
+                    final Material type = world.getBlockAt(loc).getType();
+                    if (type == Material.DARK_OAK_DOOR ||
+                            type == Material.ACACIA_DOOR ||
+                            type == Material.BIRCH_DOOR ||
+                            (!Utils.isBefore1_16() && type == Material.CRIMSON_DOOR) ||
+                            type == Material.IRON_DOOR ||
+                            type == Material.JUNGLE_DOOR ||
+                            type == Material.OAK_DOOR ||
+                            type == Material.SPRUCE_DOOR ||
+                            (!Utils.isBefore1_16() && type == Material.WARPED_DOOR) ||
+                            type == Material.VINE ||
+                            type == Material.LADDER) {
                         Location tmpLoc = getFreeBlockAroundThisPlace(world, loc);
 
                         if (tmpLoc != null) {
                             loc = tmpLoc;
                         }
                     }
-
-                    if (world.getBlockAt(loc).getType() != Material.AIR
-                            && world.getBlockAt(loc).getType() != Material.CAVE_AIR
-                            && world.getBlockAt(loc).getType() != Material.VOID_AIR
-                            && world.getBlockAt(loc).getType() != Material.WATER
-                            && world.getBlockAt(loc).getType() != Material.LAVA) {
+                    if (type != Material.AIR
+                            && type != Material.CAVE_AIR
+                            && type != Material.VOID_AIR
+                            && type != Material.WATER) {
 
                         while (world.getBlockAt(loc).getType() != Material.AIR &&
                                 loc.getY() < world.getMaxHeight()) {
@@ -328,7 +329,7 @@ public class DeadChestListener implements Listener {
             }
         }
     }
-
+    
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
         if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
