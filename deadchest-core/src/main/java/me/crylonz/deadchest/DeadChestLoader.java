@@ -44,19 +44,19 @@ public class DeadChestLoader {
         ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
     }
 
-    public DeadChestLoader() {
+    public DeadChestLoader(Plugin dcPlugin, JavaPlugin dcjavaPlugin) {
         super();
+        javaPlugin = dcjavaPlugin;
+        plugin = dcPlugin;
     }
 
-    public void enable(Plugin dcPlugin, JavaPlugin dcjavaPlugin) {
-        javaPlugin = dcjavaPlugin;
-        db = new SQLite(dcPlugin);
+    public void enable() {
+        db = new SQLite(plugin);
         db.init();
 
         ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
-        config = new DeadChestConfig(dcPlugin);
-        plugin = dcPlugin;
-        fileManager = new FileManager(dcPlugin);
+        config = new DeadChestConfig(plugin);
+        fileManager = new FileManager(plugin);
 
         chestData = new ArrayList<>();
         local = new Localization();
