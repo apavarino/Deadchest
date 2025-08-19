@@ -3,12 +3,10 @@ package me.crylonz.deadchest;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.block.data.BlockDataMock;
-import be.seeseemelk.mockbukkit.inventory.PlayerInventoryMock;
+import me.crylonz.deadchest.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.*;
 
 public class UtilsTest {
@@ -26,25 +24,6 @@ public class UtilsTest {
     @AfterAll
     public static void cleanup() {
         MockBukkit.unmock();
-    }
-
-    // isInventoryEmpty
-
-    @Test
-    @DisplayName("[isInventoryEmpty] - it should return true on empty inventories")
-    public void isInventoryEmpty_emptyInv() {
-        Inventory i = new PlayerInventoryMock(server.addPlayer());
-
-        Assertions.assertTrue(Utils.isInventoryEmpty(i));
-    }
-
-    @Test
-    @DisplayName("[isInventoryEmpty] - it should return false on inventories containing items")
-    public void isInventoryEmpty_filledInv() {
-        Inventory i = new PlayerInventoryMock(server.addPlayer());
-        i.addItem(new ItemStack(Material.ACACIA_BOAT));
-
-        Assertions.assertFalse(Utils.isInventoryEmpty(i));
     }
 
     // getFreeBlockAroundThisPlace
