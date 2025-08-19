@@ -47,6 +47,11 @@ public class PlayerDeathListener implements Listener {
         if (playerOrWorldDisallowsGeneration(player)) return;
         if (pvpKeepInventoryCase(event, player)) return;
 
+        if (player.getInventory().isEmpty()) {
+            generateLog("Player [" + player.getName() + "] died without inventory : No Deadchest generated");
+            return;
+        }
+
         // 2) Permissions & quotas
         if (!(worldGuardCheck(player) && (player.hasPermission(Permission.GENERATE.label)
                 || !config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GENERATE))))
@@ -54,47 +59,51 @@ public class PlayerDeathListener implements Listener {
 
         if (!underPerPlayerLimit(player)) return;
 
+
         // 3) Block/Vehicle Location & Constraints
         World world = player.getWorld();
-        Location loc = player.getLocation();
+        Location location = player.getLocation();
 
-        if (disallowedFluidOrRailOrMinecart(player, loc)) return;
+        if (disallowedFluidOrRailOrMinecart(player, location)) return;
 
         // 4) Position adjustments (world bottom/top, doors, solids, fragile surface)
-        loc = adjustLocationForWorldBounds(world, loc, player);
-        if (loc == null) return; // keep original behavior (message + return)
+        location = adjustLocationForWorldBounds(world, location, player);
+        if (location == null) return; // keep original behavior (message + return)
 
-        loc = adjustForDoorsAndSolids(world, loc);
-        adjustForGroundBlocks(world, loc);
+        location = adjustForDoorsAndSolids(world, location);
+        adjustForGroundBlocks(world, location);
 
-        Block b = world.getBlockAt(loc);
+        Block block = world.getBlockAt(location);
 
-        // 5) Nothing to store?
-        if (player.getInventory().isEmpty()) {
-            generateLog("Player [" + player.getName() + "] died without inventory : No Deadchest generated");
-            return;
-        }
-
-        // 6) Chest type + holograms
-        computeChestType(b, player);
-        ArmorStand[] holos = createHolograms(b, event.getEntity().getDisplayName());
-
-        // 7) Inventory cleaning (vanishing, excluded/ignored items, durability, XP)
+        // 5) Inventory cleaning (vanishing, excluded/ignored items, durability, XP)
         sanitizeInventoryOnDeath(event, player);
 
-        // 8) Preparing items to be stored (same slots, null kept)
+        // 6) Preparing items to be stored (same slots, null kept)
         ItemStack[] original = player.getInventory().getContents();
         ItemStack[] itemsToStore = prepareItemsToStore(original);
 
-        // 9) Building & saving the DeadChest (ChestData), then restoring player inventory
-        buildAndSaveChestData(player, b, holos[HOLO_TIME], holos[HOLO_NAME], itemsToStore);
+        // Check if there's at least one valid item to store
+        boolean hasSomethingToStore = Arrays.stream(itemsToStore)
+                .anyMatch(Objects::nonNull);
 
-        // 10) Clean up drops & remove remaining items on player side
+        if (!hasSomethingToStore) {
+            generateLog("Player [" + player.getName() + "] died but no valid items remain to store. No Deadchest generated");
+            return;
+        }
+
+        // 7) Chest type + holograms
+        computeChestType(block, player);
+        ArmorStand[] holos = createHolograms(block, event.getEntity().getDisplayName());
+
+        // 8) Building & saving the DeadChest (ChestData), then restoring player inventory
+        buildAndSaveChestData(player, block, holos[HOLO_TIME], holos[HOLO_NAME], itemsToStore);
+
+        // 09) Clean up drops & remove remaining items on player side
         clearEventDropsAndPlayerInventory(event, player);
 
-        // 11) Position message (optional), persistence & logs
-        maybeSendPosition(player, b);
-        persistAndLog(player, b, itemsToStore);
+        // 10) Position message (optional), persistence & logs
+        maybeSendPosition(player, block);
+        persistAndLog(player, block, itemsToStore);
     }
 
     private boolean keepInventoryAlreadyOn(PlayerDeathEvent e) {
