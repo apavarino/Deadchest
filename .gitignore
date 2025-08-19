@@ -49,3 +49,4 @@ hs_err_pid*
 /.gradle/8.5/executionHistory/executionHistory.lock
 /.gradle/8.5/fileHashes/fileHashes.lock
 /.gradle/
+/deadchest-plugin/build/

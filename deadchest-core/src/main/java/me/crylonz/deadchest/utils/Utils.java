@@ -1,8 +1,6 @@
-package me.crylonz.deadchest;
+package me.crylonz.deadchest.utils;
 
-
-import com.sk89q.worldguard.protection.flags.BooleanFlag;
-import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.DeadChestLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,11 +8,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
@@ -24,25 +19,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
 
 public class Utils {
 
-    public static BooleanFlag DEADCHEST_GUEST_FLAG;
-    public static BooleanFlag DEADCHEST_OWNER_FLAG;
-    public static BooleanFlag DEADCHEST_MEMBER_FLAG;
 
-    static boolean isInventoryEmpty(Inventory inv) {
-        for (ItemStack it : inv.getContents()) {
-            if (it != null) return false;
-        }
-        return true;
-    }
-
-    static void generateLog(String message) {
+    public static void generateLog(String message) {
         File log = new File("plugins/DeadChest/deadchest.log");
         try {
             log.createNewFile();
@@ -81,12 +65,6 @@ public class Utils {
 
     }
 
-    public static boolean worldGuardCheck(Player p) {
-        if (wgsdc != null) {
-            return wgsdc.worldGuardChecker(p);
-        }
-        return true;
-    }
 
     public static boolean isBefore1_18() {
         return Bukkit.getVersion().contains("1.17") || isBefore1_17();
@@ -105,42 +83,6 @@ public class Utils {
 
     public static boolean isGraveBlock(Material material) {
         return graveBlocks.contains(material);
-    }
-
-    public static boolean isHelmet(ItemStack i) {
-        final Material[] helmetList = {Material.IRON_HELMET, Material.GOLDEN_HELMET, Material.LEATHER_HELMET,
-                Material.DIAMOND_HELMET, Material.CHAINMAIL_HELMET, Material.TURTLE_HELMET};
-        return isGear(i, helmetList, Material.NETHERITE_HELMET);
-    }
-
-    public static boolean isLeggings(ItemStack i) {
-        final Material[] leggingList = {Material.IRON_LEGGINGS, Material.GOLDEN_LEGGINGS, Material.LEATHER_LEGGINGS,
-                Material.DIAMOND_LEGGINGS, Material.CHAINMAIL_LEGGINGS};
-        return isGear(i, leggingList, Material.NETHERITE_LEGGINGS);
-    }
-
-    public static boolean isChestplate(ItemStack i) {
-        final Material[] chestplateList = {Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.LEATHER_CHESTPLATE,
-                Material.DIAMOND_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.ELYTRA};
-        return isGear(i, chestplateList, Material.NETHERITE_CHESTPLATE);
-    }
-
-    public static boolean isBoots(ItemStack i) {
-        final Material[] bootList = {Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.LEATHER_BOOTS,
-                Material.DIAMOND_BOOTS, Material.CHAINMAIL_BOOTS};
-        return isGear(i, bootList, Material.NETHERITE_BOOTS);
-    }
-
-    public static boolean isGear(ItemStack i, Material[] gearList, Material netheriteGear) {
-        final boolean isStandardGear = Arrays.asList(gearList).contains(i.getType());
-        final boolean isNetheriteGear = isNetherite(i, netheriteGear);
-        final boolean hasCurseOfBinding = i.getEnchantments().containsKey(Enchantment.BINDING_CURSE);
-
-        return (isStandardGear || isNetheriteGear) && !hasCurseOfBinding;
-    }
-
-    public static boolean isNetherite(ItemStack i, Material netheriteGear) {
-        return !isBefore1_16() && i.getType() == netheriteGear;
     }
 
     public static int computeMinHeight() {

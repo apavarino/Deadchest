@@ -43,8 +43,11 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.70.0")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.88.1")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+
 }
 
 tasks.named<Test>("test") {

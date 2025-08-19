@@ -1,7 +1,7 @@
 package me.crylonz.deadchest.commands;
 
 import me.crylonz.deadchest.Permission;
-import me.crylonz.deadchest.PermissionUtils;
+import me.crylonz.deadchest.utils.PermissionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

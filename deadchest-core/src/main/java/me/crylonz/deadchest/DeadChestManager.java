@@ -19,8 +19,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
-import static me.crylonz.deadchest.Utils.computeChestType;
-import static me.crylonz.deadchest.Utils.isGraveBlock;
+import static me.crylonz.deadchest.utils.Utils.computeChestType;
+import static me.crylonz.deadchest.utils.Utils.isGraveBlock;
 
 public class DeadChestManager {
 
@@ -92,7 +92,7 @@ public class DeadChestManager {
      * @param p player
      * @return number of deadchests
      */
-    static int playerDeadChestAmount(Player p) {
+    public static int playerDeadChestAmount(Player p) {
         int count = 0;
         if (p != null) {
             for (ChestData chestData : chestData) {

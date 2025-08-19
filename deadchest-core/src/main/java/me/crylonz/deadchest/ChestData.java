@@ -44,13 +44,13 @@ public final class ChestData implements ConfigurationSerializable {
         this.xpStored = chest.getXpStored();
     }
 
-    ChestData(final Inventory inv,
-              final Location chestLocation,
-              final Player p,
-              final boolean isInfinity,
-              final ArmorStand asTimer,
-              final ArmorStand owner,
-              final int xpToStore) {
+    public ChestData(final Inventory inv,
+                     final Location chestLocation,
+                     final Player p,
+                     final boolean isInfinity,
+                     final ArmorStand asTimer,
+                     final ArmorStand owner,
+                     final int xpToStore) {
 
         if (p != null) {
             this.inventory = Arrays.asList(inv.getContents());

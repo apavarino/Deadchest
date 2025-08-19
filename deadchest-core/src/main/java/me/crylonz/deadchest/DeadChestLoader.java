@@ -2,6 +2,9 @@ package me.crylonz.deadchest;
 
 import me.crylonz.deadchest.commands.DCCommandExecutor;
 import me.crylonz.deadchest.commands.DCTabCompletion;
+import me.crylonz.deadchest.db.SQLite;
+import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
+import me.crylonz.deadchest.listener.*;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Bukkit;
@@ -17,12 +20,12 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static me.crylonz.deadchest.DeadChestManager.*;
-import static me.crylonz.deadchest.Utils.generateLog;
 import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
+import static me.crylonz.deadchest.utils.Utils.generateLog;
 
 public class DeadChestLoader {
 
-    public final static Logger log = Logger.getLogger("Minecraft");
+    public static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
     public static List<ChestData> chestData;
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
@@ -69,7 +72,15 @@ public class DeadChestLoader {
         }
 
         PluginManager pm = plugin.getServer().getPluginManager();
-        pm.registerEvents(new DeadChestListener(this), plugin);
+        pm.registerEvents(new ArmorstandListener(), plugin);
+        pm.registerEvents(new BlockBreakListener(), plugin);
+        pm.registerEvents(new BlockFromToListener(), plugin);
+        pm.registerEvents(new BlockPlaceEventListener(), plugin);
+        pm.registerEvents(new ClickListener(), plugin);
+        pm.registerEvents(new ExplosionListener(), plugin);
+        pm.registerEvents(new InventoryClickListener(), plugin);
+        pm.registerEvents(new PistonListener(), plugin);
+        pm.registerEvents(new PlayerDeathListener(), plugin);
 
         // Which block can be used as grave ?
         graveBlocks.add(Material.CHEST);

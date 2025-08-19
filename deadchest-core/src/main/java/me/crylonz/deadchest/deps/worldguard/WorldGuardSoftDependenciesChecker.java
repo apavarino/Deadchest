@@ -1,4 +1,4 @@
-package me.crylonz.deadchest;
+package me.crylonz.deadchest.deps.worldguard;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -10,13 +10,18 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.entity.Player;
 
 import static me.crylonz.deadchest.DeadChestLoader.config;
-import static me.crylonz.deadchest.Utils.*;
+import static me.crylonz.deadchest.utils.Utils.generateLog;
 
 public class WorldGuardSoftDependenciesChecker {
+
+    public static BooleanFlag DEADCHEST_GUEST_FLAG;
+    public static BooleanFlag DEADCHEST_OWNER_FLAG;
+    public static BooleanFlag DEADCHEST_MEMBER_FLAG;
 
     public void load() {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();

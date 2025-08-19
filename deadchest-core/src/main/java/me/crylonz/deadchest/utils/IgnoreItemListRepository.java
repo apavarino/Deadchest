@@ -45,8 +45,8 @@ public class IgnoreItemListRepository {
     public static void saveIgnoreIntoInventory(Inventory inv) {
 
         try {
-            try (Connection c = db.connection();
-                 Statement clear = c.createStatement()) {
+            try (Connection connection = db.connection();
+                 Statement clear = connection.createStatement()) {
                 clear.executeUpdate("DELETE FROM ignore_items");
             }
             String sql = "INSERT INTO ignore_items(slot, data) VALUES(?, ?)";

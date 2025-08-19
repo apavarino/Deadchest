@@ -1,4 +1,4 @@
-package me.crylonz.deadchest;
+package me.crylonz.deadchest.db;
 
 import org.bukkit.plugin.Plugin;
 

@@ -1,5 +1,6 @@
-package me.crylonz.deadchest;
+package me.crylonz.deadchest.utils;
 
+import me.crylonz.deadchest.Permission;
 import org.bukkit.entity.Player;
 
 public class PermissionUtils {
