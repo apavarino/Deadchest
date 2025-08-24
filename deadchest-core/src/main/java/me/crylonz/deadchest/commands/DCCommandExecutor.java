@@ -13,8 +13,8 @@ public class DCCommandExecutor implements CommandExecutor {
     private final DeadChestLoader plugin;
     private final DCCommandRegistrationService commandRegistration;
 
-    public DCCommandExecutor(DeadChestLoader p) {
-        this.plugin = p;
+    public DCCommandExecutor(DeadChestLoader deadChestLoader) {
+        this.plugin = deadChestLoader;
         this.commandRegistration = new DCCommandRegistrationService(plugin);
     }
 

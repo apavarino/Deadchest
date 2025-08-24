@@ -1,5 +1,6 @@
 package me.crylonz.deadchest;
 
+import me.crylonz.deadchest.db.ChestDataRepository;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,8 +20,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
-import static me.crylonz.deadchest.utils.Utils.computeChestType;
-import static me.crylonz.deadchest.utils.Utils.isGraveBlock;
+import static me.crylonz.deadchest.utils.Utils.*;
 
 public class DeadChestManager {
 
@@ -32,8 +32,8 @@ public class DeadChestManager {
     public static int cleanAllDeadChests() {
 
         int chestDataRemoved = 0;
-        if (chestData != null && !chestData.isEmpty()) {
-            Iterator<ChestData> chestDataIt = chestData.iterator();
+        if (chestDataList != null && !chestDataList.isEmpty()) {
+            Iterator<ChestData> chestDataIt = chestDataList.iterator();
             while (chestDataIt.hasNext()) {
 
                 ChestData chestData = chestDataIt.next();
@@ -46,7 +46,7 @@ public class DeadChestManager {
                     chestDataRemoved++;
                 }
             }
-            fileManager.saveModification();
+            ChestDataRepository.saveAllAsync(chestDataList);
         }
         return chestDataRemoved;
     }
@@ -95,7 +95,7 @@ public class DeadChestManager {
     public static int playerDeadChestAmount(Player p) {
         int count = 0;
         if (p != null) {
-            for (ChestData chestData : chestData) {
+            for (ChestData chestData : chestDataList) {
                 if (p.getUniqueId().toString().equals(chestData.getPlayerUUID()))
                     count++;
             }
@@ -108,7 +108,7 @@ public class DeadChestManager {
      */
     static void reloadMetaData() {
 
-        for (ChestData cdata : chestData) {
+        for (ChestData cdata : chestDataList) {
             World world = cdata.getChestLocation().getWorld();
 
             if (world != null) {
@@ -126,15 +126,45 @@ public class DeadChestManager {
         }
     }
 
-    public static boolean replaceDeadChestIfItDeseapears(ChestData chestData) {
+    public static boolean replaceDeadChestIfItDisappears(ChestData chestData) {
         World world = chestData.getChestLocation().getWorld();
-        if (world != null && !isGraveBlock(world.getBlockAt(chestData.getChestLocation()).getType())) {
-            Block b = world.getBlockAt(chestData.getChestLocation());
-            computeChestType(b, Bukkit.getPlayer(chestData.getPlayerUUID()));
-            return true;
+
+        if (world == null) {
+            return false;
         }
-        return false;
+
+        Collection<Entity> entityList = world.getNearbyEntities(chestData.getHolographicTimer(), 1.0, 1.0, 1.0);
+        boolean isLinkedToDeadchest = entityList.stream().anyMatch(entity ->
+                entity.getUniqueId().equals(chestData.getHolographicOwnerId()) ||
+                        entity.getUniqueId().equals(chestData.getHolographicTimerId())
+        );
+
+        boolean needToUpdateData = false;
+
+        Block block = world.getBlockAt(chestData.getChestLocation());
+        if (!isGraveBlock(block.getType())) {
+            generateDeadChest(block, Bukkit.getPlayer(chestData.getPlayerUUID()));
+            generateLog("Deadchest of [" + chestData.getPlayerName() + "] was corrupted. Deadchest fixed!");
+            needToUpdateData = true;
+        }
+
+        if (!isLinkedToDeadchest) {
+            for (Entity entity : entityList) {
+                if (entity instanceof ArmorStand) {
+                    entity.remove();
+                }
+            }
+
+            ArmorStand[] holos = createHolograms(block, chestData.getPlayerName());
+            chestData.setHolographicTimerId(holos[0].getUniqueId());
+            chestData.setHolographicOwnerId(holos[1].getUniqueId());
+            generateLog("Hologram Deadchest of [" + chestData.getPlayerName() + "] was corrupted. Hologram fixed!");
+            needToUpdateData = true;
+        }
+
+        return needToUpdateData;
     }
+
 
     public static boolean handleExpirateDeadChest(ChestData chestData, Iterator<ChestData> chestDataIt, Date date) {
         if (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L < date.getTime() && !chestData.isInfinity()

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import static me.crylonz.deadchest.DeadChestLoader.ignoreList;
 import static me.crylonz.deadchest.DeadChestLoader.plugin;
-import static me.crylonz.deadchest.utils.IgnoreItemListRepository.saveIgnoreIntoInventory;
+import static me.crylonz.deadchest.db.IgnoreItemListRepository.saveIgnoreIntoInventory;
 
 public class InventoryClickListener implements Listener {
 

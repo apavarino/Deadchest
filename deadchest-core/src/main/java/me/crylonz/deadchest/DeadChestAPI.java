@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.crylonz.deadchest.DeadChestLoader.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestDataList;
 
 public class DeadChestAPI {
 
@@ -22,7 +22,7 @@ public class DeadChestAPI {
     public static List<ChestData> getChests(Player player) {
 
         List<ChestData> chestData = new ArrayList<>();
-        DeadChestLoader.chestData.forEach(chest -> {
+        DeadChestLoader.chestDataList.forEach(chest -> {
             if (chest.getPlayerName().equalsIgnoreCase(player.getName())) {
                 chestData.add(new ChestData(chest));
             }
@@ -59,10 +59,10 @@ public class DeadChestAPI {
     public static boolean removeChest(ChestData chest) {
         World world = Bukkit.getWorld(chest.getWorldName());
 
-        if (world != null && chestData.contains(chest)) {
+        if (world != null && chestDataList.contains(chest)) {
             world.getBlockAt(chest.getChestLocation()).setType(Material.AIR);
             chest.removeArmorStand();
-            chestData.remove(chest);
+            chestDataList.remove(chest);
             return true;
         }
         return false;

@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
+import static me.crylonz.deadchest.DeadChestManager.generateHologram;
 
 public class Utils {
 
@@ -98,30 +100,40 @@ public class Utils {
                 !deadChest.getConfig().getBoolean(ConfigKey.GENERATE_IN_THE_END.toString());
     }
 
-    public static void computeChestType(Block b, Player p) {
+    public static void generateDeadChest(Block block, Player player) {
         switch (config.getInt(ConfigKey.DROP_BLOCK)) {
             case 2:
-                b.setType(Material.PLAYER_HEAD);
-                b.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
-                BlockState state = b.getState();
+                block.setType(Material.PLAYER_HEAD);
+                block.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
+                BlockState state = block.getState();
                 Skull skull = (Skull) state;
-                if (p != null) {
-                    skull.setOwningPlayer(p);
+                if (player != null) {
+                    skull.setOwningPlayer(player);
                 }
                 skull.update();
                 break;
             case 3:
-                b.setType(Material.BARREL);
+                block.setType(Material.BARREL);
                 break;
             case 4:
-                b.setType(Material.SHULKER_BOX);
+                block.setType(Material.SHULKER_BOX);
                 break;
             case 5:
-                b.setType(Material.ENDER_CHEST);
+                block.setType(Material.ENDER_CHEST);
                 break;
             default:
-                b.setType(Material.CHEST);
+                block.setType(Material.CHEST);
         }
+    }
+
+    public static ArmorStand[] createHolograms(Block block, String deathDisplayName) {
+        String firstLine = local.replacePlayer(local.get("holo_owner"), deathDisplayName);
+        ArmorStand holoName = generateHologram(block.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
+
+        String secondLine = local.get("holo_loading");
+        ArmorStand holoTime = generateHologram(block.getLocation(), secondLine, 0.5f, -1.2f, 0.5f, true);
+
+        return new ArmorStand[]{holoTime, holoName};
     }
 }
 

@@ -3,6 +3,7 @@ package me.crylonz.deadchest.listener;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadchestPickUpEvent;
 import me.crylonz.deadchest.Permission;
+import me.crylonz.deadchest.db.ChestDataRepository;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -45,7 +46,7 @@ public class ClickListener implements Listener {
      * Checks if the player clicks near a DeadChest
      */
     private boolean isNearGraveChest(PlayerInteractEvent e) {
-        for (ChestData cd : chestData) {
+        for (ChestData cd : chestDataList) {
             if (cd.getChestLocation().getWorld() == e.getPlayer().getWorld()
                     && e.getClickedBlock().getWorld() == e.getPlayer().getWorld()
                     && cd.getChestLocation().distance(e.getClickedBlock().getLocation()) <= 1) {
@@ -63,7 +64,7 @@ public class ClickListener implements Listener {
         String playerUUID = player.getUniqueId().toString();
         boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
 
-        for (ChestData cd : chestData) {
+        for (ChestData cd : chestDataList) {
             if (cd.getChestLocation().equals(block.getLocation())) {
                 if (canOpenChest(cd, player, playerUUID, playerHasPermission)) {
                     processChestPickup(e, cd, block, player);
@@ -192,8 +193,8 @@ public class ClickListener implements Listener {
      */
     private void cleanupChest(ChestData cd, Block block, Player player) {
         block.setType(Material.AIR);
-        chestData.remove(cd);
-        fileManager.saveModification();
+        chestDataList.remove(cd);
+        ChestDataRepository.saveAllAsync(chestDataList);
         block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
         player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
         cd.removeArmorStand();

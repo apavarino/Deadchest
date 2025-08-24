@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 
-import static me.crylonz.deadchest.DeadChestLoader.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestDataList;
 
 public class PistonListener implements Listener {
 
@@ -16,7 +16,7 @@ public class PistonListener implements Listener {
     public void onBlockPistonExtendEvent(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
             if (block != null && (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD))
-                for (ChestData cd : chestData) {
+                for (ChestData cd : chestDataList) {
                     if (cd.getChestLocation().equals(block.getLocation())) {
                         event.setCancelled(true);
                         return;

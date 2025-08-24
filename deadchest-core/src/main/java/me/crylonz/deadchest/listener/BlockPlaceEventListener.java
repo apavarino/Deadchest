@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import static me.crylonz.deadchest.DeadChestLoader.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestDataList;
 import static me.crylonz.deadchest.DeadChestLoader.local;
 
 public class BlockPlaceEventListener implements Listener {
@@ -19,7 +19,7 @@ public class BlockPlaceEventListener implements Listener {
             for (BlockFace face : BlockFace.values()) {
                 Block block = e.getBlock().getRelative(face);
                 if (block.getType() == Material.CHEST) {
-                    for (ChestData cd : chestData) {
+                    for (ChestData cd : chestDataList) {
                         if (cd.getChestLocation().equals(block.getLocation())) {
                             e.setCancelled(true);
                             e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_doubleDC"));

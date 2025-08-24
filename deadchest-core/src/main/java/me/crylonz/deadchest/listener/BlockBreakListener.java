@@ -15,7 +15,7 @@ public class BlockBreakListener implements Listener {
     public void onBlockBreakEvent(BlockBreakEvent e) {
         if (isGraveBlock(e.getBlock().getType())) {
             if (config.getBoolean(ConfigKey.INDESTRUCTIBLE_CHEST)) {
-                for (ChestData cd : chestData) {
+                for (ChestData cd : chestDataList) {
                     if (cd.getChestLocation() == e.getBlock().getLocation()) {
                         e.setCancelled(true);
                         e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));

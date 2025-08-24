@@ -2,6 +2,7 @@ package me.crylonz.deadchest.listener;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.Permission;
+import me.crylonz.deadchest.db.ChestDataRepository;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.Utils;
 import org.bukkit.*;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
-import static me.crylonz.deadchest.DeadChestManager.generateHologram;
 import static me.crylonz.deadchest.DeadChestManager.playerDeadChestAmount;
 import static me.crylonz.deadchest.utils.ConfigKey.GENERATE_DEADCHEST_IN_CREATIVE;
 import static me.crylonz.deadchest.utils.ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH;
@@ -92,13 +92,13 @@ public class PlayerDeathListener implements Listener {
         }
 
         // 7) Chest type + holograms
-        computeChestType(block, player);
+        generateDeadChest(block, player);
         ArmorStand[] holos = createHolograms(block, event.getEntity().getDisplayName());
 
         // 8) Building & saving the DeadChest (ChestData), then restoring player inventory
         buildAndSaveChestData(player, block, holos[HOLO_TIME], holos[HOLO_NAME], itemsToStore);
 
-        // 09) Clean up drops & remove remaining items on player side
+        // 9) Clean up drops & remove remaining items on player side
         clearEventDropsAndPlayerInventory(event, player);
 
         // 10) Position message (optional), persistence & logs
@@ -271,15 +271,7 @@ public class PlayerDeathListener implements Listener {
         }
     }
 
-    private ArmorStand[] createHolograms(Block b, String deathDisplayName) {
-        String firstLine = local.replacePlayer(local.get("holo_owner"), deathDisplayName);
-        ArmorStand holoName = generateHologram(b.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
 
-        String secondLine = local.get("holo_loading");
-        ArmorStand holoTime = generateHologram(b.getLocation(), secondLine, 0.5f, -1.2f, 0.5f, true);
-
-        return new ArmorStand[]{holoTime, holoName};
-    }
 
     private void sanitizeInventoryOnDeath(PlayerDeathEvent e, Player p) {
         // The order matters:
@@ -370,12 +362,11 @@ public class PlayerDeathListener implements Listener {
     }
 
     private void buildAndSaveChestData(Player p, Block b, ArmorStand holoTime, ArmorStand holoName, ItemStack[] itemsToStore) {
-        // Temporarily set contents to build ChestData (same approach as original)
         PlayerInventory inv = p.getInventory();
         ItemStack[] snapshot = inv.getContents();
         inv.setContents(itemsToStore);
 
-        chestData.add(
+        chestDataList.add(
                 new ChestData(
                         inv,
                         b.getLocation(),
@@ -387,7 +378,6 @@ public class PlayerDeathListener implements Listener {
                 )
         );
 
-        // Restore player's inventory
         inv.setContents(snapshot);
     }
 
@@ -413,12 +403,8 @@ public class PlayerDeathListener implements Listener {
     }
 
     private void persistAndLog(Player p, Block b, ItemStack[] itemsToStore) {
-        // Guard for badly initialized test environments (no behavior change in production)
-        if (fileManager != null) {
-            fileManager.saveModification();
-        } else {
-            log.warning("[DeadChest] fileManager is null; skipping saveModification");
-        }
+
+        ChestDataRepository.saveAllAsync(chestDataList);
 
         generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() +
                 " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());

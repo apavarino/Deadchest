@@ -2,6 +2,9 @@ package me.crylonz.deadchest;
 
 import me.crylonz.deadchest.commands.DCCommandExecutor;
 import me.crylonz.deadchest.commands.DCTabCompletion;
+import me.crylonz.deadchest.db.ChestDataRepository;
+import me.crylonz.deadchest.db.IgnoreItemListRepository;
+import me.crylonz.deadchest.db.SQLExecutor;
 import me.crylonz.deadchest.db.SQLite;
 import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
 import me.crylonz.deadchest.listener.*;
@@ -10,7 +13,6 @@ import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -20,14 +22,15 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static me.crylonz.deadchest.DeadChestManager.*;
-import static me.crylonz.deadchest.utils.IgnoreItemListRepository.loadIgnoreIntoInventory;
+import static me.crylonz.deadchest.db.IgnoreItemListRepository.loadIgnoreIntoInventory;
+import static me.crylonz.deadchest.legacy.OldChestData.migrateOldChestData;
 import static me.crylonz.deadchest.utils.Utils.generateLog;
 
 public class DeadChestLoader {
 
     public static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
-    public static List<ChestData> chestData;
+    public static List<ChestData> chestDataList;
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
     public static ArrayList<Material> graveBlocks = new ArrayList<>();
     public static Localization local;
@@ -42,10 +45,11 @@ public class DeadChestLoader {
     public static DeadChestConfig config;
 
     public static SQLite db;
+    public static SQLExecutor sqlExecutor = new SQLExecutor();
 
-    static {
-        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
-    }
+//    static {
+//        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
+//    }
 
     public DeadChestLoader(Plugin dcPlugin, JavaPlugin dcjavaPlugin) {
         super();
@@ -54,14 +58,18 @@ public class DeadChestLoader {
     }
 
     public void enable() {
+
+        // db parts
         db = new SQLite(plugin);
         db.init();
+        IgnoreItemListRepository.initTable();
+        ChestDataRepository.initTable();
 
         ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
         config = new DeadChestConfig(plugin);
         fileManager = new FileManager(plugin);
 
-        chestData = new ArrayList<>();
+        chestDataList = new ArrayList<>();
         local = new Localization();
 
         registerConfig();
@@ -116,10 +124,9 @@ public class DeadChestLoader {
 
     public void disable() {
 
-        // chest data
-        if (fileManager.getChestDataFile().exists()) {
-            fileManager.saveChestDataConfig();
-        }
+        ChestDataRepository.saveAllAsync(chestDataList);
+        sqlExecutor.shutdown();
+        db.close();
     }
 
     public void registerConfig() {
@@ -162,18 +169,11 @@ public class DeadChestLoader {
             config.updateConfig();
         }
 
-        // database (chestData.yml)
-        if (!fileManager.getChestDataFile().exists()) {
-            fileManager.saveChestDataConfig();
-        } else {
-            @SuppressWarnings("unchecked")
-            ArrayList<ChestData> tmp = (ArrayList<ChestData>) fileManager.getChestDataConfig().get("chestData");
+        // database (chestData)
+        chestDataList = ChestDataRepository.findAll();
 
-            if (tmp != null) {
-                checkChestDataIsSet(tmp);
-                chestData = tmp;
-            }
-        }
+        // migrate old chestData.yml config
+        migrateOldChestData();
 
         // ignore list
         loadIgnoreIntoInventory(ignoreList);
@@ -234,19 +234,15 @@ public class DeadChestLoader {
         fileManager.saveLocalizationConfig();
     }
 
-    private static void checkChestDataIsSet(ArrayList<ChestData> tmp) {
-        tmp.removeIf(Objects::isNull);
-    }
-
     public static void handleEvent() {
-        if (chestData != null && !chestData.isEmpty()) {
+        if (chestDataList != null && !chestDataList.isEmpty()) {
 
             Date now = new Date();
-            Iterator<ChestData> chestDataIt = chestData.iterator();
+            Iterator<ChestData> chestDataIt = chestDataList.iterator();
 
             while (chestDataIt.hasNext()) {
                 ChestData chestData = chestDataIt.next();
-                if(chestData == null) {
+                if (chestData == null) {
                     generateLog("Deadchest of [null] has no invalid data set. Get removed.");
                     chestDataIt.remove();
                     continue;
@@ -261,7 +257,7 @@ public class DeadChestLoader {
                         generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                     } else {
                         if (chestData.isChunkLoaded()) {
-                            isChangesNeedToBeSave = replaceDeadChestIfItDeseapears(chestData);
+                            isChangesNeedToBeSave = replaceDeadChestIfItDisappears(chestData);
                         }
                     }
                 }
@@ -269,7 +265,7 @@ public class DeadChestLoader {
         }
 
         if (isChangesNeedToBeSave) {
-            fileManager.saveModification();
+            ChestDataRepository.saveAllAsync(chestDataList);
             isChangesNeedToBeSave = false;
         }
     }

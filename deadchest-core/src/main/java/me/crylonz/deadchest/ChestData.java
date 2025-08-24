@@ -1,8 +1,6 @@
 package me.crylonz.deadchest;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -13,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 @SerializableAs("ChestData")
-public final class ChestData implements ConfigurationSerializable {
+public final class ChestData {
 
     private List<ItemStack> inventory;
     private Location chestLocation;
@@ -95,36 +93,6 @@ public final class ChestData implements ConfigurationSerializable {
         this.xpStored = xpStored;
     }
 
-    @SuppressWarnings({"unchecked", "unused"})
-    public static ChestData deserialize(final Map<String, Object> map) {
-
-        String[] loc = ((String) map.get("chestLocation")).split(";");
-        String[] locHolo = ((String) map.get("holographicTimer")).split(";");
-
-        Location myloc = new Location(Bukkit.getWorld(loc[Indexes.WORLD_NAME.ordinal()]),
-                Double.parseDouble(loc[Indexes.LOC_X.ordinal()]), Double.parseDouble(loc[Indexes.LOC_Y.ordinal()]),
-                Double.parseDouble(loc[Indexes.LOC_Z.ordinal()]));
-
-        Location mylocHolo = new Location(Bukkit.getWorld(locHolo[Indexes.WORLD_NAME.ordinal()]),
-                Double.parseDouble(locHolo[Indexes.LOC_X.ordinal()]), Double.parseDouble(locHolo[Indexes.LOC_Y.ordinal()]),
-                Double.parseDouble(locHolo[Indexes.LOC_Z.ordinal()]));
-
-        return new ChestData(
-                (List<ItemStack>) map.get("inventory"),
-                myloc,
-                (String) map.get("playerName"),
-                (String) map.get("playerUUID"),
-                (Date) map.get("chestDate"),
-                (boolean) map.get("isInfinity"),
-                map.get("isRemovedBlock") != null && (boolean) map.get("isRemovedBlock"), // compatiblity under 4.14
-                mylocHolo,
-                UUID.fromString((String) map.get("as_timer_id")),
-                UUID.fromString((String) map.get("as_owner_id")),
-                (String) map.get("worldName"),
-                (int) (map.get("xpStored") != null ? map.get("xpStored") : 0)  // compatiblity under 4.15
-        );
-    }
-
     public UUID getHolographicTimerId() {
         return holographicTimerId;
     }
@@ -135,6 +103,10 @@ public final class ChestData implements ConfigurationSerializable {
 
     public void setHolographicOwnerId(UUID holographicOwnerId) {
         this.holographicOwnerId = holographicOwnerId;
+    }
+
+    public void setHolographicTimerId(UUID holographicTimerId) {
+        this.holographicTimerId = holographicTimerId;
     }
 
     public List<ItemStack> getInventory() {
@@ -232,26 +204,6 @@ public final class ChestData implements ConfigurationSerializable {
                         chestLocation.getBlockX() >> 4,
                         chestLocation.getBlockZ() >> 4
                 );
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("inventory", inventory);
-        map.put("chestLocation", worldName + ";" + chestLocation.getX() + ";" + chestLocation.getY() + ";"
-                + chestLocation.getZ());
-        map.put("playerName", playerName);
-        map.put("playerUUID", playerUUID);
-        map.put("chestDate", chestDate);
-        map.put("isRemovedBlock", isRemovedBlock);
-        map.put("isInfinity", isInfinity);
-        map.put("holographicTimer", worldName + ";" + holographicTimer.getX() + ";" + holographicTimer.getY()
-                + ";" + holographicTimer.getZ());
-        map.put("worldName", worldName);
-        map.put("as_timer_id", holographicTimerId.toString());
-        map.put("as_owner_id", holographicOwnerId.toString());
-        map.put("xpStored", xpStored);
-        return map;
     }
 
     public int getXpStored() {

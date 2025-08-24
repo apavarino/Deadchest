@@ -7,14 +7,14 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 
-import static me.crylonz.deadchest.DeadChestLoader.chestData;
-
 public class FileManager {
 
     private final File configFile;
 
     private static FileConfiguration chestDataConfig = null;
     private static File chestDataFile = null;
+
+    @Deprecated
     private static final String chestDataFileName = "chestData.yml";
 
     private static FileConfiguration localizationConfig = null;
@@ -37,10 +37,12 @@ public class FileManager {
     }
 
     // Config 2
+    @Deprecated
     public File getChestDataFile() {
         return chestDataFile;
     }
 
+    @Deprecated
     public void reloadChestDataConfig() {
         if (chestDataFile == null) {
             chestDataFile = new File(p.getDataFolder(), chestDataFileName);
@@ -48,6 +50,7 @@ public class FileManager {
         chestDataConfig = YamlConfiguration.loadConfiguration(chestDataFile);
     }
 
+    @Deprecated
     public FileConfiguration getChestDataConfig() {
         if (chestDataConfig == null) {
             reloadChestDataConfig();
@@ -55,6 +58,7 @@ public class FileManager {
         return chestDataConfig;
     }
 
+    @Deprecated
     public void saveChestDataConfig() {
         if (chestDataConfig == null || chestDataFile == null) {
             return;
@@ -95,11 +99,4 @@ public class FileManager {
             DeadChestLoader.log.severe("Could not save config to " + localizationFile + ex);
         }
     }
-
-    // custom func
-    public void saveModification() {
-        getChestDataConfig().set("chestData", chestData);
-        saveChestDataConfig();
-    }
-
 }
