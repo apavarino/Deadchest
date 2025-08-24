@@ -77,7 +77,7 @@ public final class ItemBytes {
             oos.writeInt(items.size());
             for (ItemStack item : items) {
                 byte[] itemBytes = toBytes(item);
-                oos.writeObject(itemBytes); // on laisse ObjectOutputStream gérer la taille
+                oos.writeObject(itemBytes);
             }
             return baos.toByteArray();
 
