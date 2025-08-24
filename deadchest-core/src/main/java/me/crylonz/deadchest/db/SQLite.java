@@ -32,20 +32,8 @@ public class SQLite {
                 st.execute("PRAGMA foreign_keys=ON");
             }
 
-            createSchema();
         } catch (SQLException e) {
             throw new RuntimeException("SQLite init failed", e);
-        }
-    }
-
-    private void createSchema() throws SQLException {
-        try (Statement st = conn.createStatement()) {
-            st.execute(
-                    "CREATE TABLE IF NOT EXISTS ignore_items ("
-                            + "slot INTEGER PRIMARY KEY, "
-                            + "data BLOB NOT NULL"
-                            + ")"
-            );
         }
     }
 
@@ -65,3 +53,4 @@ public class SQLite {
         }
     }
 }
+
