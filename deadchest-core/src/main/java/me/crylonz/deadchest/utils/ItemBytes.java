@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ItemBytes {
     private ItemBytes() {
@@ -63,6 +65,44 @@ public final class ItemBytes {
             return (ItemStack) ois.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             throw new RuntimeException("Failed to deserialize ItemStack (Spigot fallback)", ex);
+        }
+    }
+
+    // --- Sérialisation d'une liste d'items ---
+    public static byte[] toBytesList(List<ItemStack> items) {
+        if (items == null) return new byte[0];
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(baos)) {
+
+            oos.writeInt(items.size());
+            for (ItemStack item : items) {
+                byte[] itemBytes = toBytes(item);
+                oos.writeObject(itemBytes); // on laisse ObjectOutputStream gérer la taille
+            }
+            return baos.toByteArray();
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to serialize inventory list", ex);
+        }
+    }
+
+    public static List<ItemStack> fromBytesList(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) return new ArrayList<>();
+
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+             BukkitObjectInputStream ois = new BukkitObjectInputStream(bais)) {
+
+            int size = ois.readInt();
+            List<ItemStack> items = new ArrayList<>(size);
+
+            for (int i = 0; i < size; i++) {
+                byte[] itemBytes = (byte[]) ois.readObject();
+                items.add(fromBytes(itemBytes));
+            }
+            return items;
+
+        } catch (IOException | ClassNotFoundException ex) {
+            throw new RuntimeException("Failed to deserialize inventory list", ex);
         }
     }
 
