@@ -48,14 +48,14 @@ class BlockBreakListenerTest {
         block = world.getBlockAt(0, 64, 0);
         listener = new BlockBreakListener();
 
-        if (DeadChestLoader.chestData == null) {
-            DeadChestLoader.chestData = new ArrayList<>();
+        if (DeadChestLoader.chestDataList == null) {
+            DeadChestLoader.chestDataList = new ArrayList<>();
         }
     }
 
     @AfterEach
     void tearDown() {
-        DeadChestLoader.chestData.clear();
+        DeadChestLoader.chestDataList.clear();
     }
 
     @Test
@@ -72,8 +72,8 @@ class BlockBreakListenerTest {
 
             ChestData cd = mock(ChestData.class);
             when(cd.getChestLocation()).thenReturn(block.getLocation());
-            DeadChestLoader.chestData.clear();
-            DeadChestLoader.chestData.add(cd);
+            DeadChestLoader.chestDataList.clear();
+            DeadChestLoader.chestDataList.add(cd);
 
             block.setType(Material.CHEST);
 

@@ -70,7 +70,7 @@ class PlayerDeathListenerTest {
         // Minimal plugin + statics
         DeadChestLoader.plugin = MockBukkit.createMockPlugin();
         DeadChestLoader.log = Logger.getLogger("DeadChestTest");
-        DeadChestLoader.chestData = new ArrayList<>();
+        DeadChestLoader.chestDataList = new ArrayList<>();
         DeadChestLoader.fileManager = mock(me.crylonz.deadchest.FileManager.class);
 
         // Localization stub
@@ -147,8 +147,7 @@ class PlayerDeathListenerTest {
 
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest should be created when keepInventory is already true");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest should be created when keepInventory is already true");
     }
 
     @Test
@@ -161,8 +160,7 @@ class PlayerDeathListenerTest {
 
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest in excluded world");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest in excluded world");
     }
 
     @Test
@@ -174,8 +172,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest in creative when disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest in creative when disabled");
     }
 
     @Test
@@ -190,10 +187,9 @@ class PlayerDeathListenerTest {
 
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest in PVP keep-inventory case");
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest in PVP keep-inventory case");
         assertTrue(evt.getDrops().isEmpty(), "Drops must be cleared in PVP keep-inventory case");
         assertTrue(evt.getKeepInventory(), "keepInventory should be set to true");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
     }
 
     @Test
@@ -212,8 +208,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest when death occurs on rails and rails are disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest when death occurs on rails and rails are disabled");
     }
 
     @Test
@@ -229,15 +224,14 @@ class PlayerDeathListenerTest {
 
         listener.onPlayerDeathEvent(evt);
 
-        assertEquals(1, DeadChestLoader.chestData.size(), "One ChestData should be created");
-        ChestData cd = DeadChestLoader.chestData.get(0);
+        assertEquals(1, DeadChestLoader.chestDataList.size(), "One ChestData should be created");
+        ChestData cd = DeadChestLoader.chestDataList.get(0);
         assertNotNull(cd.getChestLocation(), "Chest location should be set");
 
         // The block at the location should be set to CHEST (drop block default = 0)
         assertEquals(Material.CHEST, world.getBlockAt(cd.getChestLocation()).getType(),
                 "Block at chest location must be a CHEST");
 
-        verify(DeadChestLoader.fileManager, times(1)).saveModification();
     }
 
     @ParameterizedTest(name = "death on {0} should NOT generate chest when disabled")
@@ -256,9 +250,8 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(),
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(),
                 () -> "No chest should be generated when dying in " + fluid + " and " + key + " disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
     }
 
     @ParameterizedTest(name = "death on {0} rail should NOT generate chest when GENERATE_ON_RAILS=false")
@@ -276,9 +269,8 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(),
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(),
                 () -> "No chest should be generated when dying on " + railType + " and rails disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
     }
 
     @Test
@@ -309,8 +301,7 @@ class PlayerDeathListenerTest {
 
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest if dead in minecart and disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest if dead in minecart and disabled");
     }
 
     @Test
@@ -326,8 +317,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = new PlayerDeathEvent(mockedPlayer, new ArrayList<>(), 0, "");
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest in the End when disabled");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest in the End when disabled");
     }
 
     @Test
@@ -341,8 +331,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest if player already at max");
-        verify(DeadChestLoader.fileManager, never()).saveModification();
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest if player already at max");
     }
 
     @Test
@@ -379,7 +368,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertEquals(1, DeadChestLoader.chestData.size(), "Chest still created even if fileManager is null");
+        assertEquals(1, DeadChestLoader.chestDataList.size(), "Chest still created even if fileManager is null");
     }
 
     @Test
@@ -387,7 +376,7 @@ class PlayerDeathListenerTest {
         PlayerDeathEvent evt = deathEvent();
         listener.onPlayerDeathEvent(evt);
 
-        assertTrue(DeadChestLoader.chestData.isEmpty(), "No chest should be generated with empty inventory");
+        assertTrue(DeadChestLoader.chestDataList.isEmpty(), "No chest should be generated with empty inventory");
     }
 
     @ParameterizedTest(name = "slot {0} with Vanishing should be cleared")

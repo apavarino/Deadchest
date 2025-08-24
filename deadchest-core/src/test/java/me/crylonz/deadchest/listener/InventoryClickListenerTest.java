@@ -5,7 +5,7 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import be.seeseemelk.mockbukkit.inventory.InventoryMock;
 import me.crylonz.deadchest.IgnoreInventoryHolder;
-import me.crylonz.deadchest.utils.IgnoreItemListRepository;
+import me.crylonz.deadchest.db.IgnoreItemListRepository;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;

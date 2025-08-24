@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.crylonz.deadchest.DeadChestLoader.chestData;
+import static me.crylonz.deadchest.DeadChestLoader.chestDataList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -32,7 +32,7 @@ class PistonListenerTest {
     void setUp() {
         server = MockBukkit.mock();
         listener = new PistonListener();
-        chestData = new ArrayList<>();
+        chestDataList = new ArrayList<>();
     }
 
     @AfterEach
@@ -51,7 +51,7 @@ class PistonListenerTest {
 
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(loc);
-        chestData.add(cd);
+        chestDataList.add(cd);
 
         List<Block> moved = new ArrayList<>();
         moved.add(headBlock);
