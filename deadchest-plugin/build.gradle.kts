@@ -67,7 +67,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "me.crylonz.deadchest"
             artifactId = "dead-chest"
-            version = "4.22.2-SNAPSHOT"
+            version = "4.23.0-SNAPSHOT"
             from(components["java"])
         }
     }
