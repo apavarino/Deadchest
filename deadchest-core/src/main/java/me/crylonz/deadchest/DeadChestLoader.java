@@ -7,7 +7,6 @@ import me.crylonz.deadchest.db.IgnoreItemListRepository;
 import me.crylonz.deadchest.db.SQLExecutor;
 import me.crylonz.deadchest.db.SQLite;
 import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
-import me.crylonz.deadchest.listener.*;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Bukkit;
@@ -15,7 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -79,16 +77,6 @@ public class DeadChestLoader {
             cleanAllDeadChests();
         }
 
-        PluginManager pm = plugin.getServer().getPluginManager();
-        pm.registerEvents(new ArmorstandListener(), plugin);
-        pm.registerEvents(new BlockBreakListener(), plugin);
-        pm.registerEvents(new BlockFromToListener(), plugin);
-        pm.registerEvents(new BlockPlaceEventListener(), plugin);
-        pm.registerEvents(new ClickListener(), plugin);
-        pm.registerEvents(new ExplosionListener(), plugin);
-        pm.registerEvents(new InventoryClickListener(), plugin);
-        pm.registerEvents(new PistonListener(), plugin);
-        pm.registerEvents(new PlayerDeathListener(), plugin);
 
         // Which block can be used as grave ?
         graveBlocks.add(Material.CHEST);

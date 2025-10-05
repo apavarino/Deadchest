@@ -1,9 +1,11 @@
 package me.crylonz.deadchest;
 
+import me.crylonz.deadchest.listener.*;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
@@ -36,6 +38,18 @@ public class DeadChest extends JavaPlugin {
         if (bstats) {
             Metrics metrics = new Metrics(this, 11385);
         }
+
+        PluginManager pm = this.getServer().getPluginManager();
+        pm.registerEvents(new ArmorstandListener(), this);
+        pm.registerEvents(new BlockBreakListener(), this);
+        pm.registerEvents(new BlockFromToListener(), this);
+        pm.registerEvents(new BlockPlaceEventListener(), this);
+        pm.registerEvents(new ClickListener(), this);
+        pm.registerEvents(new ExplosionListener(), this);
+        pm.registerEvents(new InventoryClickListener(), this);
+        pm.registerEvents(new PistonListener(), this);
+        pm.registerEvents(new PlayerDeathListener(), this);
+
     }
 
     @Override
