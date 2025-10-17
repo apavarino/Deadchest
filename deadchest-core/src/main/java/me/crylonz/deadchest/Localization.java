@@ -26,8 +26,10 @@ public class Localization {
         local.put("loc_maxHeight", "§cYou are dead above the maximum height.");
         local.put("loc_noDCG", "§cNo deadchest generated.");
         local.put("loc_givebackInfo", "§cThis player is offline or don't have any active deadchest");
-        local.put("loc_dcgbsuccess", "§aThe oldest deadchest content of this player returned to him");
+        local.put("loc_dcgbsuccess", "§aThe oldest deadchest content of this player returned to them");
         local.put("loc_gbplayer", "§aYou have retrieved the content of your deadchest");
+        local.put("loc_dcgbsuccess_overflow", "§eThe player's inventory was full. Remaining items were dropped around them");
+        local.put("loc_gbplayer_overflow", "§eYour inventory was full. Some items have been dropped on the ground around you");
         local.put("loc_chestPos", "§6Your deadchest is at");
         local.put("loc_noPermsToGet", "§cYou are not allowed to open this chest");
     }
