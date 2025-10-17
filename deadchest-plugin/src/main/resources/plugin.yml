@@ -3,7 +3,7 @@ main: me.crylonz.deadchest.DeadChest
 softdepend: [ Multiverse-Core, WorldGuard ]
 author: Crylonz
 version: 4.23.1
-description: Keep your inventory in a chest when you die - Lilly Fork for Amplicity
+description: Keep your inventory in a chest when you die
 api-version: "1.13"
 permissions:
   deadchest.generate:
