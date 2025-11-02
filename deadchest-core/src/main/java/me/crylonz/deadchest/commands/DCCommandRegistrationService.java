@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
@@ -254,15 +255,39 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
     public void registerGiveBack() {
         registerCommand("dc giveback {0}", Permission.GIVEBACK.label, () -> {
             Player targetPlayer = null;
+            boolean hadOverflow = false;
+
             for (ChestData data : chestDataList) {
                 if (data.getPlayerName().equalsIgnoreCase(args[1])) {
 
                     targetPlayer = Bukkit.getPlayer(UUID.fromString(data.getPlayerUUID()));
 
                     if (targetPlayer != null && player.isOnline()) {
-                        for (ItemStack itemStack : data.getInventory()) {
+                        // Restore items to their original slots
+                        List<ItemStack> inventory = data.getInventory();
+                        org.bukkit.inventory.PlayerInventory playerInv = targetPlayer.getInventory();
+
+                        for (int i = 0; i < inventory.size(); i++) {
+                            ItemStack itemStack = inventory.get(i);
                             if (itemStack != null) {
-                                targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), itemStack);
+                                // Check if the slot is empty and restore to original position
+                                ItemStack currentItem = playerInv.getItem(i);
+
+                                if (currentItem == null || currentItem.getType() == Material.AIR) {
+                                    // Slot is empty, restore item to original position
+                                    playerInv.setItem(i, itemStack);
+                                } else {
+                                    // Slot is occupied, try to add to any available slot
+                                    java.util.HashMap<Integer, ItemStack> overflow = playerInv.addItem(itemStack);
+
+                                    // If the inventory is full It will drop the remaining items around the player
+                                    if (!overflow.isEmpty()) {
+                                        hadOverflow = true;
+                                        for (ItemStack overflowItem : overflow.values()) {
+                                            targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), overflowItem);
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -274,9 +299,15 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                     break;
                 }
             }
+
             if (targetPlayer != null) {
-                sender.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess"));
-                targetPlayer.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
+                if (hadOverflow) {
+                    sender.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess_overflow"));
+                    targetPlayer.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer_overflow"));
+                } else {
+                    sender.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess"));
+                    targetPlayer.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
+                }
             } else {
                 sender.sendMessage(local.get("loc_prefix") + local.get("loc_givebackInfo"));
             }
