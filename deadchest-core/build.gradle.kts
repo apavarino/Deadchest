@@ -5,24 +5,24 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 // Keep compatibility for user with old java version
 tasks.named<JavaCompile>("compileJava") {
-    options.release.set(8)
+    options.release.set(21)
 }
 
 tasks.named<JavaCompile>("compileTestJava") {
-    options.release.set(17)
+    options.release.set(21)
 }
 
 
 tasks.test {
     useJUnitPlatform()
     javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     })
 }
 
