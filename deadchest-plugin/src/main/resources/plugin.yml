@@ -4,7 +4,8 @@ softdepend: [ Multiverse-Core, WorldGuard ]
 author: Crylonz
 version: 4.23.0
 description: Keep your inventory in a chest when you die
-api-version: "1.13"
+api-version: "1.21"
+folia-supported: true
 permissions:
   deadchest.generate:
     description: Allows a player to keep inventory in a chest when he dies

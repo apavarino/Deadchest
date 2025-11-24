@@ -1,6 +1,7 @@
 package me.crylonz.deadchest.db;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.utils.FoliaSchedulerHelper;
 import me.crylonz.deadchest.utils.ItemBytes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -72,7 +73,8 @@ public class ChestDataRepository {
         sqlExecutor.runAsync(() -> {
             List<ChestData> result = findAll();
 
-            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(result));
+            // Use global scheduler for callback execution in Folia
+            FoliaSchedulerHelper.runGlobal(plugin, () -> callback.accept(result));
         });
     }
 

@@ -2,7 +2,7 @@ package me.crylonz.deadchest.listener;
 
 
 import me.crylonz.deadchest.IgnoreInventoryHolder;
-import org.bukkit.Bukkit;
+import me.crylonz.deadchest.utils.FoliaSchedulerHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,7 +36,8 @@ public class InventoryClickListener implements Listener {
             final ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType().isAir()) return;
 
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            // Use entity scheduler for player-related tasks in Folia
+            FoliaSchedulerHelper.runForEntity(plugin, (Player) event.getWhoClicked(), () -> {
                 if (clicked.getAmount() <= 1) {
                     clickedInv.setItem(slot, null);
                 } else {
@@ -55,7 +56,8 @@ public class InventoryClickListener implements Listener {
             if (src == null || src.getType().isAir()) return;
 
             if (!ignoreList.containsAtLeast(src, 1)) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                // Use entity scheduler for player-related tasks in Folia
+                FoliaSchedulerHelper.runForEntity(plugin, (Player) event.getWhoClicked(), () -> {
                     ItemStack item = src.clone();
                     item.setAmount(1);
                     ignoreList.addItem(item);

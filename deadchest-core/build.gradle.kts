@@ -35,10 +35,8 @@ repositories {
 }
 
 dependencies {
-    // WARNING :
-    // 1.20+ InventoryView is now interface
-    // cannot update now to prevent regression
-    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    // Updated to Folia/Paper API 1.21.8
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.googlecode.json-simple:json-simple:1.1.1")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.5-SNAPSHOT")
 

@@ -259,7 +259,14 @@ public class DeadChestLoader {
     }
 
     private void launchRepeatingTask() {
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleEvent, 20, 20);
+        // For Folia, we need to use the global region scheduler
+        // This will run the task periodically across all regions
+        me.crylonz.deadchest.utils.FoliaSchedulerHelper.runGlobalRepeating(
+                plugin,
+                DeadChestLoader::handleEvent,
+                20, // initial delay: 1 second
+                20  // period: 1 second
+        );
     }
 
     public DeadChestConfig getDataConfig() {

@@ -41,13 +41,7 @@ repositories {
 dependencies {
     implementation(project(":deadchest-core"))
     implementation("org.bstats:bstats-bukkit:2.2.1")
-    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
-}
-
-configurations.all {
-    resolutionStrategy {
-        force("io.papermc.paper:paper-api:1.20.4-R0.1-20240205.114523-90")
-    }
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 }
 
 tasks.named<Test>("test") {
