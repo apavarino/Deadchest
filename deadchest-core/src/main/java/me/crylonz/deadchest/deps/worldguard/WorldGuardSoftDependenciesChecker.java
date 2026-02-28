@@ -80,8 +80,9 @@ public class WorldGuardSoftDependenciesChecker {
                 return defaultAllow;
 
             final StateFlag.State state = set.queryState(localPlayer, DEADCHEST_GUEST_FLAG);
-            System.out.println("DEADCHEST_GUEST_FLAG " + state);
-            if (state == StateFlag.State.ALLOW) return true;
+            if (state == StateFlag.State.ALLOW) {
+                return true;
+            }
             if (state == StateFlag.State.DENY) {
                 generateLog("Player [" + p.getName() + "] died without [WorldGuard] permission: No Deadchest generated");
                 return false;

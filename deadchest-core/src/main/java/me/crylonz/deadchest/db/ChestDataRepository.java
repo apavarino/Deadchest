@@ -168,6 +168,12 @@ public class ChestDataRepository {
 
     public static void batchSave(Collection<ChestData> chests) {
         final String checkDuplicate = "SELECT 1 FROM chest_data WHERE player_uuid = ? AND chest_world = ? AND chest_x = ? AND chest_y = ? AND chest_z = ? LIMIT 1";
+        final String sqlInsert = "INSERT INTO chest_data (" +
+                "player_uuid, player_name, chest_world, chest_x, chest_y, chest_z, chest_yaw, chest_pitch, " +
+                "chest_date, is_infinity, is_removed_block, " +
+                "holo_world, holo_x, holo_y, holo_z, holo_yaw, holo_pitch, " +
+                "holographic_timer_id, holographic_owner_id, world_name, xp_stored, inventory" +
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         final String sqlUpdate = "UPDATE chest_data SET " +
                 "chest_date = ?," +
                 " is_infinity = ?, " +
@@ -189,7 +195,9 @@ public class ChestDataRepository {
             conn.setAutoCommit(false);
 
             try (PreparedStatement psCheck = conn.prepareStatement(checkDuplicate);
+                 PreparedStatement psInsert = conn.prepareStatement(sqlInsert);
                  PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
+                boolean hasInserts = false;
                 boolean hasUpdates = false;
                 for (ChestData chest : chests) {
                     Location chestLoc = chest.getChestLocation();
@@ -207,7 +215,35 @@ public class ChestDataRepository {
                         exists = rs.next();
                     }
                     if (!exists) {
-                        save(chest);
+                        int i = 1;
+                        psInsert.setString(i++, chest.getPlayerStringUUID());
+                        psInsert.setString(i++, chest.getPlayerName());
+
+                        psInsert.setString(i++, chestLoc.getWorld().getName());
+                        psInsert.setInt(i++, chestLoc.getBlockX());
+                        psInsert.setInt(i++, chestLoc.getBlockY());
+                        psInsert.setInt(i++, chestLoc.getBlockZ());
+                        psInsert.setFloat(i++, chestLoc.getYaw());
+                        psInsert.setFloat(i++, chestLoc.getPitch());
+
+                        psInsert.setLong(i++, chest.getChestDate().getTime());
+                        psInsert.setBoolean(i++, chest.isInfinity());
+                        psInsert.setBoolean(i++, chest.isRemovedBlock());
+
+                        psInsert.setString(i++, holoLoc.getWorld().getName());
+                        psInsert.setInt(i++, holoLoc.getBlockX());
+                        psInsert.setInt(i++, holoLoc.getBlockY());
+                        psInsert.setInt(i++, holoLoc.getBlockZ());
+                        psInsert.setFloat(i++, holoLoc.getYaw());
+                        psInsert.setFloat(i++, holoLoc.getPitch());
+
+                        psInsert.setString(i++, chest.getHolographicTimerId().toString());
+                        psInsert.setString(i++, chest.getHolographicOwnerId().toString());
+                        psInsert.setString(i++, chest.getWorldName());
+                        psInsert.setInt(i++, chest.getXpStored());
+                        psInsert.setBytes(i, ItemBytes.toBytesList(chest.getInventory()));
+                        psInsert.addBatch();
+                        hasInserts = true;
                     } else {
                         int i = 1;
                         psUpdate.setLong(i++, chest.getChestDate().getTime());
@@ -231,10 +267,13 @@ public class ChestDataRepository {
                         psUpdate.setString(i++, chestLoc.getWorld().getName());
                         psUpdate.setInt(i++, chestLoc.getBlockX());
                         psUpdate.setInt(i++, chestLoc.getBlockY());
-                        psUpdate.setInt(i + 1, chestLoc.getBlockZ());
+                        psUpdate.setInt(i++, chestLoc.getBlockZ());
                         psUpdate.addBatch();
                         hasUpdates = true;
                     }
+                }
+                if (hasInserts) {
+                    psInsert.executeBatch();
                 }
                 if (hasUpdates) {
                     psUpdate.executeBatch();
@@ -312,8 +351,6 @@ public class ChestDataRepository {
             ps.setInt(17, chestLoc.getBlockX());
             ps.setInt(18, chestLoc.getBlockY());
             ps.setInt(19, chestLoc.getBlockZ());
-            ps.setFloat(20, chestLoc.getYaw());
-            ps.setFloat(21, chestLoc.getPitch());
 
             ps.executeUpdate();
         } catch (SQLException e) {
