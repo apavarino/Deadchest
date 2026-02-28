@@ -35,8 +35,8 @@ public class DeadChestCache {
     public void setChestData(final List<ChestData> chests) {
         if (chests != null) {
             chestDataMap.clear();
+            players.clear();
             chests.forEach(this::addChestData);
-            chests.forEach(this::addPlayerData);
         }
     }
 
