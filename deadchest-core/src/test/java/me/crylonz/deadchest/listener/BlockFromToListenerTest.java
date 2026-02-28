@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.block.BlockMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
+import me.crylonz.deadchest.cache.DeadChestCache;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.junit.jupiter.api.AfterAll;
@@ -26,6 +27,7 @@ class BlockFromToListenerTest {
     private BlockMock fromBlock;
     private BlockMock toBlock;
     private BlockFromToListener listener;
+    private DeadChestCache chestData;
 
     @BeforeAll
     static void beforeAll() {
@@ -43,8 +45,8 @@ class BlockFromToListenerTest {
 
         fromBlock = world.getBlockAt(0, 64, 0);
         toBlock = world.getBlockAt(1, 64, 0);
-
-        DeadChestLoader.chestDataList = new ArrayList<>();
+        chestData = DeadChestLoader.getChestDataCache();
+        chestData.setChestData( new ArrayList<>());
 
         graveBlocks.clear();
         graveBlocks.add(Material.CHEST);
@@ -59,7 +61,7 @@ class BlockFromToListenerTest {
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(toBlock.getLocation());
 
-        DeadChestLoader.chestDataList.add(cd);
+        chestData.addChestData(cd);
 
         BlockFromToEvent event = new BlockFromToEvent(fromBlock, toBlock);
         listener.onBlockFromToEvent(event);
@@ -84,7 +86,7 @@ class BlockFromToListenerTest {
         BlockMock otherBlock = world.getBlockAt(5, 64, 5);
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(otherBlock.getLocation());
-        DeadChestLoader.chestDataList.add(cd);
+        chestData.addChestData(cd);
 
         BlockFromToEvent event = new BlockFromToEvent(fromBlock, toBlock);
         listener.onBlockFromToEvent(event);

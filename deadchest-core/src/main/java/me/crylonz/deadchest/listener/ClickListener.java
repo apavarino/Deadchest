@@ -1,12 +1,13 @@
 package me.crylonz.deadchest.listener;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.DeadchestPickUpEvent;
 import me.crylonz.deadchest.Permission;
-import me.crylonz.deadchest.db.ChestDataRepository;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,8 +19,10 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static me.crylonz.deadchest.DeadChestLoader.*;
+import static me.crylonz.deadchest.DeadChestLoader.config;
+import static me.crylonz.deadchest.DeadChestLoader.local;
 import static me.crylonz.deadchest.utils.Utils.generateLog;
 import static me.crylonz.deadchest.utils.Utils.isGraveBlock;
 
@@ -46,12 +49,23 @@ public class ClickListener implements Listener {
      * Checks if the player clicks near a DeadChest
      */
     protected boolean isNearGraveChest(PlayerInteractEvent e) {
-        for (ChestData cd : chestDataList) {
-            if (cd.getChestLocation().getWorld() == e.getPlayer().getWorld()
-                    && e.getClickedBlock().getWorld() == e.getPlayer().getWorld()
-                    && cd.getChestLocation().distance(e.getClickedBlock().getLocation()) <= 1) {
+        final Block clickedBlock = e.getClickedBlock();
+        if (clickedBlock == null)
+            return false;
+        ChestData chestData = DeadChestLoader.getChestData(clickedBlock.getLocation());
+        if (chestData != null) {
+            return true;
+        }
+
+        for (BlockFace face : CHECK_FACES) {
+            final Block relative = clickedBlock.getRelative(face);
+            final Location chestLoc = relative.getLocation();
+            chestData = DeadChestLoader.getChestData(chestLoc);
+
+            if (chestData != null) {
                 return true;
             }
+
         }
         return false;
     }
@@ -61,25 +75,21 @@ public class ClickListener implements Listener {
      */
     protected void handleChestInteraction(PlayerInteractEvent e, Block block) {
         Player player = e.getPlayer();
-        String playerUUID = player.getUniqueId().toString();
+        UUID playerUUID = player.getUniqueId();
         boolean playerHasPermission = player.hasPermission(Permission.CHESTPASS.label);
-
-        for (ChestData cd : chestDataList) {
-            if (cd.getChestLocation().equals(block.getLocation())) {
-                if (canOpenChest(cd, player, playerUUID, playerHasPermission)) {
-                    processChestPickup(e, cd, block, player);
-                } else {
-                    denyChestAccess(e, player);
-                }
-                break;
-            }
+        final ChestData chestData = DeadChestLoader.getChestData(block.getLocation());
+        if (chestData == null) return;
+        if (canOpenChest(chestData, player, playerUUID, playerHasPermission)) {
+            processChestPickup(e, chestData, block, player);
+        } else {
+            denyChestAccess(e, player);
         }
     }
 
     /**
      * Checks if the player has the right to open the chest
      */
-    private boolean canOpenChest(ChestData cd, Player player, String playerUUID, boolean hasPerm) {
+    private boolean canOpenChest(ChestData cd, Player player, UUID playerUUID, boolean hasPerm) {
         if (!config.getBoolean(ConfigKey.ONLY_OWNER_CAN_OPEN_CHEST)) return true;
         if (playerUUID.equals(cd.getPlayerUUID())) return true;
         if (hasPerm) return true;
@@ -193,10 +203,17 @@ public class ClickListener implements Listener {
      */
     private void cleanupChest(ChestData cd, Block block, Player player) {
         block.setType(Material.AIR);
-        chestDataList.remove(cd);
-        ChestDataRepository.saveAllAsync(chestDataList);
+        DeadChestLoader.getChestDataCache().removeChestData(cd);
         block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
         player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
-        cd.removeArmorStand();
     }
+
+    private static final BlockFace[] CHECK_FACES = {
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.EAST,
+            BlockFace.WEST,
+            BlockFace.UP,
+            BlockFace.DOWN
+    };
 }

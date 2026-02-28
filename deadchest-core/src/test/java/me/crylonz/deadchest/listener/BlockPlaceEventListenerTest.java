@@ -8,6 +8,7 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Localization;
+import me.crylonz.deadchest.cache.DeadChestCache;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +27,7 @@ class BlockPlaceEventListenerTest {
     private WorldMock world;
     private PlayerMock player;
     private BlockPlaceEventListener listener;
+    private DeadChestCache chestData;
 
     @BeforeEach
     void setUp() {
@@ -34,7 +36,9 @@ class BlockPlaceEventListenerTest {
         MockBukkit.getMock().addWorld(world);
         player = new PlayerMock(MockBukkit.getMock(), "Steve");
 
-        DeadChestLoader.chestDataList = new ArrayList<>();
+        chestData = DeadChestLoader.getChestDataCache();
+        chestData.setChestData( new ArrayList<>());
+
         DeadChestLoader.local = mock(Localization.class);
         when(DeadChestLoader.local.get("loc_prefix")).thenReturn("[DC] ");
         when(DeadChestLoader.local.get("loc_doubleDC")).thenReturn("You can't place a double DeadChest!");
@@ -54,7 +58,7 @@ class BlockPlaceEventListenerTest {
 
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(existingBlock.getLocation());
-        DeadChestLoader.chestDataList.add(cd);
+        chestData.addChestData(cd);
 
         BlockMock newBlock = world.getBlockAt(1, 64, 0);
         newBlock.setType(Material.CHEST);

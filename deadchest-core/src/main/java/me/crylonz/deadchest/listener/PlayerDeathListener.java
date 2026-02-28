@@ -1,8 +1,8 @@
 package me.crylonz.deadchest.listener;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Permission;
-import me.crylonz.deadchest.db.ChestDataRepository;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.Utils;
 import org.bukkit.*;
@@ -365,20 +365,27 @@ public class PlayerDeathListener implements Listener {
         PlayerInventory inv = p.getInventory();
         ItemStack[] snapshot = inv.getContents();
         inv.setContents(itemsToStore);
-
-        chestDataList.add(
-                new ChestData(
-                        inv,
-                        b.getLocation(),
-                        p,
-                        p.hasPermission(Permission.INFINITY_CHEST.label),
-                        holoTime,
-                        holoName,
-                        getTotalExperienceToStore(p)
-                )
-        );
-
+        DeadChestLoader.getChestDataCache().addChestData(cerateChestData(p, b, holoTime, holoName, inv));
         inv.setContents(snapshot);
+    }
+
+    private static ChestData cerateChestData(final Player p, final Block b, final ArmorStand holoTime, final ArmorStand holoName, final PlayerInventory inv) {
+        final ChestData chestData = new ChestData(
+                inv,
+                b.getLocation(),
+                p,
+                p.hasPermission(Permission.INFINITY_CHEST.label),
+                holoTime,
+                holoName,
+                getTotalExperienceToStore(p)
+        );
+        chestData.save(containsChestOnLoc -> {
+            if (containsChestOnLoc){
+                generateLog("Could not generate deadchest, as dublicate exist in database on same location [" + p.getName() + "] in " + b.getWorld().getName() +
+                        " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+            }
+        });
+        return chestData;
     }
 
     private void clearEventDropsAndPlayerInventory(PlayerDeathEvent e, Player p) {
@@ -404,7 +411,7 @@ public class PlayerDeathListener implements Listener {
 
     private void persistAndLog(Player p, Block b, ItemStack[] itemsToStore) {
 
-        ChestDataRepository.saveAllAsync(chestDataList);
+        //ChestDataRepository.saveAllAsync(chestDataList);
 
         generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() +
                 " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());

@@ -8,7 +8,7 @@ public class SQLExecutor {
     private final ExecutorService pool;
 
     public SQLExecutor() {
-        this.pool = Executors.newFixedThreadPool(2);
+        this.pool = Executors.newSingleThreadExecutor();
     }
 
     public void runAsync(Runnable task) {

@@ -103,8 +103,17 @@ public class Utils {
     public static void generateDeadChest(Block block, Player player) {
         switch (config.getInt(ConfigKey.DROP_BLOCK)) {
             case 2:
-                block.setType(Material.PLAYER_HEAD);
-                block.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
+                Material head = Material.getMaterial("PLAYER_HEAD");
+                if (head == null)
+                    head = Material.getMaterial("SKULL");
+                if (head != null)
+                    block.setType(head);
+                else
+                    block.setType(Material.CHEST);
+                try {
+                    block.setMetadata("deadchest", new FixedMetadataValue(plugin, true));
+                } catch (NoClassDefFoundError ignore) {
+                }
                 BlockState state = block.getState();
                 Skull skull = (Skull) state;
                 if (player != null) {

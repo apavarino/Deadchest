@@ -1,5 +1,6 @@
 package me.crylonz.deadchest;
 
+import me.crylonz.deadchest.cache.DeadChestCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -8,8 +9,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static me.crylonz.deadchest.DeadChestLoader.chestDataList;
 
 public class DeadChestAPI {
 
@@ -21,13 +20,11 @@ public class DeadChestAPI {
      */
     public static List<ChestData> getChests(Player player) {
 
-        List<ChestData> chestData = new ArrayList<>();
-        DeadChestLoader.chestDataList.forEach(chest -> {
-            if (chest.getPlayerName().equalsIgnoreCase(player.getName())) {
-                chestData.add(new ChestData(chest));
-            }
-        });
-        return chestData;
+        List<ChestData> chestDataList = new ArrayList<>();
+        DeadChestLoader.getChestDataCache().getPlayerLinkedDeadChestData(player, chestData ->
+                chestDataList.add(new ChestData(chestData))
+        );
+        return chestDataList;
     }
 
     /**
@@ -58,11 +55,12 @@ public class DeadChestAPI {
      */
     public static boolean removeChest(ChestData chest) {
         World world = Bukkit.getWorld(chest.getWorldName());
+        final DeadChestCache chestData = DeadChestLoader.getChestDataCache();
 
-        if (world != null && chestDataList.contains(chest)) {
+        if (world != null && chestData.getChestData(chest.getChestLocation()) != null) {
             world.getBlockAt(chest.getChestLocation()).setType(Material.AIR);
-            chest.removeArmorStand();
-            chestDataList.remove(chest);
+
+            chestData.removeChestData(chest);
             return true;
         }
         return false;

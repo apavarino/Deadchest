@@ -15,6 +15,7 @@ public enum ConfigKey {
     DISPLAY_POSITION_ON_DEATH("DisplayDeadChestPositionOnDeath"),
     ITEMS_DROPPED_AFTER_TIMEOUT("ItemsDroppedAfterTimeOut"),
     WORLD_GUARD_DETECTION("EnableWorldGuardDetection"),
+    WORLD_GUARD_FLAG_DEFAULT("EnableWorldGuardFlagDefault"),
     DROP_MODE("DropMode"),
     DROP_BLOCK("DropBlock"),
     GENERATE_ON_LAVA("GenerateOnLava"),

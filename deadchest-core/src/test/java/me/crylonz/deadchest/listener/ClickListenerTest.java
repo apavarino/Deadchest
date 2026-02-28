@@ -8,6 +8,7 @@ import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.FileManager;
 import me.crylonz.deadchest.Localization;
+import me.crylonz.deadchest.cache.DeadChestCache;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Material;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,6 +42,7 @@ class ClickListenerTest {
     private PlayerMock player;
     private BlockMock chestBlock;
     private ClickListener listener;
+    private DeadChestCache deadChest;
 
     @BeforeEach
     void setUp() {
@@ -51,8 +54,9 @@ class ClickListenerTest {
         chestBlock.setType(Material.CHEST);
         DeadChestLoader.graveBlocks.add(Material.CHEST);
 
+        deadChest = DeadChestLoader.getChestDataCache();
+        deadChest.setChestData(new ArrayList<>());
 
-        DeadChestLoader.chestDataList = new ArrayList<>();
         DeadChestLoader.local = mock(Localization.class);
         DeadChestLoader.fileManager = mock(FileManager.class);
         when(DeadChestLoader.local.get("loc_prefix")).thenReturn("[DC] ");
@@ -72,7 +76,7 @@ class ClickListenerTest {
     void testIsNearGraveChest_CancelsEvent() {
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(chestBlock.getLocation());
-        DeadChestLoader.chestDataList.add(cd);
+        deadChest.addChestData(cd);
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK,
                 new ItemStack(Material.STONE), chestBlock, BlockFace.UP);
@@ -88,9 +92,8 @@ class ClickListenerTest {
 
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(chestBlock.getLocation());
-        when(cd.getPlayerUUID()).thenReturn("other-uuid");
-        DeadChestLoader.chestDataList.add(cd);
-
+        when(cd.getPlayerUUID()).thenReturn(UUID.randomUUID());
+        deadChest.addChestData(cd);
         PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_BLOCK,
                 new ItemStack(Material.CHEST), chestBlock, BlockFace.UP);
 
@@ -109,10 +112,10 @@ class ClickListenerTest {
 
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(chestBlock.getLocation());
-        when(cd.getPlayerUUID()).thenReturn(player.getUniqueId().toString());
+        when(cd.getPlayerUUID()).thenReturn(player.getUniqueId());
         when(cd.getInventory()).thenReturn(Arrays.asList(new ItemStack(Material.DIAMOND), new ItemStack(Material.APPLE)));
         when(cd.getXpStored()).thenReturn(5);
-        DeadChestLoader.chestDataList.add(cd);
+        deadChest.addChestData(cd);
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_BLOCK,
                 new ItemStack(Material.CHEST), chestBlock, BlockFace.UP);
@@ -135,7 +138,7 @@ class ClickListenerTest {
         when(cd.getChestLocation()).thenReturn(chestBlock.getLocation());
         when(cd.getInventory()).thenReturn(List.of(new ItemStack(Material.EMERALD)));
         when(cd.getXpStored()).thenReturn(10);
-        DeadChestLoader.chestDataList.add(cd);
+        deadChest.addChestData(cd);
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_BLOCK,
                 new ItemStack(Material.CHEST), chestBlock, BlockFace.UP);
@@ -153,8 +156,8 @@ class ClickListenerTest {
 
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(chestBlock.getLocation());
-        when(cd.getPlayerUUID()).thenReturn(player.getUniqueId().toString());
-        DeadChestLoader.chestDataList.add(cd);
+        when(cd.getPlayerUUID()).thenReturn(player.getUniqueId());
+        deadChest.addChestData(cd);
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_BLOCK,
                 new ItemStack(Material.CHEST), chestBlock, BlockFace.UP);

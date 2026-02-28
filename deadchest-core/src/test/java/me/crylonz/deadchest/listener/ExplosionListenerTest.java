@@ -5,6 +5,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.block.BlockMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
+import me.crylonz.deadchest.cache.DeadChestCache;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Material;
@@ -27,6 +28,7 @@ class ExplosionListenerTest {
 
     private WorldMock world;
     private ExplosionListener listener;
+    private DeadChestCache deadChest;
 
     @BeforeEach
     void setUp() {
@@ -34,7 +36,10 @@ class ExplosionListenerTest {
         world = new WorldMock();
         MockBukkit.getMock().addWorld(world);
 
-        DeadChestLoader.chestDataList = new ArrayList<>();
+
+        deadChest = DeadChestLoader.getChestDataCache();
+        deadChest.setChestData(new ArrayList<>());
+
         DeadChestLoader.config = mock(DeadChestConfig.class);
         DeadChestLoader.graveBlocks.add(Material.CHEST);
 
@@ -51,7 +56,7 @@ class ExplosionListenerTest {
         ChestData cd = mock(ChestData.class);
         when(cd.getChestLocation()).thenReturn(block.getLocation());
         when(cd.getPlayerName()).thenReturn("Steve");
-        DeadChestLoader.chestDataList.add(cd);
+        deadChest.addChestData(cd);
         return cd;
     }
 
@@ -72,7 +77,7 @@ class ExplosionListenerTest {
         listener.onEntityExplodeEvent(event);
 
         assertFalse(event.blockList().contains(chestBlock));
-        assertTrue(DeadChestLoader.chestDataList.contains(cd));
+        assertTrue(deadChest.contains(cd));
     }
 
     @Test
@@ -91,7 +96,7 @@ class ExplosionListenerTest {
         EntityExplodeEvent event = new EntityExplodeEvent(creeper, chestBlock.getLocation(), explodedBlocks, 1.0f);
         listener.onEntityExplodeEvent(event);
 
-        assertFalse(DeadChestLoader.chestDataList.contains(cd), "ChestData should be removed after explosion when destructible");
+        assertFalse(DeadChestLoader.getChestDataCache().contains(cd), "ChestData should be removed after explosion when destructible");
         verify(cd, times(1)).removeArmorStand();
     }
 
@@ -112,7 +117,7 @@ class ExplosionListenerTest {
 
 
         assertFalse(event.blockList().contains(chestBlock));
-        assertTrue(DeadChestLoader.chestDataList.contains(cd));
+        assertTrue(deadChest.contains(cd));
 
     }
 
@@ -131,7 +136,7 @@ class ExplosionListenerTest {
         BlockExplodeEvent event = new BlockExplodeEvent(chestBlock, explodedBlocks, 1.0f);
         listener.onBlockExplodeEvent(event);
 
-        assertFalse(DeadChestLoader.chestDataList.contains(cd), "ChestData should be removed after block explosion when destructible");
+        assertFalse(deadChest.contains(cd), "ChestData should be removed after block explosion when destructible");
         verify(cd, times(1)).removeArmorStand();
     }
 }

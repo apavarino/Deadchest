@@ -1,45 +1,49 @@
 package me.crylonz.deadchest.deps.worldguard;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.entity.Player;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static me.crylonz.deadchest.DeadChestLoader.config;
 import static me.crylonz.deadchest.utils.Utils.generateLog;
 
 public class WorldGuardSoftDependenciesChecker {
 
-    public static BooleanFlag DEADCHEST_GUEST_FLAG;
-    public static BooleanFlag DEADCHEST_OWNER_FLAG;
-    public static BooleanFlag DEADCHEST_MEMBER_FLAG;
+    public static StateFlag DEADCHEST_GUEST_FLAG;
+    public static StateFlag DEADCHEST_OWNER_FLAG;
+    public static StateFlag DEADCHEST_MEMBER_FLAG;
 
     public void load() {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
-            BooleanFlag owner_flag = new BooleanFlag("dc-owner");
+            StateFlag owner_flag = new StateFlag("dc-owner", false);
             registry.register(owner_flag);
             DEADCHEST_OWNER_FLAG = owner_flag;
 
-            BooleanFlag nobody_flag = new BooleanFlag("dc-guest");
+            StateFlag nobody_flag = new StateFlag("dc-guest", false);
             registry.register(nobody_flag);
             DEADCHEST_GUEST_FLAG = nobody_flag;
 
-            BooleanFlag member_flag = new BooleanFlag("dc-member");
+            StateFlag member_flag = new StateFlag("dc-member", false);
             registry.register(member_flag);
             DEADCHEST_MEMBER_FLAG = member_flag;
 
-        } catch (
-                FlagConflictException e) {
+        } catch (FlagConflictException e) {
             DeadChestLoader.log.warning("Conflict in Deadchest flags");
         }
     }
@@ -51,49 +55,57 @@ public class WorldGuardSoftDependenciesChecker {
         }
 
         try {
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            RegionManager regions = container.get(BukkitAdapter.adapt(p.getLocation().getWorld()));
+/*            if (p.isOp()) {
+                return true;
+            }*/
+            final RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+            final ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(p.getLocation()));
+            final LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(p);
+            final UUID uuid = p.getUniqueId();
+            boolean defaultAllow = config.getBoolean(ConfigKey.WORLD_GUARD_FLAG_DEFAULT);
+            final Set<Boolean> defaults = new HashSet<>();
 
-            if (regions != null) {
-                BlockVector3 position = BlockVector3.at(p.getLocation().getX(),
-                        p.getLocation().getY(), p.getLocation().getZ());
-                ApplicableRegionSet set = regions.getApplicableRegions(position);
+            for (ProtectedRegion region : set.getRegions()) {
+                State stateOwner = checkRegionFlag(region, DEADCHEST_OWNER_FLAG, region.getOwners(), uuid);
+                if (stateOwner == State.ALLOWED) return true;
+                State stateMember = checkRegionFlag(region, DEADCHEST_MEMBER_FLAG, region.getMembers(), uuid);
+                if (stateMember == State.ALLOWED) return true;
 
-                if (set.size() != 0) {
-
-                    // retrieve the highest priority
-                    ProtectedRegion pr = set.getRegions().iterator().next();
-                    for (ProtectedRegion pRegion : set.getRegions()) {
-                        if (pRegion.getPriority() > pr.getPriority()) {
-                            pr = pRegion;
-                        }
-                    }
-
-                    Boolean ownerFlag = pr.getFlag(DEADCHEST_OWNER_FLAG);
-                    Boolean memberFlag = pr.getFlag(DEADCHEST_MEMBER_FLAG);
-                    Boolean guestFlag = pr.getFlag(DEADCHEST_GUEST_FLAG);
-                    if (ownerFlag != null && ownerFlag) {
-                        if (pr.getOwners().contains(p.getUniqueId()) || p.isOp()) {
-                            return true;
-                        }
-                    } else if (memberFlag != null && memberFlag) {
-                        if (pr.getMembers().contains(p.getUniqueId()) || p.isOp()) {
-                            return true;
-                        }
-                    } else if (guestFlag != null && guestFlag) {
-                        return true;
-                    } else {
-                        return p.isOp();
-                    }
-
-                    generateLog("Player [" + p.getName() + "] died without [ Worldguard] region permission : No Deadchest generated");
-                    return false;
+                if (stateMember == State.NONE && stateOwner == State.NONE) {
+                    defaults.add(true);
+                } else {
+                    if (stateOwner == State.DENY || stateMember == State.DENY)
+                        return false;
+                    defaults.add(false);
                 }
             }
-            return true;
+            if (defaults.size() == 1 && defaults.contains(true))
+                return defaultAllow;
+
+            final StateFlag.State state = set.queryState(localPlayer, DEADCHEST_GUEST_FLAG);
+            System.out.println("DEADCHEST_GUEST_FLAG " + state);
+            if (state == StateFlag.State.ALLOW) return true;
+            if (state == StateFlag.State.DENY) {
+                generateLog("Player [" + p.getName() + "] died without [WorldGuard] permission: No Deadchest generated");
+                return false;
+            }
+            return defaultAllow;
         } catch (NoClassDefFoundError e) {
             return true;
         }
     }
 
+    private State checkRegionFlag(ProtectedRegion region, StateFlag flag, DefaultDomain uuids, UUID playerUUID) {
+        StateFlag.State state = region.getFlag(flag);
+        if (state == null) return State.NONE;
+        if (state == StateFlag.State.DENY) return State.DENY;
+        return state == StateFlag.State.ALLOW && uuids.contains(playerUUID) ? State.ALLOWED : State.NOT_APPLICABLE;
+    }
+
+    private enum State {
+        NONE,
+        DENY,
+        ALLOWED,
+        NOT_APPLICABLE
+    }
 }

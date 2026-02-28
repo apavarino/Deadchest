@@ -1,5 +1,6 @@
 package me.crylonz.deadchest;
 
+import me.crylonz.deadchest.db.ChestDataRepository;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.ArmorStand;
@@ -8,7 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SerializableAs("ChestData")
 public final class ChestData {
@@ -16,7 +19,7 @@ public final class ChestData {
     private List<ItemStack> inventory;
     private Location chestLocation;
     private String playerName;
-    private String playerUUID;
+    private UUID playerUUID;
     private Date chestDate;
     private boolean isInfinity;
     private boolean isRemovedBlock;
@@ -54,7 +57,7 @@ public final class ChestData {
             this.inventory = Arrays.asList(inv.getContents());
             this.chestLocation = chestLocation.clone();
             this.playerName = p.getName();
-            this.playerUUID = String.valueOf(p.getUniqueId());
+            this.playerUUID = p.getUniqueId();
             this.chestDate = new Date();
             this.isInfinity = isInfinity;
             this.isRemovedBlock = false;
@@ -70,7 +73,7 @@ public final class ChestData {
     public ChestData(final List<ItemStack> inventory,
                      final Location chestLocation,
                      final String playerName,
-                     final String playerUUID,
+                     final UUID playerUUID,
                      final Date chestDate,
                      final boolean isInfinity,
                      final boolean isRemovedBlock,
@@ -133,8 +136,12 @@ public final class ChestData {
         return playerName;
     }
 
-    public String getPlayerUUID() {
+    public UUID getPlayerUUID() {
         return playerUUID;
+    }
+
+    public String getPlayerStringUUID() {
+        return playerUUID + "";
     }
 
     public Date getChestDate() {
@@ -213,6 +220,19 @@ public final class ChestData {
     public void setXpStored(int xpStored) {
         this.xpStored = xpStored;
     }
+
+    public void save(@Nonnull final Consumer<Boolean> containsChestOnLoc) {
+        ChestDataRepository.saveAsync(this, containsChestOnLoc);
+    }
+
+    public void update(@Nonnull final Consumer<Boolean> containsChestOnLoc) {
+        ChestDataRepository.updateAsync(this, containsChestOnLoc);
+    }
+
+    public void remove() {
+        ChestDataRepository.removeAsync(this);
+    }
+
 
     enum Indexes {WORLD_NAME, LOC_X, LOC_Y, LOC_Z}
 }
