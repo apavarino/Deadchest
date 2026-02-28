@@ -43,7 +43,9 @@ public class ExplosionListener implements Listener {
             final DeadChestCache deadChestCache = DeadChestLoader.getChestDataCache();
             for (int i = 0; i < blocklist.size(); ++i) {
                 Block block = blocklist.get(i);
-                if (!isGraveBlock(block.getType())) continue;
+                if (!isGraveBlock(block.getType())) {
+                    continue;
+                }
                 final ChestData chestData = deadChestCache.getChestData(block.getLocation());
 
                 if (chestData != null) {
@@ -54,7 +56,6 @@ public class ExplosionListener implements Listener {
                         deadChestCache.removeChestData(chestData);
                         generateLog("Deadchest of [" + chestData.getPlayerName() + "] was blown up in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                     }
-                    //break;
                 }
             }
         }

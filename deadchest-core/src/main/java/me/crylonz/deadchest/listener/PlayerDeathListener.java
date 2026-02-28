@@ -411,8 +411,6 @@ public class PlayerDeathListener implements Listener {
 
     private void persistAndLog(Player p, Block b, ItemStack[] itemsToStore) {
 
-        //ChestDataRepository.saveAllAsync(chestDataList);
-
         generateLog("New deadchest for [" + p.getName() + "] in " + b.getWorld().getName() +
                 " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
         generateLog("Chest content : " + Arrays.asList(itemsToStore));

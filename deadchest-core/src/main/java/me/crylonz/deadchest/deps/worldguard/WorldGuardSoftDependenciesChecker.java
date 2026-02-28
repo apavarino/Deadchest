@@ -55,9 +55,6 @@ public class WorldGuardSoftDependenciesChecker {
         }
 
         try {
-/*            if (p.isOp()) {
-                return true;
-            }*/
             final RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
             final ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(p.getLocation()));
             final LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(p);

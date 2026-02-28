@@ -48,7 +48,6 @@ public class ChestDataRepository {
                                 ")"
                 );
                 st.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chest_player ON chest_data(player_uuid)");
-                //st.executeUpdate("DROP INDEX IF EXISTS idx_chest_location");
                 ckeckIfUpdated();
                 st.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chest_location ON chest_data(chest_world, chest_x, chest_y, chest_z)");
                 afterCreation.run();

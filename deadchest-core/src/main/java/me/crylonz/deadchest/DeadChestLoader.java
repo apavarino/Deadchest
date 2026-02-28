@@ -183,9 +183,6 @@ public class DeadChestLoader {
             config.updateConfig();
         }
 
-        // database (chestData)
-        //chestDataList = ChestDataRepository.findAll();
-
         // ignore list
         loadIgnoreIntoInventory(ignoreList);
 

@@ -50,8 +50,9 @@ public class ClickListener implements Listener {
      */
     protected boolean isNearGraveChest(PlayerInteractEvent e) {
         final Block clickedBlock = e.getClickedBlock();
-        if (clickedBlock == null)
+        if (clickedBlock == null) {
             return false;
+        }
         ChestData chestData = DeadChestLoader.getChestData(clickedBlock.getLocation());
         if (chestData != null) {
             return true;

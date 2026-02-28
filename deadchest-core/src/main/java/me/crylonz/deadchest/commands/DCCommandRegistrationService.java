@@ -86,11 +86,11 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
 
             int cpt = 0;
             final DeadChestCache deadChestCache = DeadChestLoader.getChestDataCache();
-            final Map<Location, ChestData> chestDataList = deadChestCache.getAllChestData();
+            final Map<Location, ChestData> chestDataMap = deadChestCache.getAllChestData();
             final List<ChestData> chestDataRemove = new ArrayList<>();
 
-            if (chestDataList != null && !chestDataList.isEmpty()) {
-                for (final ChestData chestData : chestDataList.values()) {
+            if (chestDataMap != null && !chestDataMap.isEmpty()) {
+                for (final ChestData chestData : chestDataMap.values()) {
                     if (chestData.getChestLocation().getWorld() != null) {
                         if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
 
