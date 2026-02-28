@@ -1,4 +1,4 @@
-name: Deadchest
+name: DeadChest
 main: me.crylonz.deadchest.DeadChest
 softdepend: [ Multiverse-Core, WorldGuard ]
 author: Crylonz
