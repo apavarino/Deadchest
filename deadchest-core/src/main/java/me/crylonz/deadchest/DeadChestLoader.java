@@ -77,6 +77,8 @@ public class DeadChestLoader {
 
         local = new Localization();
 
+        ChestDataRepository.findAllAsync(chestData::setChestData, plugin);
+
         registerConfig();
         initializeConfig();
 
