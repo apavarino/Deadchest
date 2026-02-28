@@ -1,12 +1,8 @@
 package me.crylonz.deadchest;
 
-import me.crylonz.deadchest.cache.DeadChestCache;
 import me.crylonz.deadchest.commands.DCCommandExecutor;
 import me.crylonz.deadchest.commands.DCTabCompletion;
-import me.crylonz.deadchest.db.ChestDataRepository;
-import me.crylonz.deadchest.db.IgnoreItemListRepository;
-import me.crylonz.deadchest.db.SQLExecutor;
-import me.crylonz.deadchest.db.SQLite;
+import me.crylonz.deadchest.db.*;
 import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
 import me.crylonz.deadchest.legacy.OldChestData;
 import me.crylonz.deadchest.utils.ConfigKey;
@@ -33,7 +29,7 @@ public class DeadChestLoader {
 
     public static Logger log = Logger.getLogger("Minecraft");
     public static FileManager fileManager;
-    private static final DeadChestCache chestData = new DeadChestCache();
+    private static final InMemoryChestStore chestData = new InMemoryChestStore();
 
     public static WorldGuardSoftDependenciesChecker wgsdc = null;
     public static ArrayList<Material> graveBlocks = new ArrayList<>();
@@ -135,7 +131,7 @@ public class DeadChestLoader {
         db.close();
     }
 
-    public static DeadChestCache getChestDataCache() {
+    public static InMemoryChestStore getChestDataCache() {
         return chestData;
     }
 
@@ -245,8 +241,8 @@ public class DeadChestLoader {
     }
 
     public static void handleEvent() {
-        final DeadChestCache deadChestCache = getChestDataCache();
-        final Map<Location, ChestData> allChestData = deadChestCache.getAllChestData();
+        final InMemoryChestStore inMemoryChestStore = getChestDataCache();
+        final Map<Location, ChestData> allChestData = inMemoryChestStore.getAllChestData();
         if (!allChestData.isEmpty()) {
             final Date now = new Date();
             final Set<ChestData> needUpdate = new HashSet<>();
@@ -282,13 +278,13 @@ public class DeadChestLoader {
                 }
             }
             if (!needUpdate.isEmpty()) {
-                deadChestCache.addListOfChestData(needUpdate);
+                inMemoryChestStore.addListOfChestData(needUpdate);
             }
             if (!remove.isEmpty()) {
-                deadChestCache.removeChestDataList(remove);
+                inMemoryChestStore.removeChestDataList(remove);
             }
             if (isChangesNeedToBeSave && !update.isEmpty()) {
-                deadChestCache.addListOfChestData(update);
+                inMemoryChestStore.addListOfChestData(update);
                 isChangesNeedToBeSave = false;
             }
         }

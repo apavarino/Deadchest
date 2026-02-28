@@ -1,6 +1,6 @@
 package me.crylonz.deadchest;
 
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -55,7 +55,7 @@ public class DeadChestAPI {
      */
     public static boolean removeChest(ChestData chest) {
         World world = Bukkit.getWorld(chest.getWorldName());
-        final DeadChestCache chestData = DeadChestLoader.getChestDataCache();
+        final InMemoryChestStore chestData = DeadChestLoader.getChestDataCache();
 
         if (world != null && chestData.getChestData(chest.getChestLocation()) != null) {
             world.getBlockAt(chest.getChestLocation()).setType(Material.AIR);

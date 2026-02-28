@@ -7,7 +7,7 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Localization;
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import me.crylonz.deadchest.utils.Utils;
@@ -33,7 +33,7 @@ class BlockBreakListenerTest {
     private BlockBreakListener listener;
 
     private static List<ChestData> chestDataBackup;
-    private DeadChestCache chestData;
+    private InMemoryChestStore chestData;
 
     @BeforeAll
     static void beforeAll() {

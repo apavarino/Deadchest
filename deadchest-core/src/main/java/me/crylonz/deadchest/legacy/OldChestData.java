@@ -2,7 +2,7 @@ package me.crylonz.deadchest.legacy;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -228,9 +228,9 @@ public final class OldChestData implements ConfigurationSerializable {
                 ArrayList<OldChestData> tmp = (ArrayList<OldChestData>) fileManager.getChestDataConfig().get("chestData");
 
                 if (tmp != null) {
-                    DeadChestCache deadChestCache = DeadChestLoader.getChestDataCache();
+                    InMemoryChestStore inMemoryChestStore = DeadChestLoader.getChestDataCache();
                     for (OldChestData oldChestData : tmp) {
-                        deadChestCache.addChestData(new ChestData(
+                        inMemoryChestStore.addChestData(new ChestData(
                                 oldChestData.getInventory(),
                                 oldChestData.getChestLocation(),
                                 oldChestData.getPlayerName(),
@@ -245,7 +245,7 @@ public final class OldChestData implements ConfigurationSerializable {
                                 oldChestData.getXpStored()
                         ));
                     }
-                    deadChestCache.save();
+                    inMemoryChestStore.save();
                     fileManager.getChestDataFile().delete();
                     log.info("[DeadChest] Migration complete: all ChestData moved to the new storage system. Removed legacy chestdata.yml.");
                 }

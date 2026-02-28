@@ -1,6 +1,6 @@
 package me.crylonz.deadchest;
 
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.ExpiredActionType;
 import org.bukkit.Bukkit;
@@ -30,8 +30,8 @@ public class DeadChestManager {
     public static int cleanAllDeadChests() {
 
         int chestDataRemoved = 0;
-        final DeadChestCache deadChestCache = DeadChestLoader.getChestDataCache();
-        final Map <Location, ChestData> chestDataList = deadChestCache.getAllChestData();
+        final InMemoryChestStore inMemoryChestStore = DeadChestLoader.getChestDataCache();
+        final Map<Location, ChestData> chestDataList = inMemoryChestStore.getAllChestData();
 
         if (chestDataList != null && !chestDataList.isEmpty()) {
             final List<ChestData> chestDataRemove = new ArrayList<>();
@@ -45,7 +45,7 @@ public class DeadChestManager {
                     chestDataRemoved++;
                 }
             }
-            deadChestCache.removeChestDataList(chestDataRemove);
+            inMemoryChestStore.removeChestDataList(chestDataRemove);
         }
         return chestDataRemoved;
     }

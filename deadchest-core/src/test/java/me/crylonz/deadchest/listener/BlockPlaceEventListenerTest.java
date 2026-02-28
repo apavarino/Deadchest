@@ -8,7 +8,7 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Localization;
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +27,7 @@ class BlockPlaceEventListenerTest {
     private WorldMock world;
     private PlayerMock player;
     private BlockPlaceEventListener listener;
-    private DeadChestCache chestData;
+    private InMemoryChestStore chestData;
 
     @BeforeEach
     void setUp() {

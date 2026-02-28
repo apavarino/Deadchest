@@ -2,7 +2,7 @@ package me.crylonz.deadchest.listener;
 
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
@@ -40,20 +40,20 @@ public class ExplosionListener implements Listener {
         }
 
         if (!blocklist.isEmpty()) {
-            final DeadChestCache deadChestCache = DeadChestLoader.getChestDataCache();
+            final InMemoryChestStore inMemoryChestStore = DeadChestLoader.getChestDataCache();
             for (int i = 0; i < blocklist.size(); ++i) {
                 Block block = blocklist.get(i);
                 if (!isGraveBlock(block.getType())) {
                     continue;
                 }
-                final ChestData chestData = deadChestCache.getChestData(block.getLocation());
+                final ChestData chestData = inMemoryChestStore.getChestData(block.getLocation());
 
                 if (chestData != null) {
                     if (config.getBoolean(ConfigKey.INDESTRUCTIBLE_CHEST)) {
                         blocklist.remove(block);
                         generateLog("Deadchest of [" + chestData.getPlayerName() + "] was protected from explosion in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                     } else {
-                        deadChestCache.removeChestData(chestData);
+                        inMemoryChestStore.removeChestData(chestData);
                         generateLog("Deadchest of [" + chestData.getPlayerName() + "] was blown up in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
                     }
                 }

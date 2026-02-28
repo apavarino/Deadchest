@@ -5,7 +5,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.block.BlockMock;
 import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
-import me.crylonz.deadchest.cache.DeadChestCache;
+import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import org.bukkit.Material;
@@ -28,7 +28,7 @@ class ExplosionListenerTest {
 
     private WorldMock world;
     private ExplosionListener listener;
-    private DeadChestCache deadChest;
+    private InMemoryChestStore deadChest;
 
     @BeforeEach
     void setUp() {
