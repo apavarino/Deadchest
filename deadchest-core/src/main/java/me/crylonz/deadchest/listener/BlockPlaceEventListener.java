@@ -22,7 +22,7 @@ public class BlockPlaceEventListener implements Listener {
                     final ChestData chestData = DeadChestLoader.getChestData(block.getLocation());
                     if(chestData != null){
                         e.setCancelled(true);
-                        e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_doubleDC"));
+                        e.getPlayer().sendMessage(local.prefixed("chest.double-block"));
                     }
                 }
             }

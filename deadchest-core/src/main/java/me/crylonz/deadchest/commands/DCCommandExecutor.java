@@ -1,7 +1,6 @@
 package me.crylonz.deadchest.commands;
 
 import me.crylonz.deadchest.DeadChestLoader;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,7 +36,7 @@ public class DCCommandExecutor implements CommandExecutor {
         commandRegistration.registerIgnoreList();       // dc ignore
 
         if (!commandRegistration.isCommandSucceed()) {
-            sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Unrecognized Command");
+            sender.sendMessage(local.prefixed("commands.error.unknown"));
         }
         return commandRegistration.isCommandSucceed();
     }

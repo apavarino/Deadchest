@@ -329,7 +329,7 @@ class DeadChestManagerTest {
 
         DeadChestManager.updateTimer(chestData, new Date());
 
-        verify(timerStand).setCustomName(DeadChestLoader.local.get("loc_infinityChest"));
+        verify(timerStand).setCustomName(DeadChestLoader.local.get("chest.infinity"));
     }
 
     private ChestData chestDataAt(int x, String playerName, UUID playerId, boolean infinity) {

@@ -7,6 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -19,7 +22,13 @@ class DCCommandExecutorTest {
 
     @BeforeEach
     void setUp() {
-        DeadChestLoader.local = new Localization();
+        Localization localization = new Localization();
+        Map<String, Object> values = new HashMap<>();
+        values.put("common.prefix", "[DeadChest] ");
+        values.put("commands.error.unknown", "Unrecognized Command");
+        values.put("commands.error.player-only", "Command must be called by a player");
+        localization.set(values);
+        DeadChestLoader.local = localization;
         DeadChestLoader.plugin = mock(org.bukkit.plugin.Plugin.class);
         executor = new DCCommandExecutor(mock(DeadChestLoader.class));
         sender = mock(CommandSender.class);
@@ -43,4 +52,3 @@ class DCCommandExecutorTest {
         verify(sender, atLeastOnce()).sendMessage(contains("Command must be called by a player"));
     }
 }
-

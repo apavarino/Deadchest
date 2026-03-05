@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,7 +21,13 @@ class DCCommandRegistrationTest {
 
     @BeforeEach
     void setUp() {
-        DeadChestLoader.local = new Localization();
+        Localization localization = new Localization();
+        Map<String, Object> values = new HashMap<>();
+        values.put("common.prefix", "[DeadChest] ");
+        values.put("commands.error.no-permission", "You need permission");
+        values.put("commands.error.bad-args", "Bad argument(s) for /dc {0}");
+        localization.set(values);
+        DeadChestLoader.local = localization;
         registration = new TestRegistration();
     }
 
@@ -67,4 +75,3 @@ class DCCommandRegistrationTest {
         }
     }
 }
-

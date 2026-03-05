@@ -1,7 +1,6 @@
 package me.crylonz.deadchest.commands;
 
 import me.crylonz.deadchest.DeadChestLoader;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -75,7 +74,7 @@ abstract class DCCommandRegistration {
                     command = command.replace("{" + i + "}", args[i + 1]);
                 } else {
                     if (!commandSucceed) {
-                        sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Bad argument(s) for /dc " + args[0]);
+                        sender.sendMessage(local.prefixed("commands.error.bad-args", args[0]));
                         return true;
                     }
                 }

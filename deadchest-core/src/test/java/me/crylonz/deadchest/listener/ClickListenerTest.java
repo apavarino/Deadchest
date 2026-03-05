@@ -59,9 +59,8 @@ class ClickListenerTest {
 
         DeadChestLoader.local = mock(Localization.class);
         DeadChestLoader.fileManager = mock(FileManager.class);
-        when(DeadChestLoader.local.get("loc_prefix")).thenReturn("[DC] ");
-        when(DeadChestLoader.local.get("loc_not_owner")).thenReturn("You are not the owner");
-        when(DeadChestLoader.local.get("loc_noPermsToGet")).thenReturn("You cannot take this chest");
+        when(DeadChestLoader.local.prefixed("chest.not-owner")).thenReturn("[DC] You are not the owner");
+        when(DeadChestLoader.local.prefixed("chest.no-permission-open")).thenReturn("[DC] You cannot take this chest");
 
         DeadChestLoader.config = mock(DeadChestConfig.class);
         listener = new ClickListener();

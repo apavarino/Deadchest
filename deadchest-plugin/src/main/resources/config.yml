@@ -14,6 +14,11 @@
 # Increased when key structure changes.
 config-version: 2
 
+localization:
+  # Localization language code loaded from plugins/DeadChest/localization/<language>.json
+  # Practical Bukkit defaults: en, fr, es, de, pt-br, pl, it, zh-cn
+  language: en
+
 updates:
   # Enables automatic plugin update checks.
   # true  = check for updates on startup

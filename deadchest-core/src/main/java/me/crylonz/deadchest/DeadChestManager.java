@@ -208,9 +208,9 @@ public class DeadChestManager {
                         long diffHours = Math.abs(diff / (60 * 60 * 1000));
 
                         if (!chestData.isInfinity() && config.getInt(ConfigKey.DEADCHEST_DURATION) != 0) {
-                            entity.setCustomName(local.replaceTimer(local.get("holo_timer"), diffHours, diffMinutes, diffSeconds));
+                            entity.setCustomName(local.format("hologram.timer", diffHours, diffMinutes, diffSeconds));
                         } else {
-                            entity.setCustomName(local.get("loc_infinityChest"));
+                            entity.setCustomName(local.get("chest.infinity"));
                         }
                     }
                 }

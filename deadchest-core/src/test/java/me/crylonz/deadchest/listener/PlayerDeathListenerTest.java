@@ -75,10 +75,7 @@ class PlayerDeathListenerTest {
         DeadChestLoader.fileManager = mock(me.crylonz.deadchest.FileManager.class);
 
         // Localization stub
-        DeadChestLoader.local = mock(Localization.class);
-        when(DeadChestLoader.local.get(anyString())).thenAnswer(i -> i.getArgument(0));
-        when(DeadChestLoader.local.replacePlayer(anyString(), anyString()))
-                .thenAnswer(i -> i.getArgument(0) + ":" + i.getArgument(1));
+        DeadChestLoader.local = new Localization();
 
         // Ignore-list inventory present to avoid NPE in cleanup
         ignoreListInv = new InventoryMock(null, InventoryType.CHEST);

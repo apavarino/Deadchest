@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.bukkit.inventory.EquipmentSlot.HAND;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,9 +41,12 @@ class BlockPlaceEventListenerTest {
         chestData = DeadChestLoader.getChestDataCache();
         chestData.setChestData( new ArrayList<>());
 
-        DeadChestLoader.local = mock(Localization.class);
-        when(DeadChestLoader.local.get("loc_prefix")).thenReturn("[DC] ");
-        when(DeadChestLoader.local.get("loc_doubleDC")).thenReturn("You can't place a double DeadChest!");
+        Localization localization = new Localization();
+        Map<String, Object> values = new HashMap<>();
+        values.put("common.prefix", "[DeadChest] ");
+        values.put("chest.double-block", "You can't put a chest next to a Deadchest");
+        localization.set(values);
+        DeadChestLoader.local = localization;
 
         listener = new BlockPlaceEventListener();
     }
@@ -76,7 +81,7 @@ class BlockPlaceEventListenerTest {
         listener.onBlockPlaceEvent(event);
 
         assertTrue(event.isCancelled(), "Event should be cancelled when placing a chest next to a DeadChest");
-        assertTrue(player.nextMessage().contains("double DeadChest"),
+        assertTrue(player.nextMessage().contains("next to a Deadchest"),
                 "Player should be informed about double chest restriction");
     }
 

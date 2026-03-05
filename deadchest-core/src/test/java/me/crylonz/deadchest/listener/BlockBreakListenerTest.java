@@ -18,6 +18,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,9 +73,12 @@ class BlockBreakListenerTest {
             DeadChestLoader.config = mock(DeadChestConfig.class);
             when(DeadChestLoader.config.getBoolean(ConfigKey.INDESTRUCTIBLE_CHEST)).thenReturn(true);
 
-            DeadChestLoader.local = mock(Localization.class);
-            when(DeadChestLoader.local.get("loc_prefix")).thenReturn("[DeadChest] ");
-            when(DeadChestLoader.local.get("loc_not_owner")).thenReturn("Not your chest");
+            Localization localization = new Localization();
+            Map<String, Object> values = new HashMap<>();
+            values.put("common.prefix", "[DeadChest] ");
+            values.put("chest.not-owner", "This is not your Deadchest!");
+            localization.set(values);
+            DeadChestLoader.local = localization;
 
             ChestData cd = mock(ChestData.class);
             when(cd.getChestLocation()).thenReturn(block.getLocation());
@@ -87,7 +91,7 @@ class BlockBreakListenerTest {
             listener.onBlockBreakEvent(event);
 
             assertTrue(event.isCancelled(), "Event should be cancelled for indestructible chest");
-            assertTrue(player.nextMessage().contains("Not your chest"));
+            assertTrue(player.nextMessage().contains("not your Deadchest"));
         }
     }
 

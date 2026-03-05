@@ -33,7 +33,8 @@ public enum ConfigKey {
     STORE_XP("xp.store-on-death", "StoreXP"),
     STORE_XP_PERCENTAGE("xp.store-percentage", "StoreXPPercentage"),
     KEEP_INVENTORY_ON_PVP_DEATH("pvp.keep-inventory-on-player-kill", "KeepInventoryOnPvpDeath"),
-    ITEM_DURABILITY_LOSS_ON_DEATH("durability.loss-on-death-percent", "item-durability-loss-on-death");
+    ITEM_DURABILITY_LOSS_ON_DEATH("durability.loss-on-death-percent", "item-durability-loss-on-death"),
+    LOCALIZATION_LANGUAGE("localization.language", "language");
 
     private static final Map<String, ConfigKey> BY_CANONICAL = new HashMap<>();
 

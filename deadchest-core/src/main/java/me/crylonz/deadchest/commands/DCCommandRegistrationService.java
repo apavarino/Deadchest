@@ -6,7 +6,6 @@ import me.crylonz.deadchest.Permission;
 import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -30,95 +29,81 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
 
     public void registerReload() {
         registerCommand("dc reload", Permission.ADMIN.label, () -> {
-            fileManager.reloadLocalizationConfig();
             loadIgnoreIntoInventory(ignoreList);
             DeadChestLoader.plugin.reloadConfig();
             plugin.registerConfig();
-            local.set(fileManager.getLocalizationConfig().getConfigurationSection("localisation").getValues(true));
+            local.reloadLanguage(config.getString(ConfigKey.LOCALIZATION_LANGUAGE));
 
-            sender.sendMessage(ChatColor.GREEN + local.get("loc_prefix") + " Plugin reload successfully");
+            sender.sendMessage(local.prefixed("commands.reload.success"));
         });
     }
 
     public void registerRepairForce() {
-        registerCommand("dc repair force", Permission.ADMIN.label, () -> {
-            repair(true);
-        });
+        registerCommand("dc repair force", Permission.ADMIN.label, () -> repair(true));
     }
 
     public void registerRepair() {
-        registerCommand("dc repair", Permission.ADMIN.label, () -> {
-            repair(false);
-        });
+        registerCommand("dc repair", Permission.ADMIN.label, () -> repair(false));
     }
 
     private void repair(Boolean forced) {
-        if (player != null) {
-            Collection<Entity> entities = player.getWorld().getNearbyEntities(
-                    player.getLocation(), 100.0D, 25.0D, 100.0D);
-
-            int holoRemoved = 0;
-            for (Entity entity : entities) {
-                if (entity.getType() == EntityType.ARMOR_STAND) {
-                    ArmorStand as = (ArmorStand) entity;
-
-                    if (as.hasMetadata("deadchest") || forced) {
-                        holoRemoved++;
-                        entity.remove();
-                    }
-
-                    // Deprecated (support for deadchest 3.X and lower)
-                    else if (as.getCustomName() != null && as.getCustomName().contains("×")) {
-                        holoRemoved++;
-                        entity.remove();
-                    }
-
-                }
-            }
-            player.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" + holoRemoved + "] hologram(s) removed");
-        } else {
-            sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Command must be called by a player");
+        if (player == null) {
+            sender.sendMessage(local.prefixed("commands.error.player-only"));
+            return;
         }
+
+        Collection<Entity> entities = player.getWorld().getNearbyEntities(player.getLocation(), 100.0D, 25.0D, 100.0D);
+        int holoRemoved = 0;
+
+        for (Entity entity : entities) {
+            if (entity.getType() != EntityType.ARMOR_STAND) {
+                continue;
+            }
+
+            ArmorStand as = (ArmorStand) entity;
+            if (as.hasMetadata("deadchest") || forced) {
+                holoRemoved++;
+                entity.remove();
+            } else if (as.getCustomName() != null && as.getCustomName().contains("�")) {
+                // Deprecated support for deadchest 3.x and lower.
+                holoRemoved++;
+                entity.remove();
+            }
+        }
+
+        player.sendMessage(local.prefixed("commands.operation.holograms-removed", holoRemoved));
     }
 
     public void registerRemoveInfinite() {
         registerCommand("dc removeinfinite", Permission.ADMIN.label, () -> {
-
-            int cpt = 0;
+            int count = 0;
             final InMemoryChestStore inMemoryChestStore = DeadChestLoader.getChestDataCache();
             final Map<Location, ChestData> chestDataMap = inMemoryChestStore.getAllChestData();
             final List<ChestData> chestDataRemove = new ArrayList<>();
 
             if (chestDataMap != null && !chestDataMap.isEmpty()) {
                 for (final ChestData chestData : chestDataMap.values()) {
-                    if (chestData.getChestLocation().getWorld() != null) {
-                        if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
+                    if (chestData.getChestLocation().getWorld() != null &&
+                            (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0)) {
 
-                            // remove chest
-                            Location loc = chestData.getChestLocation();
-                            loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-
-                            // remove holographic
-                            chestData.removeArmorStand();
-
-                            //add chest to remove
-                            chestDataRemove.add(chestData);
-                            cpt++;
-                        }
+                        Location loc = chestData.getChestLocation();
+                        loc.getWorld().getBlockAt(loc).setType(Material.AIR);
+                        chestData.removeArmorStand();
+                        chestDataRemove.add(chestData);
+                        count++;
                     }
                 }
                 inMemoryChestStore.removeChestDataList(chestDataRemove);
             }
-            sender.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
-                    ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
+
+            sender.sendMessage(local.prefixed("commands.operation.deadchests-removed", count));
         });
     }
 
     public void registerRemoveAll() {
         registerCommand("dc removeall", Permission.ADMIN.label, () -> {
-            int cpt = cleanAllDeadChests();
-            sender.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
-                    ChatColor.GREEN + cpt + ChatColor.GOLD + "] deadchest(s) removed");
+            int count = cleanAllDeadChests();
+            sender.sendMessage(local.prefixed("commands.operation.deadchests-removed", count));
         });
     }
 
@@ -127,60 +112,57 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             if (player != null) {
                 removeAllDeadChestOfPlayer(player.getName());
             } else {
-                sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Command must be called by a player");
+                sender.sendMessage(local.prefixed("commands.error.player-only"));
             }
         });
     }
 
     public void registerRemoveOther() {
-        registerCommand("dc remove {0}", Permission.REMOVE_OTHER.label, () -> {
-            removeAllDeadChestOfPlayer(args[1]);
-        });
+        registerCommand("dc remove {0}", Permission.REMOVE_OTHER.label, () -> removeAllDeadChestOfPlayer(args[1]));
     }
 
     private void removeAllDeadChestOfPlayer(String playerName) {
-        final AtomicInteger cpt = new AtomicInteger();
+        final AtomicInteger count = new AtomicInteger();
         final InMemoryChestStore chestDataCache = getChestDataCache();
         final Map<Location, ChestData> chestDataList = chestDataCache.getAllChestData();
 
         if (chestDataList != null && !chestDataList.isEmpty()) {
             final List<ChestData> chestDataRemove = new ArrayList<>();
             chestDataCache.getPlayerLinkedDeadChestData(Bukkit.getPlayer(playerName), cd -> {
-                // remove chest
                 Location loc = cd.getChestLocation();
                 loc.getWorld().getBlockAt(loc).setType(Material.AIR);
                 chestDataRemove.add(cd);
-                cpt.getAndIncrement();
+                count.getAndIncrement();
             });
             chestDataCache.removeChestDataList(chestDataRemove);
         }
-        sender.sendMessage(local.get("loc_prefix") + ChatColor.GOLD + "Operation complete. [" +
-                ChatColor.GREEN + cpt.get() + ChatColor.GOLD + "] deadchest(s) removed of player " + playerName);
+
+        sender.sendMessage(local.prefixed("commands.operation.deadchests-removed-player", count.get(), playerName));
     }
 
     public void registerListOwn() {
         registerCommand("dc list", null, () -> {
-            if (player != null) {
-                if (player.hasPermission(Permission.LIST_OWN.label) || !config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN)) {
-                    Date now = new Date();
-                    final Map<Location, ChestData> chestDataList = getChestDataCache().getAllChestData();
-                    if (!chestDataList.isEmpty()) {
-                        sender.sendMessage(local.get("loc_prefix") + local.get("loc_dclistown") + " :");
-                        for (ChestData data : chestDataList.values()) {
-                            if (data.getPlayerUUID().equals(player.getUniqueId())) {
-                                displayChestData(now, data);
-                            }
+            if (player == null) {
+                sender.sendMessage(local.prefixed("commands.error.player-only"));
+                return;
+            }
+
+            if (player.hasPermission(Permission.LIST_OWN.label) || !config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_LIST_OWN)) {
+                Date now = new Date();
+                final Map<Location, ChestData> chestDataList = getChestDataCache().getAllChestData();
+                if (!chestDataList.isEmpty()) {
+                    sender.sendMessage(local.prefixed("commands.list.title.own"));
+                    for (ChestData data : chestDataList.values()) {
+                        if (data.getPlayerUUID().equals(player.getUniqueId())) {
+                            displayChestData(now, data);
                         }
-                    } else {
-                        player.sendMessage(local.get("loc_prefix") + local.get("loc_nodc"));
                     }
+                } else {
+                    player.sendMessage(local.prefixed("commands.list.none.player"));
                 }
-            } else {
-                sender.sendMessage(local.get("loc_prefix") + ChatColor.RED + "Command must be called by a player");
             }
         });
     }
-
 
     public void registerListOther() {
         registerCommand("dc list {0}", Permission.LIST_OTHER.label, () -> {
@@ -189,53 +171,60 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
 
             if (args[1].equalsIgnoreCase("all")) {
                 if (!chestDataList.isEmpty()) {
-                    sender.sendMessage(local.get("loc_prefix") + local.get("loc_dclistall") + ":");
+                    sender.sendMessage(local.prefixed("commands.list.title.all"));
                     for (ChestData data : chestDataList.values()) {
                         displayChestData(now, data);
                     }
                 } else {
-                    sender.sendMessage(local.get("loc_prefix") + local.get("loc_nodcs"));
+                    sender.sendMessage(local.prefixed("commands.list.none.global"));
                 }
+                return;
+            }
 
-            } else {
-                if (!chestDataList.isEmpty()) {
-                    sender.sendMessage(local.get("loc_prefix") + ChatColor.GREEN + args[1] + " deadchests :");
-                    for (ChestData data : chestDataList.values()) {
-                        if (data.getPlayerName().equalsIgnoreCase(args[1])) {
-                            displayChestData(now, data);
-                        }
+            if (!chestDataList.isEmpty()) {
+                sender.sendMessage(local.prefixed("commands.list.title.player", args[1]));
+                for (ChestData data : chestDataList.values()) {
+                    if (data.getPlayerName().equalsIgnoreCase(args[1])) {
+                        displayChestData(now, data);
                     }
-                } else {
-                    sender.sendMessage(local.get("loc_prefix") + local.get("loc_nodcs"));
                 }
+            } else {
+                sender.sendMessage(local.prefixed("commands.list.none.global"));
             }
         });
     }
 
     private void displayChestData(Date now, ChestData chestData) {
         String worldName = chestData.getChestLocation().getWorld() != null ?
-                chestData.getChestLocation().getWorld().getName() : "???";
+                chestData.getChestLocation().getWorld().getName() : local.get("common.unknown-world");
 
         if (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0) {
-            sender.sendMessage("-" + ChatColor.AQUA + " World: " + ChatColor.WHITE + worldName + " |"
-                    + ChatColor.AQUA + " X: " + ChatColor.WHITE + chestData.getChestLocation().getX()
-                    + ChatColor.AQUA + " Y: " + ChatColor.WHITE + chestData.getChestLocation().getY()
-                    + ChatColor.AQUA + " Z: " + ChatColor.WHITE + chestData.getChestLocation().getZ()
-                    + " | "
-                    + "∞ " + local.get("loc_endtimer"));
-        } else {
-            long diff = now.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
-            long diffSeconds = Math.abs(diff / 1000 % 60);
-            long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
-            long diffHours = Math.abs(diff / (60 * 60 * 1000));
-            player.sendMessage("-" + ChatColor.AQUA + " X: " + ChatColor.WHITE + chestData.getChestLocation().getX()
-                    + ChatColor.AQUA + " Y: " + ChatColor.WHITE + chestData.getChestLocation().getY()
-                    + ChatColor.AQUA + " Z: " + ChatColor.WHITE + chestData.getChestLocation().getZ()
-                    + " | " +
-                    +diffHours + "h "
-                    + diffMinutes + "m "
-                    + diffSeconds + "s " + local.get("loc_endtimer"));
+            sender.sendMessage(local.format(
+                    "commands.list.entry.infinity",
+                    worldName,
+                    chestData.getChestLocation().getX(),
+                    chestData.getChestLocation().getY(),
+                    chestData.getChestLocation().getZ(),
+                    local.get("chest.time-left")
+            ));
+            return;
         }
+
+        long diff = now.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
+        long diffSeconds = Math.abs(diff / 1000 % 60);
+        long diffMinutes = Math.abs(diff / (60 * 1000) % 60);
+        long diffHours = Math.abs(diff / (60 * 60 * 1000));
+
+        sender.sendMessage(local.format(
+                "commands.list.entry.timed",
+                chestData.getChestLocation().getX(),
+                chestData.getChestLocation().getY(),
+                chestData.getChestLocation().getZ(),
+                diffHours,
+                diffMinutes,
+                diffSeconds,
+                local.get("chest.time-left")
+        ));
     }
 
     public void registerGiveBack() {
@@ -245,36 +234,34 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             final Map<Location, ChestData> chestDataList = inMemoryChestStore.getAllChestData();
 
             for (ChestData data : chestDataList.values()) {
-                if (data.getPlayerName().equalsIgnoreCase(args[1])) {
-
-                    targetPlayer = Bukkit.getPlayer(data.getPlayerUUID());
-
-                    if (targetPlayer != null && player.isOnline()) {
-                        for (ItemStack itemStack : data.getInventory()) {
-                            if (itemStack != null) {
-                                targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), itemStack);
-                            }
-                        }
-
-                        // Remove chest and hologram
-                        targetPlayer.getWorld().getBlockAt(data.getChestLocation()).setType(Material.AIR);
-                        inMemoryChestStore.removeChestData(data);
-                    }
-                    break;
+                if (!data.getPlayerName().equalsIgnoreCase(args[1])) {
+                    continue;
                 }
+
+                targetPlayer = Bukkit.getPlayer(data.getPlayerUUID());
+                if (targetPlayer != null && player != null && player.isOnline()) {
+                    for (ItemStack itemStack : data.getInventory()) {
+                        if (itemStack != null) {
+                            targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), itemStack);
+                        }
+                    }
+
+                    targetPlayer.getWorld().getBlockAt(data.getChestLocation()).setType(Material.AIR);
+                    inMemoryChestStore.removeChestData(data);
+                }
+                break;
             }
+
             if (targetPlayer != null) {
-                sender.sendMessage(local.get("loc_prefix") + local.get("loc_dcgbsuccess"));
-                targetPlayer.sendMessage(local.get("loc_prefix") + local.get("loc_gbplayer"));
+                sender.sendMessage(local.prefixed("commands.giveback.success.sender"));
+                targetPlayer.sendMessage(local.prefixed("commands.giveback.success.target"));
             } else {
-                sender.sendMessage(local.get("loc_prefix") + local.get("loc_givebackInfo"));
+                sender.sendMessage(local.prefixed("commands.giveback.target-not-found"));
             }
         });
     }
 
     public void registerIgnoreList() {
-        registerCommand("dc ignore ", Permission.ADMIN.label, () -> {
-            player.openInventory(ignoreList);
-        });
+        registerCommand("dc ignore ", Permission.ADMIN.label, () -> player.openInventory(ignoreList));
     }
 }

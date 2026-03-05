@@ -49,6 +49,11 @@ public class DeadChestConfig {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public String getString(ConfigKey key) {
+        Object value = configData.get(key.toString());
+        return value == null ? "" : String.valueOf(value);
+    }
+
     private Object resolveFromConfig(String canonicalPath) {
         Object param = plugin.getConfig().get(canonicalPath);
         if (param != null) {
@@ -96,6 +101,9 @@ public class DeadChestConfig {
                         .collect(Collectors.toCollection(ArrayList::new));
             }
             return new ArrayList<>();
+        }
+        if (defaultValue instanceof String) {
+            return String.valueOf(value).trim();
         }
 
         return value;

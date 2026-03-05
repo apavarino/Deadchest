@@ -20,7 +20,7 @@ public class BlockBreakListener implements Listener {
                 final ChestData chestData = DeadChestLoader.getChestData(e.getBlock().getLocation());
                 if(chestData != null){
                     e.setCancelled(true);
-                    e.getPlayer().sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
+                    e.getPlayer().sendMessage(local.prefixed("chest.not-owner"));
                 }
 
 

@@ -64,14 +64,12 @@ public class DeadChestLoader {
         db.init();
         IgnoreItemListRepository.initTable();
 
-
-        ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, "Ignore list");
+        local = new Localization(plugin);
+        ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, local.get("gui.ignore-list.title"));
         config = new DeadChestConfig(plugin);
         fileManager = new FileManager(plugin);
 
         ChestDataRepository.initTable(/* migrate old chestData.yml config */ OldChestData::migrateOldChestData);
-
-        local = new Localization();
 
         ChestDataRepository.findAllAsync(chestData::setChestData, plugin);
 
@@ -180,6 +178,7 @@ public class DeadChestLoader {
         config.register(ConfigKey.STORE_XP.toString(), false);
         config.register(ConfigKey.STORE_XP_PERCENTAGE.toString(), 100);
         config.register(ConfigKey.KEEP_INVENTORY_ON_PVP_DEATH.toString(), false);
+        config.register(ConfigKey.LOCALIZATION_LANGUAGE.toString(), "en");
     }
 
     private void initializeConfig() {
@@ -190,64 +189,14 @@ public class DeadChestLoader {
         } else {
             config.updateConfig();
         }
+        plugin.reloadConfig();
 
-        // ignore list
+        // localization jsons
+        local.reloadLanguage(config.getString(ConfigKey.LOCALIZATION_LANGUAGE));
+
+        // ignore list inventory title now follows selected language
+        ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, local.get("gui.ignore-list.title"));
         loadIgnoreIntoInventory(ignoreList);
-
-        // locale file for translation
-        if (!fileManager.getLocalizationConfigFile().exists()) {
-            fileManager.saveLocalizationConfig();
-            fileManager.getLocalizationConfig().options().header(
-                    "+--------------------------------------------------------------+\n" +
-                            "PLEASE REMOVE ALL EXISTING DEADCHESTS BEFORE EDITING THIS FILE\n" +
-                            "+--------------------------------------------------------------+\n" +
-                            "You can add colors on texts :\n" +
-                            "Example '§cHello' will print Hello in red\n" +
-                            "§4 : DARK_RED\n" +
-                            "§c : RED\n" +
-                            "§6 : GOLD\n" +
-                            "§e : YELLOW\n" +
-                            "§2 : DARK_GREEN\n" +
-                            "§a : GREEN\n" +
-                            "§b : AQUA\n" +
-                            "§3 : DARK_AQUA\n" +
-                            "§1 : DARK_BLUE\n" +
-                            "§9 : BLUE\n" +
-                            "§d : LIGHT_PURPLE\n" +
-                            "§5 : DARK_PURPLE\n" +
-                            "§f : WHITE\n" +
-                            "§7 : GRAY\n" +
-                            "§8 : DARK_GRAY\n" +
-                            "§0 : BLACK\n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "You can also add some styling options :\n" +
-                            "§l : Text in bold\n" +
-                            "§o : Text in italic\n" +
-                            "§n : Underline text\n" +
-                            "§m : Strike text\n" +
-                            "§k : Magic \n" +
-                            "+---------------------------------------------------------------+\n" +
-                            "Need help ? Join the discord support :\n" +
-                            "https://discord.com/invite/jCsvJxS\n" +
-                            "+---------------------------------------------------------------+\n"
-            );
-        } else {
-            // if file exist
-            // we verify if the file have all translation
-            // and add missing if needed
-
-            Map<String, Object> localTmp =
-                    Objects.requireNonNull(fileManager.getLocalizationConfig().
-                            getConfigurationSection("localisation")).getValues(true);
-
-            for (Map.Entry<String, Object> entry : local.get().entrySet()) {
-                localTmp.computeIfAbsent(entry.getKey(), k -> entry.getValue());
-            }
-            local.set(localTmp);
-        }
-
-        fileManager.getLocalizationConfig().createSection("localisation", local.get());
-        fileManager.saveLocalizationConfig();
     }
 
     public static void handleEvent() {

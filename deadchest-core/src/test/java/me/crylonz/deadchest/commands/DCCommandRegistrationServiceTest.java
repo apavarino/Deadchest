@@ -12,6 +12,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +26,12 @@ class DCCommandRegistrationServiceTest {
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
-        DeadChestLoader.local = new Localization();
+        Localization localization = new Localization();
+        Map<String, Object> values = new HashMap<>();
+        values.put("common.prefix", "[DeadChest] ");
+        values.put("commands.error.player-only", "Command must be called by a player");
+        localization.set(values);
+        DeadChestLoader.local = localization;
         DeadChestLoader.ignoreList = server.createInventory(null, 9);
         service = new DCCommandRegistrationService(mock(DeadChestLoader.class));
     }
@@ -58,4 +66,3 @@ class DCCommandRegistrationServiceTest {
         assertSame(ignoreInventory, admin.getOpenInventory().getTopInventory());
     }
 }
-

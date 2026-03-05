@@ -212,7 +212,7 @@ public class PlayerDeathListener implements Listener {
             }
 
             if (y < 1) {
-                p.sendMessage(local.get("loc_prefix") + local.get("loc_noDCG"));
+                p.sendMessage(local.prefixed("death.not-generated"));
                 return null;
             }
             return loc;
@@ -402,10 +402,7 @@ public class PlayerDeathListener implements Listener {
 
     private void maybeSendPosition(Player p, Block b) {
         if (config.getBoolean(ConfigKey.DISPLAY_POSITION_ON_DEATH)) {
-            p.sendMessage(local.get("loc_prefix") + local.get("loc_chestPos") + " X: " +
-                    ChatColor.WHITE + b.getX() + ChatColor.GOLD + " Y: " +
-                    ChatColor.WHITE + b.getY() + ChatColor.GOLD + " Z: " +
-                    ChatColor.WHITE + b.getZ());
+            p.sendMessage(local.prefixed("death.position", b.getX(), b.getY(), b.getZ()));
         }
     }
 

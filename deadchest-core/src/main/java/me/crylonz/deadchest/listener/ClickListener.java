@@ -102,7 +102,7 @@ public class ClickListener implements Listener {
      */
     private void denyChestAccess(PlayerInteractEvent e, Player player) {
         e.setCancelled(true);
-        player.sendMessage(local.get("loc_prefix") + local.get("loc_not_owner"));
+        player.sendMessage(local.prefixed("chest.not-owner"));
     }
 
     /**
@@ -133,7 +133,7 @@ public class ClickListener implements Listener {
         if (config.getBoolean(ConfigKey.REQUIRE_PERMISSION_TO_GET_CHEST)
                 && !player.hasPermission(Permission.GET.label)) {
             generateLog("Player [" + player.getName() + "] needs deadchest.get permission");
-            player.sendMessage(local.get("loc_prefix") + local.get("loc_noPermsToGet"));
+            player.sendMessage(local.prefixed("chest.no-permission-open"));
             return false;
         }
         return true;

@@ -135,10 +135,10 @@ public class Utils {
     }
 
     public static ArmorStand[] createHolograms(Block block, String deathDisplayName) {
-        String firstLine = local.replacePlayer(local.get("holo_owner"), deathDisplayName);
+        String firstLine = local.format("hologram.owner", deathDisplayName);
         ArmorStand holoName = generateHologram(block.getLocation(), firstLine, 0.5f, -0.95f, 0.5f, false);
 
-        String secondLine = local.get("holo_loading");
+        String secondLine = local.get("hologram.loading");
         ArmorStand holoTime = generateHologram(block.getLocation(), secondLine, 0.5f, -1.2f, 0.5f, true);
 
         return new ArmorStand[]{holoTime, holoName};
