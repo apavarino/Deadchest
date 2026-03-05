@@ -115,7 +115,7 @@ public class PlayerDeathListener implements Listener {
     }
 
     private boolean disallowedEndGeneration(PlayerDeathEvent e) {
-        if (checkTheEndGeneration(e.getEntity(), plugin)) {
+        if (checkTheEndGeneration(e.getEntity())) {
             generateLog("Player dies in the end and " + ConfigKey.GENERATE_IN_THE_END + " is set to false. No Deadchest generated");
             return true;
         }

@@ -12,7 +12,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,9 +94,9 @@ public class Utils {
         }
     }
 
-    public static boolean checkTheEndGeneration(Entity player, Plugin deadChest) {
+    public static boolean checkTheEndGeneration(Entity player) {
         return player.getWorld().getEnvironment().equals(World.Environment.THE_END) &&
-                !deadChest.getConfig().getBoolean(ConfigKey.GENERATE_IN_THE_END.toString());
+                !config.getBoolean(ConfigKey.GENERATE_IN_THE_END);
     }
 
     public static void generateDeadChest(Block block, Player player) {

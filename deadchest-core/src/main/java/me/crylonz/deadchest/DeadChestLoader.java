@@ -110,7 +110,17 @@ public class DeadChestLoader {
 
 
     public void load() {
-        if (javaPlugin.getConfig().getBoolean(ConfigKey.WORLD_GUARD_DETECTION.toString())) {
+        boolean worldGuardEnabled = javaPlugin.getConfig().getBoolean(ConfigKey.WORLD_GUARD_DETECTION.toString());
+        if (!worldGuardEnabled) {
+            for (String legacyKey : ConfigKey.WORLD_GUARD_DETECTION.aliases()) {
+                if (javaPlugin.getConfig().contains(legacyKey)) {
+                    worldGuardEnabled = javaPlugin.getConfig().getBoolean(legacyKey);
+                    break;
+                }
+            }
+        }
+
+        if (worldGuardEnabled) {
             try {
                 wgsdc = new WorldGuardSoftDependenciesChecker();
                 wgsdc.load();
@@ -156,8 +166,8 @@ public class DeadChestLoader {
         config.register(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT.toString(), false);
         config.register(ConfigKey.WORLD_GUARD_DETECTION.toString(), false);
         config.register(ConfigKey.WORLD_GUARD_FLAG_DEFAULT.toString(), false);
-        config.register(ConfigKey.DROP_MODE.toString(), 1);
-        config.register(ConfigKey.DROP_BLOCK.toString(), 1);
+        config.register(ConfigKey.DROP_MODE.toString(), "inventory-then-ground");
+        config.register(ConfigKey.DROP_BLOCK.toString(), "chest");
         config.register(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH.toString(), 0);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);

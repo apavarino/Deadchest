@@ -1,127 +1,171 @@
-################################################################################################################################
-# Welcome to the DeadChest configuration file!                                                                                 #
-#                                                                                                                              #
-# You can find more information about the plugin and this file on the plugin page:                                             #
-#   > https://dev.bukkit.org/projects/dead-chest                                                                               #
-# If you need any support, feel free to ask for it on our Discord server:                                                      #
-#   > https://discordapp.com/invite/jCsvJxS                                                                                    #
-#                                                                                                                              #
-# If you make any changes in this file, please run the command '/dc reload' to apply the changes!                              #
-################################################################################################################################
+####################################################################################################
+# DeadChest Configuration
+#
+# Plugin page and documentation:
+#   https://dev.bukkit.org/projects/dead-chest
+#
+# Support (Discord):
+#   https://discordapp.com/invite/jCsvJxS
+#
+# After editing this file, run '/dc reload' to apply the new settings.
+####################################################################################################
 
-auto-update: true
+# Configuration schema version.
+# Increased when key structure changes.
+config-version: 2
 
-# Should DeadChests be openable by other players or just the owner?
-#   > false - DeadChests can be opened by anyone.
-#   > true  - DeadChests can only be opened by the owner.
-OnlyOwnerCanOpenDeadChest: true
+updates:
+  # Enables automatic plugin update checks.
+  # true  = check for updates on startup
+  # false = disable update checks
+  auto-check: true
 
-# The amount of time a DeadChest will be active for (in seconds)...
-#   You can disable this limit by setting the value to 0.
-DeadChestDuration: 300
+chest:
+  # Controls who can open a DeadChest.
+  # true  = only the owner can open it, except bypass permission.
+  # false = any player can open it.
+  # Bypass permission: 'deadchest.chestPass'
+  owner-only-open: true
 
-# Should DeadChests be protected from explosions and other players?
-#   > false - DeadChests will not be protected and can be broken.
-#   > true  - DeadChests will be protected.
-IndestructibleChest: true
+  # DeadChest lifetime in seconds.
+  # 0 = no expiration (infinite)
+  duration-seconds: 300
 
-# The maximum number of DeadChests a player can have active at a time...
-#   You can disable this limit by setting the value to 0.
-maxDeadChestPerPlayer: 15
+  # Protects DeadChest blocks from destruction (players/explosions).
+  # true  = protected
+  # false = breakable
+  indestructible: true
 
-# Should we notify the console when and where a DeadChest is created?
-logDeadChestOnConsole: false
+  # Maximum number of active DeadChests per player.
+  # 0 = unlimited
+  # Note: players with 'deadchest.infinityChest' create infinite chests.
+  max-per-player: 15
 
-# Should players require permission ('deadchest.generate') to generate a DeadChest?
-#   > false - Players will NOT require permission to generate a DeadChest.
-#   > true  - Players WILL require permission to generate a DeadChest.
-RequirePermissionToGenerate: false
+  # Item recovery mode when claiming a chest:
+  # - inventory-then-ground = fill inventory first, drop overflow
+  # - ground-drop           = drop everything on the ground
+  recovery-mode: inventory-then-ground
 
-# Should players require permission ('deadchest.get') to retrieve their DeadChest?
-#   > false - Players will NOT require permission to retrieve their DeadChest.
-#   > true  - Players WILL require permission to retrieve their DeadChest.
-RequirePermissionToGetChest: false
+  # Block type used to represent a DeadChest:
+  # chest | player-head | barrel | shulker-box | ender-chest
+  block-type: chest
 
-# Should players require permission ('deadchest.list.own') to view their DeadChests (using '/dc list')?
-#   > false - Players will NOT require permission to view their DeadChests.
-#   > true  - Players WILL require permission to view their DeadChests.
-RequirePermissionToListOwn: false
+  # Behavior when the chest timer expires:
+  # true  = drop items on the ground
+  # false = remove chest contents
+  drop-items-on-timeout: false
 
-# Should we remove all DeadChests when the server starts?
-AutoCleanupOnStart: false
+permissions:
+  # Require permission to generate a DeadChest on death.
+  # Required permission when true: 'deadchest.generate'
+  require-generate: false
 
-# Should players in creative mode create a DeadChest when they die?
-GenerateDeadChestInCreative: true
+  # Require permission to claim/retrieve a DeadChest.
+  # Required permission when true: 'deadchest.get'
+  require-claim: false
 
-# Should we tell the player where their DeadChest is located when they die?
-DisplayDeadChestPositionOnDeath: true
+  # Require permission to run '/dc list' for own chests.
+  # Required permission when true: 'deadchest.list.own'
+  require-list-own: false
 
-# How should we return the items to the player when they claim their DeadChest?
-#   > 1 - Items are added directly to the players inventory until it's full, excess gets dropped.
-#   > 2 - All items are dropped on the ground.
-DropMode: 1
+maintenance:
+  # Removes all DeadChests when the server starts.
+  # true  = global cleanup on startup
+  # false = keep existing chests
+  cleanup-on-startup: false
 
-# What block should we use for the DeadChest?
-#   > 1 - CHEST
-#   > 2 - PLAYER HEAD
-#   > 3 - BARREL
-#   > 4 - SHULKER BOX
-#   > 5 - ENDER CHEST
-DropBlock: 1
+generation:
+  # Allow generation in Creative mode.
+  # false = no DeadChest if the player dies in Creative
+  allow-in-creative: true
 
-# Store Player XP on Deadchest
-StoreXP: false
+  # Allow generation when the player dies in lava.
+  allow-on-lava: true
 
-# % of XP stored on the deadchest. Only works if StoreXP is true
-# If 0 is used the all the XP from the player vanishes, no XP orb gets dropped on death and no XP gets stored
-# If a value of 100 is used then all the XP is stored on the chest
-# Values higher than 100 are allowed but not recommended as they would duplicate XP
-StoreXPPercentage: 100
+  # Allow generation when the player dies in water.
+  allow-on-water: true
 
-# Should we drop DeadChest contents when the timer expires?
-#   > false - DeadChest contents are removed when the timer expires.
-#   > true  - DeadChest contents are dropped when the timer expires.
-ItemsDroppedAfterTimeOut: false
+  # Allow generation when the player dies on rails.
+  allow-on-rails: true
 
-# Should generate a DeadChest on lava?
-GenerateOnLava: true
-# Should generate a DeadChest on water?
-GenerateOnWater: true
-# Should generate a DeadChest on rails?
-GenerateOnRails: true
-# Should generate a DeadChest in minecarts?
-GenerateInMinecart: true
+  # Allow generation when the player dies in a minecart.
+  allow-in-minecart: true
 
-# Should generate in the end worlds ? if set to false no stuff will be kept
-GenerateInTheEnd: true
+  # Allow generation in The End worlds.
+  # false = no items are kept in The End
+  allow-in-end-worlds: true
 
-# Should players keep their inventory when they die to a player?
-#   > false - Deaths by players will not be treated specially.
-#   > true  - Deaths by players will always keep the players inventory.
-KeepInventoryOnPvpDeath: false
+messages:
+  # Send DeadChest coordinates to the player on death.
+  display-position-on-death: true
 
-# Should we check for WorldGuard regions when a player dies?
-#   > false - WorldGuard regions will NOT be checked for.
-#   > true  - WorldGuard regions WILL be checked for.
-EnableWorldGuardDetection: false
+xp:
+  # Store player XP in the DeadChest.
+  # true  = no XP orbs dropped, XP is stored
+  # false = vanilla XP behavior
+  store-on-death: false
 
-# Percentage of stuff durability loss on death
-item-durability-loss-on-death: 0
+  # Percentage of XP to store when store-on-death=true.
+  # 0   = store no XP
+  # 100 = store all XP
+  # >100 = possible but duplicates XP (not recommended)
+  store-percentage: 100
 
-# A list of worlds that DeadChests will NOT be generated in...
-ExcludedWorld:
-  - 'excluded_world_example'
-  - 'another_excluded_world_example'
+pvp:
+  # Behavior for PvP deaths (killed by another player):
+  # true  = keep inventory, no DeadChest generated
+  # false = normal plugin behavior
+  keep-inventory-on-player-kill: false
 
-# A list of items that will be excluded from DeadChests...
-# Items on this list will not be kept on die
-ExcludedItems:
-  - 'EXCLUDED_ITEM_EXAMPLE'
-  - 'HEROBRINE'
+integrations:
+  worldguard:
+    # Enable WorldGuard region checks for generation allow/deny.
+    enabled: false
 
-# A list of items that will be ignored from DeadChests...
-# Items on this list will not be processed by Deadchest (not stored, not clear from the inventory)
-# Could be useful to provide support for customs items managed by other plugins
-IgnoredItems:
-  - 'IGNORED_ITEM_EXAMPLE'
+    # Default value when no explicit DeadChest flag is found in a region.
+    # true  = allowed by default
+    # false = denied by default
+    default-allow: false
 
+durability:
+  # Durability loss applied to items on death (percentage of max durability).
+  # 0 = disabled
+  loss-on-death-percent: 0
+
+logging:
+  # Log each DeadChest creation to the server console.
+  deadchest-create-to-console: false
+
+filters:
+  # World names where DeadChest generation is disabled.
+  excluded-worlds:
+    - excluded_world_example
+    - another_excluded_world_example
+
+  # Items excluded from DeadChest storage.
+  # These items are not kept on death.
+  # Use Bukkit Material names (example: DIAMOND_SWORD).
+  excluded-items:
+    - EXCLUDED_ITEM_EXAMPLE
+    - HEROBRINE
+
+  # Items ignored by DeadChest processing.
+  # Ignored items are not stored and not removed from player inventory.
+  # Useful for custom items managed by other plugins.
+  # Use Bukkit Material names.
+  ignored-items:
+    - IGNORED_ITEM_EXAMPLE
+
+# --------------------------------------------------------------------------------------------------
+# Permission Reference
+# --------------------------------------------------------------------------------------------------
+# deadchest.admin         -> Access admin commands (reload, repair, removeall, removeinfinite, ignore).
+# deadchest.generate      -> Generate a DeadChest on player death (if require-generate is true).
+# deadchest.get           -> Claim/retrieve a DeadChest (if require-claim is true).
+# deadchest.list.own      -> List your own DeadChests with '/dc list' (if require-list-own is true).
+# deadchest.list.other    -> List another player's DeadChests with '/dc list <player>'.
+# deadchest.remove.own    -> Remove your own DeadChests with '/dc remove'.
+# deadchest.remove.other  -> Remove another player's DeadChests with '/dc remove <player>'.
+# deadchest.giveback      -> Give back another player's items with '/dc giveback <player>'.
+# deadchest.chestPass     -> Bypass owner-only chest access.
+# deadchest.infinityChest -> Create infinite DeadChests (not affected by duration-seconds timeout).

@@ -5,8 +5,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DeadChestConfig {
 
@@ -19,41 +22,233 @@ public class DeadChestConfig {
     }
 
     public void register(String key, Object defaultValue) {
-        configData.put(key, getFromConfig(key, defaultValue));
+        configData.put(key, normalizeValue(resolveFromConfig(key), defaultValue, ConfigKey.fromCanonicalPath(key)));
 
     }
 
     public Boolean getBoolean(ConfigKey key) {
-        return (Boolean) configData.get(key.toString());
+        return toBoolean(configData.get(key.toString()));
     }
 
     public double getDouble(ConfigKey key) {
-        return (double) configData.get(key.toString());
+        return toDouble(configData.get(key.toString()));
     }
 
     public int getInt(ConfigKey key) {
-        return (int) configData.get(key.toString());
+        return toInt(configData.get(key.toString()), key);
     }
 
     public ArrayList<String> getArray(ConfigKey key) {
-        return (ArrayList<String>) configData.get(key.toString());
+        Object value = configData.get(key.toString());
+        if (!(value instanceof List)) {
+            return new ArrayList<>();
+        }
+
+        return ((List<?>) value).stream()
+                .map(String::valueOf)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private Object getFromConfig(String paramName, Object defaultValue) {
-        Object param = plugin.getConfig().get(paramName);
+    private Object resolveFromConfig(String canonicalPath) {
+        Object param = plugin.getConfig().get(canonicalPath);
         if (param != null) {
             return param;
-        } else {
+        }
+
+        ConfigKey configKey = ConfigKey.fromCanonicalPath(canonicalPath);
+        if (configKey == null) {
+            return null;
+        }
+
+        for (String alias : configKey.aliases()) {
+            param = plugin.getConfig().get(alias);
+            if (param != null) {
+                return param;
+            }
+        }
+        return null;
+    }
+
+    private Object normalizeValue(Object value, Object defaultValue, ConfigKey key) {
+        if (value == null) {
             return defaultValue;
+        }
+
+        if (key == ConfigKey.DROP_MODE) {
+            return normalizeDropMode(value, defaultValue);
+        }
+        if (key == ConfigKey.DROP_BLOCK) {
+            return normalizeDropBlock(value, defaultValue);
+        }
+        if (defaultValue instanceof Boolean) {
+            return toBoolean(value);
+        }
+        if (defaultValue instanceof Integer) {
+            return toInt(value, key);
+        }
+        if (defaultValue instanceof Double) {
+            return toDouble(value);
+        }
+        if (defaultValue instanceof Collection) {
+            if (value instanceof List) {
+                return ((List<?>) value).stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toCollection(ArrayList::new));
+            }
+            return new ArrayList<>();
+        }
+
+        return value;
+    }
+
+    private boolean toBoolean(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            return Boolean.parseBoolean(((String) value).trim());
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue() != 0;
+        }
+        return false;
+    }
+
+    private int toInt(Object value, ConfigKey key) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        if (value instanceof String) {
+            String normalized = ((String) value).trim().toLowerCase(Locale.ROOT);
+            if (key == ConfigKey.DROP_MODE) {
+                return decodeDropMode(normalized);
+            }
+            if (key == ConfigKey.DROP_BLOCK) {
+                return decodeDropBlock(normalized);
+            }
+            try {
+                return Integer.parseInt(normalized);
+            } catch (NumberFormatException ignored) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    private double toDouble(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Double.parseDouble(((String) value).trim());
+            } catch (NumberFormatException ignored) {
+                return 0D;
+            }
+        }
+        return 0D;
+    }
+
+    private String normalizeDropMode(Object value, Object defaultValue) {
+        int mode = toInt(value, ConfigKey.DROP_MODE);
+        if (mode == 1) {
+            return "inventory-then-ground";
+        }
+        if (mode == 2) {
+            return "ground-drop";
+        }
+        return String.valueOf(defaultValue);
+    }
+
+    private String normalizeDropBlock(Object value, Object defaultValue) {
+        int block = toInt(value, ConfigKey.DROP_BLOCK);
+        if (block <= 0) {
+            String normalized = String.valueOf(value).trim().toLowerCase(Locale.ROOT);
+            switch (normalized) {
+                case "player_head":
+                case "player-head":
+                    return "player-head";
+                case "barrel":
+                    return "barrel";
+                case "shulker_box":
+                case "shulker-box":
+                    return "shulker-box";
+                case "ender_chest":
+                case "ender-chest":
+                    return "ender-chest";
+                case "chest":
+                    return "chest";
+                default:
+                    return String.valueOf(defaultValue);
+            }
+        }
+
+        switch (block) {
+            case 2:
+                return "player-head";
+            case 3:
+                return "barrel";
+            case 4:
+                return "shulker-box";
+            case 5:
+                return "ender-chest";
+            default:
+                return "chest";
+        }
+    }
+
+    private int decodeDropMode(String normalized) {
+        switch (normalized) {
+            case "inventory-then-ground":
+            case "inventory":
+            case "1":
+                return 1;
+            case "ground-drop":
+            case "ground":
+            case "2":
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
+    private int decodeDropBlock(String normalized) {
+        switch (normalized) {
+            case "chest":
+            case "1":
+                return 1;
+            case "player-head":
+            case "player_head":
+            case "2":
+                return 2;
+            case "barrel":
+            case "3":
+                return 3;
+            case "shulker-box":
+            case "shulker_box":
+            case "4":
+                return 4;
+            case "ender-chest":
+            case "ender_chest":
+            case "5":
+                return 5;
+            default:
+                return 1;
         }
     }
 
     private boolean detectMissingConfigs() {
         plugin.reloadConfig();
 
-        return configData.keySet()
+        boolean missingCanonical = configData.keySet()
                 .stream()
                 .anyMatch(key -> !plugin.getConfig().getKeys(true).contains(key));
+
+        boolean hasLegacyKeys = Arrays.stream(ConfigKey.values())
+                .flatMap(configKey -> Arrays.stream(configKey.aliases()))
+                .anyMatch(alias -> plugin.getConfig().contains(alias));
+
+        return missingCanonical || hasLegacyKeys;
     }
 
     public void updateConfig() {
@@ -62,18 +257,59 @@ public class DeadChestConfig {
             plugin.getLogger().warning("Updating config.yml with missing parameters");
 
             File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "config.yml");
+            File backup = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "config.legacy.yml");
+            if (file.exists()) {
+                try {
+                    Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    plugin.getLogger().warning("Legacy configuration backup created at " + backup.getName());
+                } catch (IOException exception) {
+                    plugin.getLogger().warning("Could not create config backup: " + exception.getMessage());
+                }
+            }
+            final FileConfiguration legacyConfiguration = YamlConfiguration.loadConfiguration(backup);
             file.delete();
             plugin.saveDefaultConfig();
+            // Reload freshly generated V2 template so we keep its structure/comments.
+            plugin.reloadConfig();
 
             configData.entrySet()
                     .stream()
-                    .filter(config -> plugin.getConfig().get(config.getKey()) != null)
                     .forEach(config -> {
-                        plugin.getConfig().set(config.getKey(), config.getValue());
+                        Object migratedValue = resolveFromLegacyForMigration(config.getKey(), config.getValue(), legacyConfiguration);
+                        plugin.getConfig().set(config.getKey(), migratedValue);
                     });
+
+            for (ConfigKey configKey : ConfigKey.values()) {
+                for (String alias : configKey.aliases()) {
+                    plugin.getConfig().set(alias, null);
+                }
+            }
+            plugin.getConfig().set("config-version", 2);
 
             plugin.saveConfig();
         }
+    }
+
+    private Object resolveFromLegacyForMigration(String canonicalKey, Object fallbackValue, FileConfiguration legacyConfiguration) {
+        ConfigKey configKey = ConfigKey.fromCanonicalPath(canonicalKey);
+        if (configKey == null) {
+            return fallbackValue;
+        }
+
+        Object legacyValue = legacyConfiguration.get(canonicalKey);
+        if (legacyValue == null) {
+            for (String alias : configKey.aliases()) {
+                legacyValue = legacyConfiguration.get(alias);
+                if (legacyValue != null) {
+                    break;
+                }
+            }
+        }
+
+        if (legacyValue == null) {
+            return fallbackValue;
+        }
+        return normalizeValue(legacyValue, fallbackValue, configKey);
     }
 
     public FileConfiguration getConfiguration() {
