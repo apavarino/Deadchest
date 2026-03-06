@@ -257,6 +257,7 @@ public class DeadChestManager {
 
             world.spawnParticle(soulParticle, x, y, z, 1, 0.03D, 0.03D, 0.03D, 0.0D);
         }
+
     }
 
     private static Particle resolveStyleParticle(EffectAnimationStyle style) {

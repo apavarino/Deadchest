@@ -206,7 +206,7 @@ public class ClickListener implements Listener {
         block.setType(Material.AIR);
         DeadChestLoader.getChestDataCache().removeChestData(cd);
         playPickupAnimation(block);
-        player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+        playPickupSound(block, player);
     }
 
     private void playPickupAnimation(Block block) {
@@ -234,6 +234,27 @@ public class ClickListener implements Listener {
             }
         }
         return Particle.TOTEM;
+    }
+
+    private void playPickupSound(Block block, Player player) {
+        if (!config.getBoolean(ConfigKey.PICKUP_SOUND_ENABLED)) {
+            return;
+        }
+
+        Sound sound = resolveSound(config.getString(ConfigKey.PICKUP_SOUND_NAME));
+        float volume = (float) clamp(config.getDouble(ConfigKey.PICKUP_SOUND_VOLUME), 0.0D, 10.0D);
+        float pitch = (float) clamp(config.getDouble(ConfigKey.PICKUP_SOUND_PITCH), 0.2D, 2.0D);
+        player.playSound(block.getLocation(), sound, volume, pitch);
+    }
+
+    private Sound resolveSound(String soundName) {
+        if (soundName != null && !soundName.trim().isEmpty()) {
+            try {
+                return Sound.valueOf(soundName.trim().toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
     }
 
     private double clamp(double value, double min, double max) {

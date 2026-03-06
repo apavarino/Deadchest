@@ -178,6 +178,18 @@ visuals:
     # Vertical center offset from block base.
     y-shift: 0.55
 
+  sound:
+    pickup:
+      # Sound played to the player when picking up the DeadChest.
+      enabled: true
+
+      # Bukkit sound name (example: ENTITY_EXPERIENCE_ORB_PICKUP).
+      name: ENTITY_PLAYER_LEVELUP
+
+      # Sound volume and pitch.
+      volume: 1.2
+      pitch: 1.0
+
 filters:
   # World names where DeadChest generation is disabled.
   excluded-worlds:

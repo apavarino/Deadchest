@@ -180,6 +180,10 @@ public class DeadChestLoader {
         config.register(ConfigKey.PICKUP_ANIMATION_OFFSET_Z.toString(), 0.45D);
         config.register(ConfigKey.PICKUP_ANIMATION_SPEED.toString(), 0.08D);
         config.register(ConfigKey.PICKUP_ANIMATION_Y_SHIFT.toString(), 0.55D);
+        config.register(ConfigKey.PICKUP_SOUND_ENABLED.toString(), true);
+        config.register(ConfigKey.PICKUP_SOUND_NAME.toString(), "ENTITY_EXPERIENCE_ORB_PICKUP");
+        config.register(ConfigKey.PICKUP_SOUND_VOLUME.toString(), 1.2D);
+        config.register(ConfigKey.PICKUP_SOUND_PITCH.toString(), 1.0D);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);
         config.register(ConfigKey.GENERATE_ON_RAILS.toString(), true);

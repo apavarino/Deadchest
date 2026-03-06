@@ -46,6 +46,10 @@ public enum ConfigKey {
     PICKUP_ANIMATION_OFFSET_Z("visuals.pickup-animation.offset-z"),
     PICKUP_ANIMATION_SPEED("visuals.pickup-animation.speed"),
     PICKUP_ANIMATION_Y_SHIFT("visuals.pickup-animation.y-shift"),
+    PICKUP_SOUND_ENABLED("visuals.sound.pickup.enabled"),
+    PICKUP_SOUND_NAME("visuals.sound.pickup.name"),
+    PICKUP_SOUND_VOLUME("visuals.sound.pickup.volume"),
+    PICKUP_SOUND_PITCH("visuals.sound.pickup.pitch"),
     LOCALIZATION_LANGUAGE("localization.language", "language");
 
     private static final Map<String, ConfigKey> BY_CANONICAL = new HashMap<>();
