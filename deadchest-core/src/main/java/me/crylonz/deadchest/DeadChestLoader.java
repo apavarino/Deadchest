@@ -7,6 +7,7 @@ import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
 import me.crylonz.deadchest.legacy.OldChestData;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
+import me.crylonz.deadchest.utils.EffectAnimationStyle;
 import me.crylonz.deadchest.utils.ExpiredActionType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -167,6 +168,18 @@ public class DeadChestLoader {
         config.register(ConfigKey.DROP_MODE.toString(), "inventory-then-ground");
         config.register(ConfigKey.DROP_BLOCK.toString(), "chest");
         config.register(ConfigKey.ITEM_DURABILITY_LOSS_ON_DEATH.toString(), 0);
+        config.register(ConfigKey.EFFECT_ANIMATION_ENABLED.toString(), true);
+        config.register(ConfigKey.EFFECT_ANIMATION_STYLE.toString(), EffectAnimationStyle.SOUL.id());
+        config.register(ConfigKey.EFFECT_ANIMATION_RADIUS.toString(), 0.8D);
+        config.register(ConfigKey.EFFECT_ANIMATION_SPEED.toString(), 1.1D);
+        config.register(ConfigKey.PICKUP_ANIMATION_ENABLED.toString(), true);
+        config.register(ConfigKey.PICKUP_ANIMATION_PARTICLE.toString(), "TOTEM");
+        config.register(ConfigKey.PICKUP_ANIMATION_COUNT.toString(), 22);
+        config.register(ConfigKey.PICKUP_ANIMATION_OFFSET_X.toString(), 0.45D);
+        config.register(ConfigKey.PICKUP_ANIMATION_OFFSET_Y.toString(), 0.5D);
+        config.register(ConfigKey.PICKUP_ANIMATION_OFFSET_Z.toString(), 0.45D);
+        config.register(ConfigKey.PICKUP_ANIMATION_SPEED.toString(), 0.08D);
+        config.register(ConfigKey.PICKUP_ANIMATION_Y_SHIFT.toString(), 0.55D);
         config.register(ConfigKey.GENERATE_ON_LAVA.toString(), true);
         config.register(ConfigKey.GENERATE_ON_WATER.toString(), true);
         config.register(ConfigKey.GENERATE_ON_RAILS.toString(), true);
@@ -251,6 +264,30 @@ public class DeadChestLoader {
 
     private void launchRepeatingTask() {
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleEvent, 20, 20);
+        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleAnimationEvent, 20, 4);
+    }
+
+    public static void handleAnimationEvent() {
+        if (!config.getBoolean(ConfigKey.EFFECT_ANIMATION_ENABLED)) {
+            return;
+        }
+
+        final Map<Location, ChestData> allChestData = getChestDataCache().getAllChestData();
+        if (allChestData.isEmpty()) {
+            return;
+        }
+
+        final long nowMs = System.currentTimeMillis();
+        for (ChestData chestData : allChestData.values()) {
+            if (chestData != null && chestData.isChunkLoaded()) {
+                animateSoulOrbit(chestData, nowMs);
+            }
+        }
+    }
+
+    public static EffectAnimationStyle getConfiguredAnimationStyle() {
+        EffectAnimationStyle style = EffectAnimationStyle.fromInput(config.getString(ConfigKey.EFFECT_ANIMATION_STYLE));
+        return style == null ? EffectAnimationStyle.SOUL : style;
     }
 
     public DeadChestConfig getDataConfig() {

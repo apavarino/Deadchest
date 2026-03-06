@@ -2,11 +2,9 @@ package me.crylonz.deadchest;
 
 import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.utils.EffectAnimationStyle;
 import me.crylonz.deadchest.utils.ExpiredActionType;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -16,11 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.utils.Utils.*;
 
 public class DeadChestManager {
+    private static final Map<EffectAnimationStyle, Particle> styleParticles = new ConcurrentHashMap<>();
+    private static final Set<EffectAnimationStyle> unresolvedParticleStyles = EnumSet.noneOf(EffectAnimationStyle.class);
 
     /**
      * Remove all active deadchests
@@ -216,5 +217,76 @@ public class DeadChestManager {
                 }
             }
         }
+    }
+
+    public static void animateSoulOrbit(ChestData chestData, long nowMs) {
+        if (chestData.isRemovedBlock()) {
+            return;
+        }
+
+        final Location chestLocation = chestData.getChestLocation();
+        final World world = chestLocation.getWorld();
+        if (world == null || !isGraveBlock(world.getBlockAt(chestLocation).getType())) {
+            return;
+        }
+
+        final EffectAnimationStyle style = DeadChestLoader.getConfiguredAnimationStyle();
+        final Particle soulParticle = resolveStyleParticle(style);
+        if (soulParticle == null) {
+            return;
+        }
+
+        final double radius = clamp(config.getDouble(ConfigKey.EFFECT_ANIMATION_RADIUS), 0.25D, 2.0D);
+        final double speed = clamp(config.getDouble(ConfigKey.EFFECT_ANIMATION_SPEED), 0.1D, 8.0D);
+
+        final double centerX = chestLocation.getX() + 0.5D;
+        final double minY = chestLocation.getY() + 0.06D;
+        final double maxY = chestLocation.getY() + 1.58D;
+        final double centerZ = chestLocation.getZ() + 0.5D;
+
+        final double basePhase = (nowMs / 1000.0D) * speed
+                + (Math.abs(chestData.getPlayerUUID().hashCode()) % 360) * Math.PI / 180.0D;
+
+        // Spawn two opposite "souls" to create an orbit effect around the chest.
+        for (int i = 0; i < 2; i++) {
+            final double angle = basePhase + (i * Math.PI);
+            final double x = centerX + (Math.cos(angle) * radius);
+            final double oscillation = (Math.sin(basePhase * 1.15D + i) + 1.0D) * 0.5D;
+            final double y = minY + (maxY - minY) * oscillation;
+            final double z = centerZ + (Math.sin(angle) * radius);
+
+            world.spawnParticle(soulParticle, x, y, z, 1, 0.03D, 0.03D, 0.03D, 0.0D);
+        }
+    }
+
+    private static Particle resolveStyleParticle(EffectAnimationStyle style) {
+        if (unresolvedParticleStyles.contains(style)) {
+            return null;
+        }
+        if (styleParticles.containsKey(style)) {
+            return styleParticles.get(style);
+        }
+
+        for (String particleName : style.particleCandidates()) {
+            Particle resolved = valueOfOrNull(Particle.class, particleName);
+            if (resolved != null) {
+                styleParticles.put(style, resolved);
+                return resolved;
+            }
+        }
+        unresolvedParticleStyles.add(style);
+        return null;
+    }
+
+    private static <T extends Enum<T>> T valueOfOrNull(Class<T> type, String name) {
+        try {
+            return Enum.valueOf(type, name);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
+    private static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 }

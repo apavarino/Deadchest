@@ -34,6 +34,18 @@ public enum ConfigKey {
     STORE_XP_PERCENTAGE("xp.store-percentage", "StoreXPPercentage"),
     KEEP_INVENTORY_ON_PVP_DEATH("pvp.keep-inventory-on-player-kill", "KeepInventoryOnPvpDeath"),
     ITEM_DURABILITY_LOSS_ON_DEATH("durability.loss-on-death-percent", "item-durability-loss-on-death"),
+    EFFECT_ANIMATION_ENABLED("visuals.effect-animation.enabled"),
+    EFFECT_ANIMATION_STYLE("visuals.effect-animation.style"),
+    EFFECT_ANIMATION_RADIUS("visuals.effect-animation.radius"),
+    EFFECT_ANIMATION_SPEED("visuals.effect-animation.speed"),
+    PICKUP_ANIMATION_ENABLED("visuals.pickup-animation.enabled"),
+    PICKUP_ANIMATION_PARTICLE("visuals.pickup-animation.particle"),
+    PICKUP_ANIMATION_COUNT("visuals.pickup-animation.count"),
+    PICKUP_ANIMATION_OFFSET_X("visuals.pickup-animation.offset-x"),
+    PICKUP_ANIMATION_OFFSET_Y("visuals.pickup-animation.offset-y"),
+    PICKUP_ANIMATION_OFFSET_Z("visuals.pickup-animation.offset-z"),
+    PICKUP_ANIMATION_SPEED("visuals.pickup-animation.speed"),
+    PICKUP_ANIMATION_Y_SHIFT("visuals.pickup-animation.y-shift"),
     LOCALIZATION_LANGUAGE("localization.language", "language");
 
     private static final Map<String, ConfigKey> BY_CANONICAL = new HashMap<>();

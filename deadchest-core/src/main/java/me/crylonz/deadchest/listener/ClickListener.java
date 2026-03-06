@@ -205,8 +205,39 @@ public class ClickListener implements Listener {
     private void cleanupChest(ChestData cd, Block block, Player player) {
         block.setType(Material.AIR);
         DeadChestLoader.getChestDataCache().removeChestData(cd);
-        block.getWorld().playEffect(block.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
+        playPickupAnimation(block);
         player.playSound(block.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
+    }
+
+    private void playPickupAnimation(Block block) {
+        if (!config.getBoolean(ConfigKey.PICKUP_ANIMATION_ENABLED)) {
+            return;
+        }
+
+        final Particle particle = resolveParticle(config.getString(ConfigKey.PICKUP_ANIMATION_PARTICLE));
+        final int count = Math.max(1, Math.min(config.getInt(ConfigKey.PICKUP_ANIMATION_COUNT), 250));
+        final double offsetX = clamp(config.getDouble(ConfigKey.PICKUP_ANIMATION_OFFSET_X), 0.0D, 3.0D);
+        final double offsetY = clamp(config.getDouble(ConfigKey.PICKUP_ANIMATION_OFFSET_Y), 0.0D, 3.0D);
+        final double offsetZ = clamp(config.getDouble(ConfigKey.PICKUP_ANIMATION_OFFSET_Z), 0.0D, 3.0D);
+        final double speed = clamp(config.getDouble(ConfigKey.PICKUP_ANIMATION_SPEED), 0.0D, 2.0D);
+        final double yShift = clamp(config.getDouble(ConfigKey.PICKUP_ANIMATION_Y_SHIFT), -0.5D, 2.5D);
+
+        final Location center = block.getLocation().clone().add(0.5D, yShift, 0.5D);
+        block.getWorld().spawnParticle(particle, center, count, offsetX, offsetY, offsetZ, speed);
+    }
+
+    private Particle resolveParticle(String particleName) {
+        if (particleName != null && !particleName.trim().isEmpty()) {
+            try {
+                return Particle.valueOf(particleName.trim().toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return Particle.TOTEM;
+    }
+
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private static final BlockFace[] CHECK_FACES = {

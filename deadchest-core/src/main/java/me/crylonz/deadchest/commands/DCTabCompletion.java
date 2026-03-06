@@ -71,7 +71,6 @@ public class DCTabCompletion implements TabCompleter {
                             }
                         }
                     }
-
                 }
             }
         }

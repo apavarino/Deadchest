@@ -141,6 +141,43 @@ logging:
   # Log each DeadChest creation to the server console.
   deadchest-create-to-console: false
 
+visuals:
+  effect-animation:
+    # Visual particles orbiting around active DeadChests.
+    enabled: true
+
+    # Global effect style used for all DeadChests:
+    # soul | flame | ender
+    style: ender
+
+    # Orbit radius around the chest center (recommended: 0.5 to 1.2).
+    radius: 0.8
+
+    # Orbit speed multiplier (recommended: 1.0 to 3.0).
+    speed: 1.1
+
+  pickup-animation:
+    # Animation played when a player recovers a DeadChest.
+    enabled: true
+
+    # Bukkit particle name used for the pickup animation.
+    # Examples: TOTEM, END_ROD, FIREWORK, SOUL, FLAME
+    particle: FIREWORK
+
+    # Number of particles spawned on pickup.
+    count: 22
+
+    # Particle spread around the center.
+    offset-x: 0.45
+    offset-y: 0.5
+    offset-z: 0.45
+
+    # Particle extra/speed value.
+    speed: 0.08
+
+    # Vertical center offset from block base.
+    y-shift: 0.55
+
 filters:
   # World names where DeadChest generation is disabled.
   excluded-worlds:
