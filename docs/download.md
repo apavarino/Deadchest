@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Download"
-permalink: /download/
----
-
-## Deadchest - Download
+﻿## Deadchest - Download
 
 You can download the plugin here
 
@@ -31,4 +25,3 @@ Deadchest is build to work with Java 8+ and support the following server softwar
 
 See [installation part](https://apavarino.github.io/Deadchest/installation) or go
 to [home page](https://apavarino.github.io/Deadchest)
-

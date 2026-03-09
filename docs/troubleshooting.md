@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Troubleshooting"
-permalink: /troubleshooting/
----
-
-## Deadchest - Troubleshooting
+﻿## Deadchest - Troubleshooting
 
 This section explains how to resolve most common issues that you can have with the plugin.
 
@@ -25,4 +19,3 @@ your server before. You can remove active deadchests with `/dc removeall` comman
 ### Next step
 
 See [api part](https://apavarino.github.io/Deadchest/api) or go to [home page](https://apavarino.github.io/Deadchest)
-

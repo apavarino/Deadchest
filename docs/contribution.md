@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Contribution"
-permalink: /contribution/
----
-
-## Deadchest - Contribution
+﻿## Deadchest - Contribution
 
 ### Github
 
@@ -18,4 +12,3 @@ paypal [here](https://www.paypal.com/cgi-bin/webscr?return=https://dev.bukkit.or
 ### Next step
 
 Go to [home page](https://apavarino.github.io/Deadchest)
-

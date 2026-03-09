@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Installation"
-permalink: /installation/
----
-
-## Deadchest - Installation
+﻿## Deadchest - Installation
 
 Make sure you have [downloaded](https://apavarino.github.io/Deadchest/download) the plugin before reading this step.
 
@@ -22,4 +16,3 @@ if you have any error, make sure to match the requirement. If needed, you can as
 
 See [how it works part](https://apavarino.github.io/Deadchest/how-it-works) or go
 to [home page](https://apavarino.github.io/Deadchest)
-

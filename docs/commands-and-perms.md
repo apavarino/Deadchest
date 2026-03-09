@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Commands and Permissions"
-permalink: /commands-and-perms/
----
-
-## Deadchest - Commands & Permissions
+﻿## Deadchest - Commands & Permissions
 
 Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 
@@ -29,5 +23,4 @@ This section describes commands and permissions provided by the plugin
 
 See [cutomization part](https://apavarino.github.io/Deadchest/customization) or go
 to [home page](https://apavarino.github.io/Deadchest)
-
 
