@@ -10,7 +10,7 @@ description: >-
 url: "https://apavarino.github.io"
 baseurl: "/Deadchest"
 
-remote_theme: cotes2020/jekyll-theme-chirpy
+theme: jekyll-theme-chirpy
 
 plugins:
   - jekyll-include-cache
