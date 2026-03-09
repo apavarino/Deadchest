@@ -8,7 +8,7 @@ When a player dies. A chest is generated at the exact location where the player 
 be only openable by the owner. At the top of the chest an hologram is generated with the name of the owner and the time
 remaining before the chest disappears.
 
-> All is configurable, see [configuration part]({{ '/configuration/' | relative_url }}) for more
+> All is configurable, see [configuration part](https://apavarino.github.io/Deadchest/configuration) for more
 > information.
 
 Items on the chest can be collect by just left clicking on it. There is no space limitation the chest can store all of
@@ -65,6 +65,6 @@ to keep great performances. Deadchest only work on loaded chunk to prevent any p
 
 ### Next step
 
-See [configuration part]({{ '/configuration/' | relative_url }}) or go
-to [home page]({{ '/' | relative_url }})
+See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go
+to [home page](https://apavarino.github.io/Deadchest)
 

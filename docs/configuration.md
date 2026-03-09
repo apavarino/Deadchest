@@ -1,6 +1,6 @@
 ﻿## Deadchest - Configuration
 
-Make sure you have [installed]({{ '/installation/' | relative_url }}) the plugin before reading this step.
+Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 
 This section describes how to configure Deadchest through the`config.yml` file
 
@@ -24,14 +24,14 @@ This section describes how to configure Deadchest through the`config.yml` file
  `GenerateOnWater`                 | boolean        | true    | Enable Deadchest generation on water                                                                                                           
  `GenerateOnRails`                 | boolean        | true    | Enable Deadchest generation on rails                                                                                                           
  `GenerateInMinecart`              | boolean        | true    | Enable Deadchest generation in minecart                                                                                                        
- `EnableWorldGuardDetection`       | boolean        | false   | Enable Worldguard integration. More info [here]({{ '/worldguard/'                                                                              | relative_url }})                                              
+ `EnableWorldGuardDetection`       | boolean        | false   | Enable Worldguard integration. More info [here](https://apavarino.github.io/Deadchest/worldguard)                                              
  `ExcludedWorld`                   | list of string |         | List of worlds that DeadChests will NOT be generated in                                                                                        
  `ExcludedItems`                   | list of string |         | List of items that will be excluded from DeadChests                                                                                            
 
 ### Next step
 
-See [commands & permissions part]({{ '/commands-and-perms/' | relative_url }}) or go
-to [home page]({{ '/' | relative_url }})
+See [commands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go
+to [home page](https://apavarino.github.io/Deadchest)
 
 
 

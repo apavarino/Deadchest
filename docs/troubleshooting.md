@@ -18,5 +18,5 @@ your server before. You can remove active deadchests with `/dc removeall` comman
 
 ### Next step
 
-See [api part]({{ '/api/' | relative_url }}) or go to [home page]({{ '/' | relative_url }})
+See [api part](https://apavarino.github.io/Deadchest/api) or go to [home page](https://apavarino.github.io/Deadchest)
 

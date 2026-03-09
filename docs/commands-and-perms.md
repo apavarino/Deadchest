@@ -1,6 +1,6 @@
 ﻿## Deadchest - Commands & Permissions
 
-Make sure you have [installed]({{ '/installation/' | relative_url }}) the plugin before reading this step.
+Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 
 This section describes commands and permissions provided by the plugin
 
@@ -21,7 +21,7 @@ This section describes commands and permissions provided by the plugin
 
 ### Next step
 
-See [customization part]({{ '/customization/' | relative_url }}) or go
-to [home page]({{ '/' | relative_url }})
+See [cutomization part](https://apavarino.github.io/Deadchest/customization) or go
+to [home page](https://apavarino.github.io/Deadchest)
 
 

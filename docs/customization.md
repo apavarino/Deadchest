@@ -41,6 +41,6 @@ If you want to edit the timer, you need to update `holo_timer`. To edit the owne
 
 ### Next step
 
-See [worldguard part]({{ '/worldguard/' | relative_url }}) or go
-to [home page]({{ '/' | relative_url }})
+See [worldguard part](https://apavarino.github.io/Deadchest/worldguard) or go
+to [home page](https://apavarino.github.io/Deadchest)
 

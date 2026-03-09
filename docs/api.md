@@ -27,6 +27,6 @@ If you are a developer and you need more tools from Deadchest to work with. Cont
 
 ### Next step
 
-See [contribution part]({{ '/contribution/' | relative_url }}) or go
-to [home page]({{ '/' | relative_url }})
+See [contribution part](https://apavarino.github.io/Deadchest/contribution) or go
+to [home page](https://apavarino.github.io/Deadchest)
 
