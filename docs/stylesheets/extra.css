@@ -1,0 +1,51 @@
+﻿:root {
+    --dc-gradient-light: linear-gradient(120deg, rgba(20, 184, 166, 0.15), rgba(14, 165, 233, 0.16) 50%, rgba(245, 158, 11, 0.2));
+    --dc-gradient-dark: linear-gradient(120deg, rgba(34, 211, 238, 0.16), rgba(16, 185, 129, 0.14) 50%, rgba(245, 158, 11, 0.22));
+}
+
+.md-header {
+    backdrop-filter: blur(8px);
+}
+
+.md-header__title,
+.md-nav__title,
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+    letter-spacing: 0.01em;
+}
+
+.md-typeset h1 {
+    font-weight: 800;
+}
+
+.hero {
+    border: 1px solid color-mix(in srgb, var(--md-primary-fg-color), transparent 70%);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    background: var(--dc-gradient-light);
+}
+
+[data-md-color-scheme="slate"] .hero {
+    background: var(--dc-gradient-dark);
+}
+
+.hero p {
+    margin: 0;
+}
+
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin: .8rem 0 1.2rem;
+}
+
+.home-actions .md-button {
+    border-radius: 999px;
+}
+
+.md-typeset .grid.cards > ul > li {
+    border-radius: .9rem;
+}

@@ -1,33 +1,108 @@
-﻿## Deadchest Documentation
+﻿# DeadChest Documentation
 
-Welcome to the official documentation of Deadchest plugin. Here you will find everything you need to use the plugin.
-
-<div  align="center">
-    <img src="https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png" alt="Deadchest" width="800" /><br>
+<div class="hero">
+  <p>Modern death-chest plugin for Bukkit, Spigot, and Paper. This documentation covers setup, configuration, integrations, and API usage.</p>
 </div>
 
-> All the documentation is made for the last version of the plugin. If you are using an older version. Some information
-> may be incorrect
+<div class="home-actions" markdown>
+[Get Started](installation.md){ .md-button .md-button--primary }
+[Download](download.md){ .md-button }
+[Configuration](configuration.md){ .md-button }
+</div>
 
-## Table of Contents
+![DeadChest](assets/images/deadchest-logo.png)
 
-- [Download](download.md)
-- [Installation](installation.md)
-- [How it works](how-it-works.md)
-- [Plugin configuration](configuration.md)
-- [Commands & Permissions](commands-and-perms.md)
-- [Plugin Customization](customization.md)
-- [Worldguard integration](worldguard.md)
-- [Troubleshooting](troubleshooting.md)
-- [Deadchest API](api.md)
-- [Contribution](contribution.md)
+!!! note
+This documentation targets the latest plugin version.
+
+## Documentation
+
+<div class="grid cards" markdown>
+
+- **Download**
+
+  ---
+
+  Install the latest release.
+
+  [Open](download.md)
+
+- **Installation**
+
+  ---
+
+  Server setup and first launch.
+
+  [Open](installation.md)
+
+- **How It Works**
+
+  ---
+
+  Understand DeadChest behavior in-game.
+
+  [Open](how-it-works.md)
+
+- **Configuration**
+
+  ---
+
+  Full `config.yml` options and behavior.
+
+  [Open](configuration.md)
+
+- **Commands and Permissions**
+
+  ---
+
+  Admin/player commands and required permissions.
+
+  [Open](commands-and-perms.md)
+
+- **Customization**
+
+  ---
+
+  Tune visuals, effects, and behavior.
+
+  [Open](customization.md)
+
+- **WorldGuard Integration**
+
+  ---
+
+  Region protection and compatibility.
+
+  [Open](worldguard.md)
+
+- **Troubleshooting**
+
+  ---
+
+  Diagnose common setup/runtime issues.
+
+  [Open](troubleshooting.md)
+
+- **API**
+
+  ---
+
+  Integrate DeadChest in custom plugins.
+
+  [Open](api.md)
+
+- **Contribution**
+
+  ---
+
+  Contributing guidelines and workflow.
+
+  [Open](contribution.md)
+
+</div>
 
 ## Community
 
-You can join the discord of the community [here](https://discord.com/invite/jCsvJxS) for extra help.
-
-
-
-
-
-
+- [Discord support](https://discord.com/invite/jCsvJxS)
+- [GitHub repository](https://github.com/apavarino/Deadchest)
+- [Bukkit page](https://dev.bukkit.org/projects/dead-chest)

@@ -3,15 +3,38 @@ site_url: https://apavarino.github.io/Deadchest/
 repo_url: https://github.com/apavarino/Deadchest
 repo_name: apavarino/Deadchest
 
+plugins:
+  - search
+
 theme:
   name: material
   language: en
+  logo: assets/images/deadchest-logo-small.png
+  favicon: assets/images/deadchest-logo-small.png
   features:
     - navigation.sections
     - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - content.code.copy
+    - content.action.edit
     - search.suggest
     - search.highlight
-    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: cyan
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
 
 markdown_extensions:
   - admonition
@@ -19,19 +42,34 @@ markdown_extensions:
   - md_in_html
   - tables
 
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/apavarino/Deadchest
+    - icon: fontawesome/brands/discord
+      link: https://discord.com/invite/jCsvJxS
+
+copyright: Copyright © DeadChest
+
 docs_dir: docs
 site_dir: site
 use_directory_urls: true
 
 nav:
-  - Home: index.md
-  - Download: download.md
-  - Installation: installation.md
-  - How It Works: how-it-works.md
-  - Configuration: configuration.md
-  - Commands and Permissions: commands-and-perms.md
-  - Customization: customization.md
-  - WorldGuard Integration: worldguard.md
-  - Troubleshooting: troubleshooting.md
-  - API: api.md
-  - Contribution: contribution.md
+  - Getting Started:
+      - Home: index.md
+      - Download: download.md
+      - Installation: installation.md
+      - How It Works: how-it-works.md
+  - Administration:
+      - Configuration: configuration.md
+      - Commands and Permissions: commands-and-perms.md
+      - Customization: customization.md
+      - WorldGuard Integration: worldguard.md
+      - Troubleshooting: troubleshooting.md
+  - Developer:
+      - API: api.md
+      - Contribution: contribution.md
