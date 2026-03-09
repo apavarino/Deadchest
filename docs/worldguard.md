@@ -1,4 +1,10 @@
-﻿## Deadchest - Worldguard Integration
+﻿---
+layout: page
+title: "WorldGuard Integration"
+permalink: /worldguard/
+---
+
+## Deadchest - Worldguard Integration
 
 Deadchest allow you to manage permission to generate chest with the region system of **WorldGuard**.
 This section explains how configure Deadchest with Worldguard.
@@ -32,3 +38,4 @@ Set Deadchest flags for your regions.
 
 See [troubleshooting part](https://apavarino.github.io/Deadchest/troubleshooting) or go
 to [home page](https://apavarino.github.io/Deadchest)
+

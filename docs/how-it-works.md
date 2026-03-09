@@ -1,4 +1,10 @@
-﻿## Deadchest - How it works ?
+﻿---
+layout: page
+title: "How It Works"
+permalink: /how-it-works/
+---
+
+## Deadchest - How it works ?
 
 This section describes the behavior of the plugin on different situations.
 
@@ -67,3 +73,4 @@ to keep great performances. Deadchest only work on loaded chunk to prevent any p
 
 See [configuration part](https://apavarino.github.io/Deadchest/configuration) or go
 to [home page](https://apavarino.github.io/Deadchest)
+

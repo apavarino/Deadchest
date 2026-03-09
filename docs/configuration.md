@@ -1,4 +1,10 @@
-﻿## Deadchest - Configuration
+﻿---
+layout: page
+title: "Configuration"
+permalink: /configuration/
+---
+
+## Deadchest - Configuration
 
 Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 
@@ -32,5 +38,6 @@ This section describes how to configure Deadchest through the`config.yml` file
 
 See [commands & permissions part](https://apavarino.github.io/Deadchest/commands-and-perms) or go
 to [home page](https://apavarino.github.io/Deadchest)
+
 
 

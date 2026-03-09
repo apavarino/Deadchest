@@ -1,31 +1,32 @@
-﻿## Deadchest Documentation
+﻿---
+layout: page
+title: "Home"
+permalink: /
+---
 
-Welcome to the official documentation of Deadchest plugin. Here you will find everything you need to use the plugin.
+# DeadChest Documentation
 
-<div  align="center">
-    <img src="https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png" alt="Deadchest" width="800" /><br>
-</div>
+Everything you need to install, configure, and customize DeadChest on Bukkit, Spigot, and Paper.
 
-> All the documentation is made for the last version of the plugin. If you are using an older version. Some information
-> may be incorrect
+![DeadChest](https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png)
 
-## Table of Contents
+> This documentation targets the latest DeadChest version.
 
-- [Download](https://apavarino.github.io/Deadchest/download)
-- [Installation](https://apavarino.github.io/Deadchest/installation)
-- [How it works](https://apavarino.github.io/Deadchest/how-it-works)
-- [Plugin configuration](https://apavarino.github.io/Deadchest/configuration)
-- [Commands & Permissions](https://apavarino.github.io/Deadchest/commands-and-perms)
-- [Plugin Customization](https://apavarino.github.io/Deadchest/customization)
-- [Worldguard integration](https://apavarino.github.io/Deadchest/worldguard)
-- [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting)
-- [Deadchest API](https://apavarino.github.io/Deadchest/api)
-- [Contribution](https://apavarino.github.io/Deadchest/contribution)
+## Explore Docs
 
-## Community
+- [Download](/Deadchest/download/)
+- [Installation](/Deadchest/installation/)
+- [How It Works](/Deadchest/how-it-works/)
+- [Configuration](/Deadchest/configuration/)
+- [Commands and Permissions](/Deadchest/commands-and-perms/)
+- [Customization](/Deadchest/customization/)
+- [WorldGuard Integration](/Deadchest/worldguard/)
+- [Troubleshooting](/Deadchest/troubleshooting/)
+- [API](/Deadchest/api/)
+- [Contribution](/Deadchest/contribution/)
 
-You can join the discord of the community [here](https://discord.com/invite/jCsvJxS) for extra help.
+## Quick Links
 
-
-
-
+- [Plugin Page](https://dev.bukkit.org/projects/dead-chest)
+- [Discord Support](https://discord.com/invite/jCsvJxS)
+- [GitHub Repository](https://github.com/apavarino/Deadchest)
