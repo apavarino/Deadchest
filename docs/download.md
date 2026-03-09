@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Download"
-permalink: /download/
----
-
-## Deadchest - Download
+﻿## Deadchest - Download
 
 You can download the plugin here
 

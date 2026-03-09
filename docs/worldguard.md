@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "WorldGuard Integration"
-permalink: /worldguard/
----
-
-## Deadchest - Worldguard Integration
+﻿## Deadchest - Worldguard Integration
 
 Deadchest allow you to manage permission to generate chest with the region system of **WorldGuard**.
 This section explains how configure Deadchest with Worldguard.

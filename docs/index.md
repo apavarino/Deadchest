@@ -1,32 +1,34 @@
-﻿---
-layout: page
-title: "Home"
-permalink: /
----
+﻿# DeadChest Documentation
 
-# DeadChest Documentation
+<div class="hero">
+  <p>Everything you need to install, configure, and customize DeadChest on Bukkit, Spigot, and Paper.</p>
+</div>
 
-Everything you need to install, configure, and customize DeadChest on Bukkit, Spigot, and Paper.
-
-![DeadChest](https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png)
+<div align="center">
+  <img src="https://github.com/apavarino/Deadchest/raw/master/deadchest-logo.png" alt="DeadChest" width="800" />
+</div>
 
 > This documentation targets the latest DeadChest version.
 
 ## Explore Docs
 
-- [Download](/Deadchest/download/)
-- [Installation](/Deadchest/installation/)
-- [How It Works](/Deadchest/how-it-works/)
-- [Configuration](/Deadchest/configuration/)
-- [Commands and Permissions](/Deadchest/commands-and-perms/)
-- [Customization](/Deadchest/customization/)
-- [WorldGuard Integration](/Deadchest/worldguard/)
-- [Troubleshooting](/Deadchest/troubleshooting/)
-- [API](/Deadchest/api/)
-- [Contribution](/Deadchest/contribution/)
+<ul class="doc-grid">
+  <li><a href="/Deadchest/download/">Download</a></li>
+  <li><a href="/Deadchest/installation/">Installation</a></li>
+  <li><a href="/Deadchest/how-it-works/">How It Works</a></li>
+  <li><a href="/Deadchest/configuration/">Configuration</a></li>
+  <li><a href="/Deadchest/commands-and-perms/">Commands and Permissions</a></li>
+  <li><a href="/Deadchest/customization/">Customization</a></li>
+  <li><a href="/Deadchest/worldguard/">WorldGuard Integration</a></li>
+  <li><a href="/Deadchest/troubleshooting/">Troubleshooting</a></li>
+  <li><a href="/Deadchest/api/">API</a></li>
+  <li><a href="/Deadchest/contribution/">Contribution</a></li>
+</ul>
 
 ## Quick Links
 
-- [Plugin Page](https://dev.bukkit.org/projects/dead-chest)
-- [Discord Support](https://discord.com/invite/jCsvJxS)
-- [GitHub Repository](https://github.com/apavarino/Deadchest)
+<div class="quick-actions">
+  <a href="https://dev.bukkit.org/projects/dead-chest">Plugin Page</a>
+  <a href="https://discord.com/invite/jCsvJxS">Discord Support</a>
+  <a href="https://github.com/apavarino/Deadchest">GitHub Repository</a>
+</div>

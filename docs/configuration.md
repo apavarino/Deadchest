@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Configuration"
-permalink: /configuration/
----
-
-## Deadchest - Configuration
+﻿## Deadchest - Configuration
 
 Make sure you have [installed](https://apavarino.github.io/Deadchest/installation) the plugin before reading this step.
 

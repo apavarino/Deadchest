@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "Contribution"
-permalink: /contribution/
----
-
-## Deadchest - Contribution
+﻿## Deadchest - Contribution
 
 ### Github
 

@@ -1,10 +1,4 @@
-﻿---
-layout: page
-title: "How It Works"
-permalink: /how-it-works/
----
-
-## Deadchest - How it works ?
+﻿## Deadchest - How it works ?
 
 This section describes the behavior of the plugin on different situations.
 
