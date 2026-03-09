@@ -1,0 +1,37 @@
+﻿site_name: DeadChest Documentation
+site_url: https://apavarino.github.io/Deadchest/
+repo_url: https://github.com/apavarino/Deadchest
+repo_name: apavarino/Deadchest
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+
+nav:
+  - Home: index.md
+  - Download: download.md
+  - Installation: installation.md
+  - How It Works: how-it-works.md
+  - Configuration: configuration.md
+  - Commands and Permissions: commands-and-perms.md
+  - Customization: customization.md
+  - WorldGuard Integration: worldguard.md
+  - Troubleshooting: troubleshooting.md
+  - API: api.md
+  - Contribution: contribution.md

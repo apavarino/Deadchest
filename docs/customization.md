@@ -41,5 +41,7 @@ If you want to edit the timer, you need to update `holo_timer`. To edit the owne
 
 ### Next step
 
-See [worldguard part](https://apavarino.github.io/Deadchest/worldguard) or go
-to [home page](https://apavarino.github.io/Deadchest)
+See [worldguard part](worldguard.md) or go
+to [home page](index.md)
+
+

@@ -11,4 +11,6 @@ paypal [here](https://www.paypal.com/cgi-bin/webscr?return=https://dev.bukkit.or
 
 ### Next step
 
-Go to [home page](https://apavarino.github.io/Deadchest)
+Go to [home page](index.md)
+
+

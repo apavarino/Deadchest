@@ -11,20 +11,22 @@ Welcome to the official documentation of Deadchest plugin. Here you will find ev
 
 ## Table of Contents
 
-- [Download](https://apavarino.github.io/Deadchest/download)
-- [Installation](https://apavarino.github.io/Deadchest/installation)
-- [How it works](https://apavarino.github.io/Deadchest/how-it-works)
-- [Plugin configuration](https://apavarino.github.io/Deadchest/configuration)
-- [Commands & Permissions](https://apavarino.github.io/Deadchest/commands-and-perms)
-- [Plugin Customization](https://apavarino.github.io/Deadchest/customization)
-- [Worldguard integration](https://apavarino.github.io/Deadchest/worldguard)
-- [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting)
-- [Deadchest API](https://apavarino.github.io/Deadchest/api)
-- [Contribution](https://apavarino.github.io/Deadchest/contribution)
+- [Download](download.md)
+- [Installation](installation.md)
+- [How it works](how-it-works.md)
+- [Plugin configuration](configuration.md)
+- [Commands & Permissions](commands-and-perms.md)
+- [Plugin Customization](customization.md)
+- [Worldguard integration](worldguard.md)
+- [Troubleshooting](troubleshooting.md)
+- [Deadchest API](api.md)
+- [Contribution](contribution.md)
 
 ## Community
 
 You can join the discord of the community [here](https://discord.com/invite/jCsvJxS) for extra help.
+
+
 
 
 

@@ -1,6 +1,6 @@
 ﻿## Deadchest - Installation
 
-Make sure you have [downloaded](https://apavarino.github.io/Deadchest/download) the plugin before reading this step.
+Make sure you have [downloaded](download.md) the plugin before reading this step.
 
 All you have to do it is to put the `DeadChest-X.X.X.jar` in the `plugins` folder and start your server.
 
@@ -14,5 +14,7 @@ if you have any error, make sure to match the requirement. If needed, you can as
 
 ### Next step
 
-See [how it works part](https://apavarino.github.io/Deadchest/how-it-works) or go
-to [home page](https://apavarino.github.io/Deadchest)
+See [how it works part](how-it-works.md) or go
+to [home page](index.md)
+
+

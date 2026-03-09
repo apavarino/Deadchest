@@ -23,5 +23,7 @@ Deadchest is build to work with Java 8+ and support the following server softwar
 
 ### Next step
 
-See [installation part](https://apavarino.github.io/Deadchest/installation) or go
-to [home page](https://apavarino.github.io/Deadchest)
+See [installation part](installation.md) or go
+to [home page](index.md)
+
+

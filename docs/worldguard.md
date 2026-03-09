@@ -30,5 +30,7 @@ Set Deadchest flags for your regions.
 
 ### Next step
 
-See [troubleshooting part](https://apavarino.github.io/Deadchest/troubleshooting) or go
-to [home page](https://apavarino.github.io/Deadchest)
+See [troubleshooting part](troubleshooting.md) or go
+to [home page](index.md)
+
+
