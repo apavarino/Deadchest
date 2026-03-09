@@ -17,7 +17,6 @@ theme:
     - navigation.instant
     - navigation.tracking
     - content.code.copy
-    - content.action.edit
     - search.suggest
     - search.highlight
   palette:
@@ -46,6 +45,8 @@ extra_css:
   - stylesheets/extra.css
 
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/apavarino/Deadchest

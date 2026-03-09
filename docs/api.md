@@ -7,19 +7,19 @@ Deadchest.
 
 Here is a list of method that you can use
 
- Command                                                               | Description                                  | Version       
------------------------------------------------------------------------|----------------------------------------------|---------------|
- `public static List<ChestData> getChests(Player player)`              | Get all chests of the given player           | since `4.6.0` 
- `public static boolean giveBackChest(Player player, ChestData chest)` | Get back the given chest to the given player | since `4.6.0` 
- `public static boolean removeChest(ChestData chest)`                  | Remove the given chest                       | since `4.7.0` 
+| Command                                                               | Description                                  | Version       |
+|-----------------------------------------------------------------------|----------------------------------------------|---------------|
+| `public static List<ChestData> getChests(Player player)`              | Get all chests of the given player           | since `4.6.0` |
+| `public static boolean giveBackChest(Player player, ChestData chest)` | Get back the given chest to the given player | since `4.6.0` |
+| `public static boolean removeChest(ChestData chest)`                  | Remove the given chest                       | since `4.7.0` |
 
 > All theses methods are in DeadchestAPI class.
 
 ### Events
 
- Command                | Description                              | Version       
-------------------------|------------------------------------------|---------------|
- `DeadchestPickUpEvent` | Triggered when a player pick a Deadchest | since `4.7.0` 
+| Command                | Description                               | Version       |
+|------------------------|-------------------------------------------|---------------|
+| `DeadchestPickUpEvent` | Triggered when a player picks a Deadchest | since `4.7.0` |
 
 ### Notes
 

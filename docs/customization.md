@@ -13,12 +13,12 @@ characters, please put your translation between quotes or you will have an error
 
 There are several variables you can use
 
- Command    | Description                                                             
-------------|-------------------------------------------------------------------------| 
- `%player%` | Write the name of the current player for `holo_owner`                   
- `%hours%`  | Write the amount of hour left before chest expires for `holo_timer`     
- `%min%`    | Write the amount of minutes left before chest expires for `holo_timer`  
- `%sec%`    | Write the amount of secondes left before chest expires for `holo_timer` 
+| Command    | Description                                                            |
+|------------|------------------------------------------------------------------------|
+| `%player%` | Write the name of the current player for `holo_owner`                  |
+| `%hours%`  | Write the amount of hour left before chest expires for `holo_timer`    |
+| `%min%`    | Write the amount of minutes left before chest expires for `holo_timer` |
+| `%sec%`    | Write the amount of seconds left before chest expires for `holo_timer` |
 
 ### Customize colors and effects
 

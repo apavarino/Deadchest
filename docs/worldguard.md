@@ -20,11 +20,11 @@ successful
 
 Set Deadchest flags for your regions.
 
- Command     | Description                                
--------------|--------------------------------------------| 
- `dc_owner`  | Owner of the region can generate chest     
- `dc_member` | Member of the region can generate chest    
- `dc_guest`  | Everyone can generate chest on this region 
+| Command     | Description                                |
+|-------------|--------------------------------------------|
+| `dc_owner`  | Owner of the region can generate chest     |
+| `dc_member` | Member of the region can generate chest    |
+| `dc_guest`  | Everyone can generate chest on this region |
 
 > If no flag is specified for a region, nobody can generate except OP.
 
