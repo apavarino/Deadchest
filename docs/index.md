@@ -13,16 +13,16 @@
 ## Explore Docs
 
 <ul class="doc-grid">
-  <li><a href="/Deadchest/download/">Download</a></li>
-  <li><a href="/Deadchest/installation/">Installation</a></li>
-  <li><a href="/Deadchest/how-it-works/">How It Works</a></li>
-  <li><a href="/Deadchest/configuration/">Configuration</a></li>
-  <li><a href="/Deadchest/commands-and-perms/">Commands and Permissions</a></li>
-  <li><a href="/Deadchest/customization/">Customization</a></li>
-  <li><a href="/Deadchest/worldguard/">WorldGuard Integration</a></li>
-  <li><a href="/Deadchest/troubleshooting/">Troubleshooting</a></li>
-  <li><a href="/Deadchest/api/">API</a></li>
-  <li><a href="/Deadchest/contribution/">Contribution</a></li>
+  <li><a href="{{ '/download/' | relative_url }}">Download</a></li>
+  <li><a href="{{ '/installation/' | relative_url }}">Installation</a></li>
+  <li><a href="{{ '/how-it-works/' | relative_url }}">How It Works</a></li>
+  <li><a href="{{ '/configuration/' | relative_url }}">Configuration</a></li>
+  <li><a href="{{ '/commands-and-perms/' | relative_url }}">Commands and Permissions</a></li>
+  <li><a href="{{ '/customization/' | relative_url }}">Customization</a></li>
+  <li><a href="{{ '/worldguard/' | relative_url }}">WorldGuard Integration</a></li>
+  <li><a href="{{ '/troubleshooting/' | relative_url }}">Troubleshooting</a></li>
+  <li><a href="{{ '/api/' | relative_url }}">API</a></li>
+  <li><a href="{{ '/contribution/' | relative_url }}">Contribution</a></li>
 </ul>
 
 ## Quick Links
