@@ -1,4 +1,10 @@
-﻿## Deadchest - Customization
+﻿---
+layout: page
+title: "Customization"
+permalink: /customization/
+---
+
+## Deadchest - Customization
 
 This section explains how to customize Deadchest
 

@@ -1,4 +1,10 @@
-﻿## Deadchest - Download
+﻿---
+layout: page
+title: "Download"
+permalink: /download/
+---
+
+## Deadchest - Download
 
 You can download the plugin here
 

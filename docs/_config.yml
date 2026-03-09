@@ -1,6 +1,26 @@
-﻿title: DeadChest
-description: DeadChest documentation for Bukkit, Spigot and Paper.
+﻿lang: en
+timezone: Europe/Paris
+
+title: DeadChest
+tagline: Official Documentation
+
+description: >-
+  Modern death chest plugin for Bukkit, Spigot, and Paper.
+
 url: "https://apavarino.github.io"
 baseurl: "/Deadchest"
-theme: jekyll-theme-cayman
-show_downloads: false
+
+theme: jekyll-theme-chirpy
+
+plugins:
+  - jekyll-include-cache
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+social:
+  name: DeadChest
+  links:
+    - https://github.com/apavarino/Deadchest

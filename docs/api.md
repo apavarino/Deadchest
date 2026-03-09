@@ -1,4 +1,10 @@
-﻿## Deadchest - API
+﻿---
+layout: page
+title: "API"
+permalink: /api/
+---
+
+## Deadchest - API
 
 Deadchest allow you to manage plugin data with an API since version `4.6.0`. This section explains how to use the API of
 Deadchest.

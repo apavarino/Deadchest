@@ -1,4 +1,10 @@
-﻿## Deadchest - Troubleshooting
+﻿---
+layout: page
+title: "Troubleshooting"
+permalink: /troubleshooting/
+---
+
+## Deadchest - Troubleshooting
 
 This section explains how to resolve most common issues that you can have with the plugin.
 
