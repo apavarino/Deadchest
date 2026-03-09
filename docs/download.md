@@ -1,29 +1,25 @@
-﻿## Deadchest - Download
+﻿## DeadChest - Download
 
-You can download the plugin here
+You can download DeadChest from the official sources below:
 
-- [Bukkit](https://dev.bukkit.org/projects/dead-chest)
-- [Curseforge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
-- [Github](https://github.com/apavarino/Deadchest) (You need to build it yourself)
+- [BukkitDev](https://dev.bukkit.org/projects/dead-chest)
+- [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
+- [GitHub](https://github.com/apavarino/Deadchest) (build from source)
 
-> If you find the plugin on another platform, please don't download it. This is not safe
+!!! warning
+Avoid downloading the plugin from unofficial mirrors.
 
-### Requirement
+### Requirements
 
-You must run Minecraft 1.13 or newer. No support is provided for older version.
+- Minecraft server version: **1.13+**
+- Java runtime: **Java 8+**
 
-Deadchest is build to work with Java 8+ and support the following server softwares
+Supported server implementations include:
 
 - Bukkit
 - Spigot
-- PaperMC
+- Paper
 - Tuinity
 - Purpur
-- And all server based on Bukkit/Spigot
-
-### Next step
-
-See [installation part](installation.md) or go
-to [home page](index.md)
-
+- Most Bukkit/Spigot derivatives
 

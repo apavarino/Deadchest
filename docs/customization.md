@@ -1,47 +1,93 @@
-﻿## Deadchest - Customization
+﻿## DeadChest - Customization
 
-This section explains how to customize Deadchest
+This section explains how to customize DeadChest with the current configuration system.
 
-On your `plugins` folder you will find a file named `locale.yml`. You can edit this file to change any translation of
-the plugin or change any color. You can change messages that are displayed in the chat and also also customize holograms
-of deadchests.
+### What can be customized
 
-### Text edition
+You can customize:
 
-If you want to change any translation, just update the text and put what you want. If you need to put some special
-characters, please put your translation between quotes or you will have an error on server startup.
+- Language and messages (localization JSON files)
+- Visual effects around chests
+- Pickup animation particles
+- Pickup sound
 
-There are several variables you can use
+Most visual/audio settings are in `config.yml` under `visuals.*`.
 
-| Command    | Description                                                            |
-|------------|------------------------------------------------------------------------|
-| `%player%` | Write the name of the current player for `holo_owner`                  |
-| `%hours%`  | Write the amount of hour left before chest expires for `holo_timer`    |
-| `%min%`    | Write the amount of minutes left before chest expires for `holo_timer` |
-| `%sec%`    | Write the amount of seconds left before chest expires for `holo_timer` |
+### Localization files
 
-### Customize colors and effects
+DeadChest uses JSON localization files located in:
 
-As you can see, there is some special chracters with the text. This is to handle colors. Here is an image to illustrate
-how it works.
+`plugins/DeadChest/localization/`
 
-<div  align="center">
-    <img src="https://hypixel.net/attachments/2694189" alt="Colors Code" width="600" /><br>
-</div>
+Examples of bundled languages:
 
-> You need to use `§` instead of `&`
->
-> Example : I want to have `Hello !` with  `Hel` in blue and `lo !` in red I will write `§1Hel§4lo !`
+- `en.json`
+- `fr.json`
+- `es.json`
+- `de.json`
+- `pt-br.json`
+- `pl.json`
+- `it.json`
+- `zh-cn.json`
 
-### Customize Holograms
+Select active language in `config.yml`:
 
-All translations are prefixed by `loc` or `holo`. The first prefix is for chat text, the second one is for hologram
+```yaml
+localization:
+  language: en
+```
 
-If you want to edit the timer, you need to update `holo_timer`. To edit the owner part, you have to edit `holo_owner`
+### Placeholders in messages
 
-### Next step
+Current placeholders use indexed format:
 
-See [worldguard part](worldguard.md) or go
-to [home page](index.md)
+- `{0}`
+- `{1}`
+- `{2}`
 
+Example:
+
+```json
+"commands.list.title.player": "DeadChests of {0}"
+```
+
+### Colors and formatting
+
+Minecraft formatting codes are supported in localization strings.
+
+- Use `§` codes in text if needed.
+- Keep valid JSON syntax (quotes, commas, escaping).
+
+### Legacy migration note
+
+If you used old `locale.yml`, DeadChest migrates it automatically to `localization/en.json` on startup and archives the
+legacy file.
+
+### Visual customization (config.yml)
+
+You can tune visuals in these sections:
+
+- `visuals.effect-animation.*`
+- `visuals.pickup-animation.*`
+- `visuals.sound.pickup.*`
+
+Quick reference:
+
+| Key                                 | Description                             |
+|-------------------------------------|-----------------------------------------|
+| `visuals.effect-animation.style`    | Orbit style (`soul`, `flame`, `ender`). |
+| `visuals.effect-animation.radius`   | Orbit radius around chest.              |
+| `visuals.effect-animation.speed`    | Orbit speed multiplier.                 |
+| `visuals.pickup-animation.particle` | Particle used on pickup.                |
+| `visuals.pickup-animation.count`    | Number of particles.                    |
+| `visuals.sound.pickup.name`         | Bukkit sound played on pickup.          |
+| `visuals.sound.pickup.volume`       | Pickup sound volume.                    |
+| `visuals.sound.pickup.pitch`        | Pickup sound pitch.                     |
+
+For full option list, see [configuration](configuration.md).
+
+### Apply changes
+
+- Run `/dc reload` after editing `config.yml` or localization files.
+- Validate server logs if a JSON formatting error occurs.
 

@@ -1,71 +1,57 @@
-﻿## Deadchest - How it works ?
+﻿## DeadChest - How It Works
 
-This section describes the behavior of the plugin on different situations.
+This page explains how DeadChest behaves in common gameplay situations.
 
-### Default behaviour
+### Default behavior
 
-When a player dies. A chest is generated at the exact location where the player dies. This chest is by default locked to
-be only openable by the owner. At the top of the chest an hologram is generated with the name of the owner and the time
-remaining before the chest disappears.
+When a player dies, DeadChest creates a protected chest at a suitable location near the death point.
+By default:
 
-> All is configurable, see [configuration part](configuration.md) for more
-> information.
+- chest access is owner-only
+- a hologram shows owner and remaining time
+- the chest expires after configured timeout (unless infinite)
 
-Items on the chest can be collect by just left clicking on it. There is no space limitation the chest can store all of
-your stuff in all situation.
+All behavior is configurable in [configuration](configuration.md).
 
-The plugin will **NEVER replace or destroy any solid block** of your world. An algorithm will look for the most suitable
-location depending on the situation
+### Chest placement rules
 
-### Nether / End / Customs world
+DeadChest never intentionally replaces solid blocks. If the exact death block is invalid, it searches for the nearest
+valid location.
 
-Deadchest works on every type of world. The behaviour is the same everywhere.
+#### Overworld, Nether, End, custom worlds
 
-### Falling out of the world
+The same placement logic is used in all worlds.
 
-If a player dies under the map, Deadchest is generated to the lowest possible height corresponding to the dying
-position. In other words, the plugin will generate the chest at the X and Y coordinates where the player died. For the Z
-axis, the plugin will take the lowest possible location
+#### Death below the world
 
-### Dying higher than the top of world
+DeadChest clamps to the lowest valid height for that world at the same horizontal position.
 
-This is exactly the same logic than dying under the world expect that will take the highest Z value for chest
-generation.
+#### Death above world max height
 
-### Dying on block / Trap / Door / Torch / Rail etc...
+DeadChest clamps to the highest valid height for that world at the same horizontal position.
 
-On this situation this is not possible to generated a chest on the block where the player dies without destroying block.
-For this reason the plugin will search for the next free space at the same X et Y by increasing Z value. For exemple if
-you dies on the door of your house. Your deadchest will be probably generated on your roof.
+#### Death on non-placeable spots (doors, rails, torches, etc.)
 
-> One may wonder why it is not generated right next to it. A malicious player could block access to the door by dying
-> voluntarily. If the chest is protected to be opened only by the owner, the other player will be stuck.
+If the exact block cannot host a chest, DeadChest searches for the next valid free space.
 
-### Water and lava
+### Water and lava deaths
 
-The chest will be generate at the dying position.
+DeadChest can generate in these environments if enabled:
 
-> In a future update some options will be added to handle differently the generation for water and lava
+- `generation.allow-on-water`
+- `generation.allow-on-lava`
 
-### Curse of vanishing
+### Item handling
 
-Items with enchantement curse of vanishing are not pushed to Deadchest to keep the balance of the game.
+- Items with Curse of Vanishing are not stored.
+- Retrieval behavior depends on `chest.recovery-mode`.
 
-### Grief protection
+### Protection and anti-grief behavior
 
-The plugin provides a high security against griefer. By default, all deadchests are protected to be only open by his
-owner. The chest cannot be destroyed moved or opened by other players. Deadchest cannot be destroyed by any type of
-explosion, cannot be pushed by a piston and cannot be merged with another chest. If you are using player head as
-Deadchest, it is protect by water destruction also.
+Depending on config, DeadChests are protected against unauthorized access and destruction.
+This includes owner checks and block protection logic.
 
-### Performances
+### Performance model
 
-Plugin is designed to handle big server with lot of players and lot of Deadchests at the same time. Many work is pushed
-to keep great performances. Deadchest only work on loaded chunk to prevent any performance drop.
-
-### Next step
-
-See [configuration part](configuration.md) or go
-to [home page](index.md)
-
+DeadChest is designed for active servers and focuses work on loaded areas/chunks to limit overhead.
 

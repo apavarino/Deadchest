@@ -1,33 +1,27 @@
-﻿## Deadchest - API
+﻿## DeadChest - API
 
-Deadchest allow you to manage plugin data with an API since version `4.6.0`. This section explains how to use the API of
-Deadchest.
+DeadChest exposes a public API for integrations.
+
+### API class
+
+Use static methods from `DeadChestAPI`.
 
 ### Methods
 
-Here is a list of method that you can use
-
-| Command                                                               | Description                                  | Version       |
-|-----------------------------------------------------------------------|----------------------------------------------|---------------|
-| `public static List<ChestData> getChests(Player player)`              | Get all chests of the given player           | since `4.6.0` |
-| `public static boolean giveBackChest(Player player, ChestData chest)` | Get back the given chest to the given player | since `4.6.0` |
-| `public static boolean removeChest(ChestData chest)`                  | Remove the given chest                       | since `4.7.0` |
-
-> All theses methods are in DeadchestAPI class.
+| Method                                                                | Description                                         | Available since |
+|-----------------------------------------------------------------------|-----------------------------------------------------|-----------------|
+| `public static List<ChestData> getChests(Player player)`              | Return all known DeadChests for a player.           | `4.6.0`         |
+| `public static boolean giveBackChest(Player player, ChestData chest)` | Give back one specific chest inventory to a player. | `4.6.0`         |
+| `public static boolean removeChest(ChestData chest)`                  | Remove a specific chest from world/storage.         | `4.7.0`         |
 
 ### Events
 
-| Command                | Description                               | Version       |
-|------------------------|-------------------------------------------|---------------|
-| `DeadchestPickUpEvent` | Triggered when a player picks a Deadchest | since `4.7.0` |
+| Event                  | Description                                      | Available since |
+|------------------------|--------------------------------------------------|-----------------|
+| `DeadchestPickUpEvent` | Fired when a player picks up/claims a DeadChest. | `4.7.0`         |
 
 ### Notes
 
-If you are a developer and you need more tools from Deadchest to work with. Contact me on Discord.
-
-### Next step
-
-See [contribution part](contribution.md) or go
-to [home page](index.md)
-
+- Use null checks and online/offline checks for player-dependent operations.
+- Review behavior on full inventories depending on configured recovery mode.
 

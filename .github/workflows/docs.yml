@@ -43,5 +43,5 @@ jobs:
 
       - name: Deploy versions with mike
         run: |
-          mike deploy --push --update-aliases 4.x latest
+          mike deploy --push --update-aliases 5.x latest
           mike set-default --push latest

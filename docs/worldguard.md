@@ -1,36 +1,67 @@
-﻿## Deadchest - Worldguard Integration
+﻿## DeadChest - WorldGuard Integration
 
-Deadchest allow you to manage permission to generate chest with the region system of **WorldGuard**.
-This section explains how configure Deadchest with Worldguard.
+DeadChest can use WorldGuard regions to control where a DeadChest may be generated.
 
-### Prerequisite
+### Prerequisites
 
-First of all, be sure to have Deadchest version `4.3.0` or higher.
+- DeadChest installed and running
+- WorldGuard installed
+- Integration enabled in `config.yml`
 
-### Update configuration
+### Enable integration
 
-Open the file `config.yml` of Deadchest and set : `EnableWorldGuardDetection: true`
+Set the following keys in `config.yml`:
 
-### Verify that Worldguard support is working
+```yaml
+integrations:
+  worldguard:
+    enabled: true
+    default-allow: false
+```
 
-Start/restart your server. Deadchest will display a message on the console to tell you if the worldguard detection was
-successful
+- `enabled`: activates WorldGuard checks.
+- `default-allow`: fallback when no explicit DeadChest flag result applies.
 
-### Manage flag
+### DeadChest WorldGuard flags
 
-Set Deadchest flags for your regions.
+DeadChest registers these custom region flags:
 
-| Command     | Description                                |
-|-------------|--------------------------------------------|
-| `dc_owner`  | Owner of the region can generate chest     |
-| `dc_member` | Member of the region can generate chest    |
-| `dc_guest`  | Everyone can generate chest on this region |
+| Flag        | Meaning                                              |
+|-------------|------------------------------------------------------|
+| `dc-owner`  | Region owners can generate DeadChest in the region.  |
+| `dc-member` | Region members can generate DeadChest in the region. |
+| `dc-guest`  | Any player can generate DeadChest in the region.     |
 
-> If no flag is specified for a region, nobody can generate except OP.
+### How flags are evaluated
 
-### Next step
+At death location, DeadChest checks regions and applies logic in this order:
 
-See [troubleshooting part](troubleshooting.md) or go
-to [home page](index.md)
+1. If `dc-owner=allow` and player is owner -> allow.
+2. If `dc-member=allow` and player is member -> allow.
+3. If owner/member flags explicitly deny -> deny.
+4. If `dc-guest=allow` -> allow.
+5. If `dc-guest=deny` -> deny.
+6. Otherwise fallback to `integrations.worldguard.default-allow`.
 
+### Example commands (WorldGuard)
+
+Command syntax may vary slightly by WorldGuard version, but typically:
+
+```text
+/rg flag <region> dc-owner allow
+/rg flag <region> dc-member allow
+/rg flag <region> dc-guest deny
+```
+
+### Verify integration
+
+- Restart/reload server.
+- Check console logs for WorldGuard detection and flag behavior.
+- Test player deaths in and out of flagged regions.
+
+### Troubleshooting
+
+- If no custom flags appear, ensure WorldGuard is loaded before DeadChest check happens.
+- If behavior seems global, verify the exact region at death location.
+- If unsure, temporarily set `default-allow: true` to compare behavior.
 

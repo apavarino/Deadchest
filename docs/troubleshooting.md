@@ -1,23 +1,47 @@
-﻿## Deadchest - Troubleshooting
+﻿## DeadChest - Troubleshooting
 
-This section explains how to resolve most common issues that you can have with the plugin.
+This page covers common issues and quick fixes.
 
-### Hologram remains
+### Ghost/leftover hologram
 
-Type `/dc repair` next the the hologram you want to remove. You need to have enough permission on the server. If that
-doesn't work try this command
+Use:
 
+```text
+/dc repair
 ```
-/minecraft:kill @e[sort=nearest,limit=1,type=minecraft:armor_stand]
+
+If needed, use the force variant:
+
+```text
+/dc repair force
 ```
 
-### Plugin don't work after update
+You need admin permission (`deadchest.admin`) for repair commands.
 
-You must remove your deadchest folder `plugins/deadchest` to do the update. Be sure that there is no active deadchest in
-your server before. You can remove active deadchests with `/dc removeall` command
+### DeadChest not behaving as expected after update
 
-### Next step
+1. Check your server version and Java version match plugin requirements.
+2. Run `/dc reload` after config changes.
+3. Verify `config.yml` was migrated correctly to schema version `2`.
+4. Check startup logs for localization/config parsing warnings.
 
-See [api part](api.md) or go to [home page](index.md)
+!!! note
+Avoid deleting plugin data unless you know the impact on active chests.
 
+### Commands not working
+
+- Ensure command is `/dc ...`
+- Verify required permissions for your user/group
+- Check `permissions.require-*` settings in config
+
+### WorldGuard behavior is incorrect
+
+- Ensure `integrations.worldguard.enabled: true`
+- Verify region flags (`dc-owner`, `dc-member`, `dc-guest`)
+- Check `integrations.worldguard.default-allow`
+
+### Need more help
+
+- Share startup logs and relevant config sections when asking for support.
+- Join Discord support from the home page links.
 
