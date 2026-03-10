@@ -3,73 +3,80 @@
 </h1>
 
 <h2  align="center">
-    <img src="http://cf.way2muchnoise.eu/full_322882_downloads.svg" alt="download"/> 
-    <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="licence"/>
+    <img src="https://cf.way2muchnoise.eu/full_322882_downloads.svg" alt="Downloads"/> 
     <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="commit"/>
+    <a href="https://github.com/apavarino/deadchest/actions/workflows/ci.yml"><img src="https://github.com/apavarino/deadchest/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
+    <a href="https://apavarino.github.io/Deadchest/"><img src="https://img.shields.io/badge/docs-online-blue" alt="Docs"/></a>
+    <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="License"/>
 </h2>
 
+DeadChest keeps a player's inventory in a chest when they die.
 
-**Keep your inventory in a chest when you die !**
+It is designed for Minecraft Java Edition servers and primarily targets Bukkit, Spigot, and Paper.
 
-Java Edition required. Deadchest is mainly compatible with Bukkit, Spigot and Paper.
+## Features
+
+- Store a player's inventory in a chest on death instead of dropping items on the ground
+- Support modern Bukkit-based server software including Paper, Spigot, and Purpur
+- Provide admin tools to inspect, remove, repair, and give back DeadChests
+- Offer configurable behavior, localization, and optional integrations such as WorldGuard
+- Include an API and automated tests for safer maintenance and extensions
+
+## Compatibility
+
+- Minecraft Java Edition
+- Bukkit API `1.13+`
+- Supported server software: Bukkit, Spigot, Paper, Purpur, Tuinity, and similar forks
 
 ## Download
 
-* [Curseforge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
-* [Bukkit](https://dev.bukkit.org/projects/dead-chest)
+- [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
+- [Bukkit](https://dev.bukkit.org/projects/dead-chest)
+
+## Quick Start
+
+1. Download the latest DeadChest JAR.
+2. Place it in your server's `plugins/` directory.
+3. Start the server and confirm that DeadChest is enabled in the console.
+4. Adjust the generated configuration files if needed.
+
+Expected startup log:
+
+```text
+[DeadChest] Enabling DeadChest vX.X.X
+```
 
 ## Documentation
 
-Official Deadchest Documentation is available [here](https://apavarino.github.io/Deadchest/)
+The official documentation is available at [apavarino.github.io/Deadchest](https://apavarino.github.io/Deadchest/).
+
+Useful pages:
+
+- [Installation](https://apavarino.github.io/Deadchest/installation/)
+- [Configuration](https://apavarino.github.io/Deadchest/configuration/)
+- [Commands and Permissions](https://apavarino.github.io/Deadchest/commands-and-perms/)
+- [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting/)
 
 ## Statistics
 
 <img align="center" src="https://bstats.org/signatures/bukkit/Deadchest.svg" alt="stats"/> 
 
-More stats [here](https://bstats.org/plugin/bukkit/DeadChest/11385)
+More statistics are available on [bStats](https://bstats.org/plugin/bukkit/DeadChest/11385).
 
-## Contribution
+## Commands
 
-Feel free to contribute to the project if you want it. here is some information to help you
+The main command is `/dc`.
 
-The project is built with Gradle. Use the included gradle wrapper to build the project.
+Common examples:
 
-### Build
+- `/dc reload`
+- `/dc list`
+- `/dc remove`
+- `/dc giveback <player>`
 
-To build the project on linux/macOS, from the root folder of the project type
+The full command list and permission nodes are
+documented [here](https://apavarino.github.io/Deadchest/commands-and-perms/).
 
-```
-./gradlew build
-```
+## Contributing
 
-On Windows
-
-```
-gradlew.bat build
-```
-
-### Generate jar
-
-To generate the .jar file use
-
-```
-./gradlew shadowJar
-```
-
-The jar file will be generated on `/build/libs`
-
-### Testing
-
-To simplify testing of the plugin you can configure on your `gradle.properties` the following configuration
-
-```
-pluginDir=<path_to_your_plugin_folder_of_your_server>
-```
-
-After that, you can use
-
-```
-./gradlew copyJar --continuous
-```
-
-That will automatically rebuild the jar on each modification and copy it directly to the plugin folder of your server.
+Development and contribution guidelines are available in [CONTRIBUTING.md](CONTRIBUTING.md).
