@@ -52,3 +52,5 @@ hs_err_pid*
 /deadchest-plugin/build/
 /.venv/
 /site/
+/.gradle-ci/
+/.kotlin/
