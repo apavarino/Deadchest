@@ -12,7 +12,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -637,23 +639,65 @@ public class DeadChestUpdater {
      * @return true if Updater should consider the remote version an update, false if not.
      */
     public boolean shouldUpdate(String localVersion, String remoteVersion) {
-        int localVersionInt = Integer.parseInt(localVersion.replace(".", ""));
-        int remoteVersionInt = Integer.parseInt(remoteVersion.replace(".", ""));
+        List<Integer> localParts = parseVersionParts(localVersion);
+        List<Integer> remoteParts = parseVersionParts(remoteVersion);
+        int majorComparison = Integer.compare(localParts.get(0), remoteParts.get(0));
+        int versionComparison = compareVersionParts(localParts, remoteParts);
 
-        if (localVersion.charAt(0) < remoteVersion.charAt(0)) {
+        if (majorComparison < 0) {
             this.plugin.getLogger().warning("New major version (" + remoteVersion + ") is available for " + this.plugin.getName());
             this.plugin.getLogger().warning("To prevent any breaking change, this update is not downloaded automatically");
             this.plugin.getLogger().warning("Please download it manually on Bukkit/Spigot");
             return false;
-        } else if (localVersionInt > remoteVersionInt) {
+        } else if (versionComparison > 0) {
             this.plugin.getLogger().warning("-------------------");
             this.plugin.getLogger().warning("This version (" + localVersion + ") of " + this.plugin.getName() + " is not released yet");
             this.plugin.getLogger().warning("Auto update is disabled");
             this.plugin.getLogger().warning("-------------------");
             return false;
         } else {
-            return !localVersion.equalsIgnoreCase(remoteVersion);
+            return versionComparison < 0;
         }
+    }
+
+    static List<Integer> parseVersionParts(String version) {
+        String[] rawParts = version.split("[.-]");
+        List<Integer> parts = new ArrayList<>();
+        for (String rawPart : rawParts) {
+            if (rawPart.isEmpty()) {
+                continue;
+            }
+
+            int end = 0;
+            while (end < rawPart.length() && Character.isDigit(rawPart.charAt(end))) {
+                end++;
+            }
+
+            if (end == 0) {
+                continue;
+            }
+
+            parts.add(Integer.parseInt(rawPart.substring(0, end)));
+        }
+
+        if (parts.isEmpty()) {
+            throw new IllegalArgumentException("Invalid version: " + version);
+        }
+
+        return parts;
+    }
+
+    static int compareVersionParts(List<Integer> left, List<Integer> right) {
+        int maxSize = Math.max(left.size(), right.size());
+        for (int i = 0; i < maxSize; i++) {
+            int leftPart = i < left.size() ? left.get(i) : 0;
+            int rightPart = i < right.size() ? right.get(i) : 0;
+            int comparison = Integer.compare(leftPart, rightPart);
+            if (comparison != 0) {
+                return comparison;
+            }
+        }
+        return 0;
     }
 
     /**
