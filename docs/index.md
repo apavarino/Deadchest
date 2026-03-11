@@ -25,4 +25,5 @@
 
 - [Discord support](https://discord.com/invite/jCsvJxS)
 - [GitHub repository](https://github.com/apavarino/Deadchest)
+- [Modrinth page](https://modrinth.com/plugin/dead-chest)
 - [Bukkit page](https://dev.bukkit.org/projects/dead-chest)

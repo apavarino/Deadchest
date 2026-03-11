@@ -2,6 +2,7 @@
 
 You can download DeadChest from the official sources below:
 
+- [Modrinth](https://modrinth.com/plugin/dead-chest)
 - [BukkitDev](https://dev.bukkit.org/projects/dead-chest)
 - [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
 - [GitHub](https://github.com/apavarino/Deadchest) (build from source)

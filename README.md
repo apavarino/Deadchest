@@ -4,6 +4,7 @@
 
 <h2  align="center">
     <img src="https://cf.way2muchnoise.eu/full_322882_downloads.svg" alt="Downloads"/> 
+    <a href="https://modrinth.com/plugin/dead-chest"><img src="https://img.shields.io/modrinth/dt/dead-chest?logo=modrinth&label=Modrinth%20downloads" alt="Modrinth Downloads"/></a>
     <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="commit"/>
     <a href="https://github.com/apavarino/deadchest/actions/workflows/ci.yml"><img src="https://github.com/apavarino/deadchest/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
     <a href="https://apavarino.github.io/Deadchest/"><img src="https://img.shields.io/badge/docs-online-blue" alt="Docs"/></a>
@@ -30,6 +31,7 @@ It is designed for Minecraft Java Edition servers and primarily targets Bukkit, 
 
 ## Download
 
+- [Modrinth](https://modrinth.com/plugin/dead-chest)
 - [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/dead-chest)
 - [Bukkit](https://dev.bukkit.org/projects/dead-chest)
 
