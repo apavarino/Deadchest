@@ -50,7 +50,7 @@ Expected startup log:
 
 ## Documentation
 
-The official documentation is available at [apavarino.github.io/Deadchest](https://stellionix.github.io/Deadchest/).
+The official documentation is available at [stellionix.github.io/Deadchest](https://stellionix.github.io/Deadchest/).
 
 Useful pages:
 
