@@ -7,7 +7,7 @@
     <a href="https://modrinth.com/plugin/dead-chest"><img src="https://img.shields.io/modrinth/dt/dead-chest?logo=modrinth&label=Modrinth%20downloads" alt="Modrinth Downloads"/></a>
     <img src="https://img.shields.io/github/last-commit/apavarino/deadchest" alt="commit"/>
     <a href="https://github.com/apavarino/deadchest/actions/workflows/ci.yml"><img src="https://github.com/apavarino/deadchest/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
-    <a href="https://apavarino.github.io/Deadchest/"><img src="https://img.shields.io/badge/docs-online-blue" alt="Docs"/></a>
+    <a href="https://stellionix.github.io/Deadchest/"><img src="https://img.shields.io/badge/docs-online-blue" alt="Docs"/></a>
     <img src="https://img.shields.io/github/license/apavarino/deadchest" alt="License"/>
 </h2>
 
@@ -50,14 +50,14 @@ Expected startup log:
 
 ## Documentation
 
-The official documentation is available at [apavarino.github.io/Deadchest](https://apavarino.github.io/Deadchest/).
+The official documentation is available at [apavarino.github.io/Deadchest](https://stellionix.github.io/Deadchest/).
 
 Useful pages:
 
-- [Installation](https://apavarino.github.io/Deadchest/installation/)
-- [Configuration](https://apavarino.github.io/Deadchest/configuration/)
-- [Commands and Permissions](https://apavarino.github.io/Deadchest/commands-and-perms/)
-- [Troubleshooting](https://apavarino.github.io/Deadchest/troubleshooting/)
+- [Installation](https://stellionix.github.io/Deadchest/installation/)
+- [Configuration](https://stellionix.github.io/Deadchest/configuration/)
+- [Commands and Permissions](https://stellionix.github.io/Deadchest/commands-and-perms/)
+- [Troubleshooting](https://stellionix.github.io/Deadchest/troubleshooting/)
 
 ## Statistics
 
@@ -77,7 +77,7 @@ Common examples:
 - `/dc giveback <player>`
 
 The full command list and permission nodes are
-documented [here](https://apavarino.github.io/Deadchest/commands-and-perms/).
+documented [here](https://stellionix.github.io/Deadchest/commands-and-perms/).
 
 ## Contributing
 
