@@ -77,7 +77,7 @@ Common examples:
 - `/dc giveback <player>`
 
 The full command list and permission nodes are
-documented [here](https://stellionix.github.io/Deadchest/lastest/commands-and-perms/).
+documented [here](https://stellionix.github.io/Deadchest/latest/commands-and-perms/).
 
 ## Contributing
 
