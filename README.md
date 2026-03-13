@@ -54,10 +54,10 @@ The official documentation is available at [stellionix.github.io/Deadchest](http
 
 Useful pages:
 
-- [Installation](https://stellionix.github.io/Deadchest/installation/)
-- [Configuration](https://stellionix.github.io/Deadchest/configuration/)
-- [Commands and Permissions](https://stellionix.github.io/Deadchest/commands-and-perms/)
-- [Troubleshooting](https://stellionix.github.io/Deadchest/troubleshooting/)
+- [Installation](https://stellionix.github.io/Deadchest/latest/installation/)
+- [Configuration](https://stellionix.github.io/Deadchest/latest/configuration/)
+- [Commands and Permissions](https://stellionix.github.io/Deadchest/latest/commands-and-perms/)
+- [Troubleshooting](https://stellionix.github.io/Deadchest/latest/troubleshooting/)
 
 ## Statistics
 
