@@ -4,11 +4,12 @@
   <p>Modern death-chest plugin for Bukkit ecosystems: Spigot, Paper, Purpur, Tuinity, and more. This documentation covers setup, configuration, integrations, and API usage.</p>
 </div>
 
-![DeadChest](assets/images/deadchest-logo.png)
+![DeadChest](assets/images/deadchest-logo.png){ .home-logo }
 
 ### Compatibility
 
-<div align="center">
+<div class="compat-badges">
+  <img alt="Folia" src="https://img.shields.io/badge/Folia-supported-14b8a6?style=for-the-badge" />
   <img alt="Paper" src="https://img.shields.io/badge/Paper-supported-22c55e?style=for-the-badge" />
   <img alt="Spigot" src="https://img.shields.io/badge/Spigot-supported-f59e0b?style=for-the-badge" />
   <img alt="Purpur" src="https://img.shields.io/badge/Purpur-supported-06b6d4?style=for-the-badge" />

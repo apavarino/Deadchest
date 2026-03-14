@@ -30,6 +30,14 @@ tasks.register("copyJar", Copy::class) {
     into(pluginDir)
 }
 
+tasks.processResources {
+    val pluginVersion = project.version.toString()
+    inputs.property("pluginVersion", pluginVersion)
+    filesMatching("plugin.yml") {
+        expand("pluginVersion" to pluginVersion)
+    }
+}
+
 repositories {
     mavenCentral()
     gradlePluginPortal()
@@ -56,7 +64,7 @@ tasks.named<Test>("test") {
 
 tasks.withType<ShadowJar> {
     relocate("org.bstats", "me.crylonz.deadchest")
-    archiveFileName.set("dead-chest-SNAPSHOT.jar")
+    archiveFileName.set("dead-chest-${project.version}.jar")
 }
 
 val spaceUsername: String by project
@@ -65,9 +73,9 @@ val spacePassword: String by project
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "me.crylonz.deadchest"
+            groupId = project.group.toString()
             artifactId = "dead-chest"
-            version = "4.23.0-SNAPSHOT"
+            version = project.version.toString()
             from(components["java"])
         }
     }
