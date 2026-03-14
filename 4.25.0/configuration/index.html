@@ -1580,10 +1580,18 @@ After any change, run <code>/dc reload</code>.</p>
 <td><code>filters.ignored-items</code></td>
 <td>list<string></td>
 <td>Example values</td>
-<td>Items ignored by DeadChest processing (not stored and not removed).</td>
+<td>Items ignored by DeadChest storage; they keep vanilla death behavior.</td>
 </tr>
 </tbody>
 </table>
+<p><code>filters.ignored-items</code> and <code>/dc ignore</code> use the same source of truth:</p>
+<ul>
+<li><code>filters.ignored-items</code> is the canonical list in <code>config.yml</code>.</li>
+<li><code>/dc ignore</code> edits that same list through a GUI.</li>
+<li>A rule can be either a Bukkit <code>Material</code> name or a serialized <code>ItemStack</code>.</li>
+<li>Serialized <code>ItemStack</code> rules preserve custom meta and are written automatically by <code>/dc ignore</code>.</li>
+<li>Ignored items are not saved in a DeadChest and are left to vanilla death handling or other plugins.</li>
+</ul>
 <h3 id="permission-reference">Permission reference</h3>
 <ul>
 <li><code>deadchest.admin</code>: admin commands (<code>reload</code>, <code>repair</code>, <code>removeall</code>, <code>removeinfinite</code>, <code>ignore</code>)</li>

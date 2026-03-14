@@ -877,7 +877,7 @@
 <tr>
 <td><code>/dc ignore</code></td>
 <td><code>deadchest.admin</code></td>
-<td>Open the ignore-items GUI/list.</td>
+<td>Open the ignore-items GUI/list backed by <code>filters.ignored-items</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -939,6 +939,13 @@
 <li><code>permissions.require-generate</code>: require <code>deadchest.generate</code> for chest generation.</li>
 <li><code>permissions.require-claim</code>: require <code>deadchest.get</code> for claiming chests.</li>
 <li><code>permissions.require-list-own</code>: require <code>deadchest.list.own</code> for <code>/dc list</code>.</li>
+</ul>
+<p><code>/dc ignore</code> edits <code>filters.ignored-items</code> from <code>config.yml</code> directly:</p>
+<ul>
+<li><code>filters.ignored-items</code> ignores by <code>Material</code> name.</li>
+<li><code>/dc ignore</code> updates the same YAML list through a GUI.</li>
+<li>Custom items are stored there as serialized <code>ItemStack</code> entries, including item meta.</li>
+<li>Ignored items are skipped by DeadChest storage and keep their default death behavior.</li>
 </ul>
 
 
