@@ -118,10 +118,28 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
         int count = 0;
         final InMemoryChestStore chestDataCache = getChestDataCache();
         final Map<Location, ChestData> chestDataList = chestDataCache.getAllChestData();
+        final Player targetPlayer = Bukkit.getPlayer(playerName);
 
         if (chestDataList != null && !chestDataList.isEmpty()) {
-            for (ChestData chestData : chestDataList.values()) {
-                if (chestData != null && chestData.getPlayerName().equalsIgnoreCase(playerName)) {
+            if (targetPlayer != null) {
+                final Collection<Location> playerChestLocations = chestDataCache.getPlayerLinkedData(targetPlayer);
+                if (playerChestLocations != null) {
+                    for (Location chestLocation : playerChestLocations) {
+                        ChestData chestData = chestDataCache.getChestData(chestLocation);
+                        if (chestData == null) {
+                            continue;
+                        }
+
+                        getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
+                        count++;
+                    }
+                }
+            } else {
+                for (ChestData chestData : chestDataList.values()) {
+                    if (chestData == null || !chestData.getPlayerName().equalsIgnoreCase(playerName)) {
+                        continue;
+                    }
+
                     getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
                     count++;
                 }
@@ -230,6 +248,9 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                 }
 
                 targetPlayer = Bukkit.getPlayer(data.getPlayerUUID());
+                if (targetPlayer == null) {
+                    targetPlayer = Bukkit.getPlayerExact(data.getPlayerName());
+                }
                 if (targetPlayer != null && player != null && player.isOnline()) {
                     final Player finalTargetPlayer = targetPlayer;
                     getSchedulerAdapter().executeForEntity(finalTargetPlayer, () -> {

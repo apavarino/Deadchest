@@ -87,6 +87,24 @@ public class DCCommandRegistrationServiceTest {
         assertEquals(Material.AIR, target.getWorld().getBlockAt(chestData.getChestLocation()).getType());
     }
 
+    @Test
+    public void registerRemoveOtherClassicRemovesTrackedChestForOnlineTargetPlayer() {
+        PlayerMock admin = server.addPlayer("Admin");
+        PlayerMock target = server.addPlayer("Steve");
+        admin.addAttachment(MockBukkit.createMockPlugin(), Permission.REMOVE_OTHER.label, true);
+
+        ChestData chestData = chestDataAt(41, target);
+        DeadChestLoader.getChestDataCache().addChestData(chestData);
+        target.getWorld().getBlockAt(chestData.getChestLocation()).setType(Material.CHEST);
+
+        service.register(admin, new String[]{"remove", target.getName()});
+        service.registerRemoveOther();
+
+        assertTrue(service.isCommandSucceed());
+        assertNull(DeadChestLoader.getChestDataCache().getChestData(chestData.getChestLocation()));
+        assertEquals(Material.AIR, target.getWorld().getBlockAt(chestData.getChestLocation()).getType());
+    }
+
     private ChestData chestDataAt(int x, PlayerMock player) {
         UUID timerId = UUID.nameUUIDFromBytes(("timer-" + x).getBytes());
         UUID ownerId = UUID.nameUUIDFromBytes(("owner-" + x).getBytes());
