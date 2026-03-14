@@ -23,4 +23,5 @@ Supported server implementations include:
 - Tuinity
 - Purpur
 - Most Bukkit/Spigot derivatives
+- Folia
 
