@@ -106,6 +106,55 @@
   border-radius: .9rem;
 }
 
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--md-default-fg-color), transparent 88%);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+[data-md-color-scheme="default"] .md-typeset .admonition.note,
+[data-md-color-scheme="default"] .md-typeset details.note {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.03));
+}
+
+[data-md-color-scheme="default"] .md-typeset .admonition.warning,
+[data-md-color-scheme="default"] .md-typeset details.warning {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.04));
+}
+
+[data-md-color-scheme="default"] .md-typeset .admonition.info,
+[data-md-color-scheme="default"] .md-typeset details.info {
+  background: linear-gradient(180deg, rgba(20, 184, 166, 0.1), rgba(20, 184, 166, 0.04));
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition,
+[data-md-color-scheme="slate"] .md-typeset details {
+  box-shadow: none;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.note,
+[data-md-color-scheme="slate"] .md-typeset details.note {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.16), rgba(15, 23, 42, 0.2));
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.warning,
+[data-md-color-scheme="slate"] .md-typeset details.warning {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.16), rgba(15, 23, 42, 0.2));
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.info,
+[data-md-color-scheme="slate"] .md-typeset details.info {
+  background: linear-gradient(180deg, rgba(20, 184, 166, 0.16), rgba(15, 23, 42, 0.2));
+}
+
 @media (max-width: 760px) {
   .hero {
     padding: 0.9rem 1rem;
@@ -140,6 +189,11 @@
 
   .md-typeset h1 {
     margin-bottom: 0.7rem;
+  }
+
+  .md-typeset .admonition,
+  .md-typeset details {
+    border-radius: 0.8rem;
   }
 }
 
