@@ -66,10 +66,6 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                 if (armorStand.hasMetadata("deadchest") || forced) {
                     holoRemoved++;
                     entity.remove();
-                } else if (armorStand.getCustomName() != null && armorStand.getCustomName().contains("ï¿½")) {
-                    // Deprecated support for deadchest 3.x and lower.
-                    holoRemoved++;
-                    entity.remove();
                 }
             }
 
