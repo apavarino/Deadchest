@@ -169,8 +169,16 @@ public final class ChestData {
         final int armorStandShiftY = 1;
 
         if (chestLocation.getWorld() != null) {
+            final boolean foliaRuntime = DeadChestLoader.getSchedulerAdapter().isFoliaLikeRuntime();
+            final boolean shouldForceLoadChunk = !foliaRuntime;
 
-            chestLocation.getChunk().setForceLoaded(true);
+            if (foliaRuntime && !isChunkLoaded()) {
+                return false;
+            }
+
+            if (shouldForceLoadChunk) {
+                chestLocation.getChunk().setForceLoaded(true);
+            }
 
             Collection<Entity> entities = chestLocation.getWorld().getNearbyEntities(
                     new Location(
@@ -187,7 +195,7 @@ public final class ChestData {
                 }
             }
 
-            if (isChunkForceLoaded()) {
+            if (shouldForceLoadChunk && isChunkForceLoaded()) {
                 chestLocation.getWorld().unloadChunk(chestLocation.getBlockX() >> 4, chestLocation.getBlockZ() >> 4);
                 chestLocation.getChunk().setForceLoaded(false);
             }

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -23,8 +24,8 @@ import java.util.function.Consumer;
  * Persistence is handled by {@link ChestDataRepository}; this store is the runtime state layer.
  */
 public class InMemoryChestStore {
-    private final Map<Location, ChestData> chestDataMap = new HashMap<>();
-    private final Map<UUID, Set<Location>> playerChestLocations = new HashMap<>();
+    private final Map<Location, ChestData> chestDataMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Set<Location>> playerChestLocations = new ConcurrentHashMap<>();
 
     /**
      * Adds a chest entry to both in-memory indexes.
@@ -219,7 +220,7 @@ public class InMemoryChestStore {
         if (chestData.getPlayerUUID() == null) {
             return;
         }
-        playerChestLocations.computeIfAbsent(chestData.getPlayerUUID(), uuid -> new HashSet<>())
+        playerChestLocations.computeIfAbsent(chestData.getPlayerUUID(), uuid -> ConcurrentHashMap.newKeySet())
                 .add(normalizeLocation(chestData.getChestLocation()));
     }
 

@@ -332,6 +332,33 @@ class DeadChestManagerTest {
         verify(timerStand).setCustomName(DeadChestLoader.local.get("chest.infinity"));
     }
 
+    @Test
+    void handleChestTickKeepsChestTrackedWhenArmorStandRemovalFails() {
+        Location loc = new Location(world, 62, 64, 62);
+        world.getBlockAt(loc).setType(Material.CHEST);
+
+        ChestData chestData = mock(ChestData.class);
+        when(config.getInt(ConfigKey.DEADCHEST_DURATION)).thenReturn(1);
+        when(config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)).thenReturn(false);
+        when(chestData.getChestLocation()).thenReturn(loc);
+        when(chestData.getHolographicTimer()).thenReturn(new Location(world, 62, 65, 62));
+        when(chestData.getChestDate()).thenReturn(new Date(0L));
+        when(chestData.isInfinity()).thenReturn(false);
+        when(chestData.isRemovedBlock()).thenReturn(false);
+        when(chestData.isChunkLoaded()).thenReturn(false);
+        when(chestData.removeArmorStand()).thenReturn(false);
+        when(chestData.getPlayerName()).thenReturn("Steve");
+        when(chestData.getPlayerUUID()).thenReturn(UUID.randomUUID());
+
+        DeadChestLoader.getChestDataCache().addChestData(chestData);
+
+        DeadChestManager.handleChestTick(chestData, new Date(10_000L));
+
+        assertFalse(DeadChestLoader.getChestDataCache().isEmpty());
+        verify(chestData, times(1)).update(any());
+        verify(chestData, never()).remove();
+    }
+
     private ChestData chestDataAt(int x, String playerName, UUID playerId, boolean infinity) {
         UUID timerId = UUID.nameUUIDFromBytes(("timer-" + x).getBytes());
         UUID ownerId = UUID.nameUUIDFromBytes(("owner-" + x).getBytes());

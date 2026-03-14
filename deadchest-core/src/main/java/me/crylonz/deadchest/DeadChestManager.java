@@ -35,18 +35,12 @@ public class DeadChestManager {
         final Map<Location, ChestData> chestDataList = inMemoryChestStore.getAllChestData();
 
         if (chestDataList != null && !chestDataList.isEmpty()) {
-            final List<ChestData> chestDataRemove = new ArrayList<>();
             for (final ChestData chestData : chestDataList.values()) {
-                if (chestData.getChestLocation().getWorld() != null) {
-
-                    Location loc = chestData.getChestLocation();
-                    loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-                    chestData.removeArmorStand();
-                    chestDataRemove.add(chestData);
+                if (chestData != null) {
+                    DeadChestLoader.getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
                     chestDataRemoved++;
                 }
             }
-            inMemoryChestStore.removeChestDataList(chestDataRemove);
         }
         return chestDataRemoved;
     }
@@ -220,7 +214,7 @@ public class DeadChestManager {
     }
 
     public static void animateSoulOrbit(ChestData chestData, long nowMs) {
-        if (chestData.isRemovedBlock()) {
+        if (chestData.isRemovedBlock() || !chestData.isChunkLoaded()) {
             return;
         }
 
@@ -258,6 +252,53 @@ public class DeadChestManager {
             world.spawnParticle(soulParticle, x, y, z, 1, 0.03D, 0.03D, 0.03D, 0.0D);
         }
 
+    }
+
+    public static void handleChestTick(ChestData chestData, Date now) {
+        if (chestData == null) {
+            return;
+        }
+
+        World world = chestData.getChestLocation().getWorld();
+        if (world == null) {
+            return;
+        }
+
+        updateTimer(chestData, now);
+
+        final ExpiredActionType expiredActionType = handleExpirateDeadChest(chestData, now);
+        if (expiredActionType != ExpiredActionType.NOT_EXPIRED) {
+            if (expiredActionType == ExpiredActionType.FAIL_REMOVE_ARMORSTAND) {
+                chestData.update(ignored -> {
+                });
+            } else {
+                DeadChestLoader.getChestDataCache().removeChestData(chestData);
+            }
+            generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + world.getName());
+            return;
+        }
+
+        if (!chestData.isChunkLoaded()) {
+            return;
+        }
+
+        if (replaceDeadChestIfItDisappears(chestData)) {
+            chestData.update(ignored -> {
+            });
+        }
+    }
+
+    public static void removeDeadChest(ChestData chestData) {
+        if (chestData == null) {
+            return;
+        }
+
+        Location loc = chestData.getChestLocation();
+        World world = loc.getWorld();
+        if (world != null) {
+            world.getBlockAt(loc).setType(Material.AIR);
+        }
+        DeadChestLoader.getChestDataCache().removeChestData(chestData);
     }
 
     private static Particle resolveStyleParticle(EffectAnimationStyle style) {
