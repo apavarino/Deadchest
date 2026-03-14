@@ -29,10 +29,7 @@ import org.mockito.MockedStatic;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -241,14 +238,42 @@ class DeadChestManagerTest {
         when(chestData.getHolographicTimer()).thenReturn(holoLoc);
         when(chestData.getHolographicOwnerId()).thenReturn(ownerId);
         when(chestData.getHolographicTimerId()).thenReturn(timerId);
-        when(mockedWorld.getNearbyEntities(holoLoc, 1, 1, 1)).thenReturn(new ArrayList<>(List.of(owner, timer)));
+        Collection<Entity> nearbyEntities = new ArrayList<>(List.of(owner, timer));
 
-        DeadChestLoader.getChestDataCache().addChestData(chestData);
-
-        DeadChestManager.reloadMetaData();
+        DeadChestManager.reloadMetaData(chestData, nearbyEntities);
 
         verify(owner).setMetadata(eq("deadchest"), any(FixedMetadataValue.class));
         verify(timer).setMetadata(eq("deadchest"), any(FixedMetadataValue.class));
+    }
+
+    @Test
+    void updateTimerUsesChestWorldWhenHologramWorldIsInconsistent() {
+        World chestWorld = mock(World.class);
+        World hologramWorld = mock(World.class);
+        Entity timerStand = mock(Entity.class);
+        Location chestLoc = new Location(chestWorld, 10, 64, -25);
+        Location holoLoc = new Location(hologramWorld, 11, 46.8, -25);
+
+        ChestData chestData = mock(ChestData.class);
+        when(chestData.getChestLocation()).thenReturn(chestLoc);
+        when(chestData.getHolographicTimer()).thenReturn(holoLoc);
+        when(chestData.isChunkLoaded()).thenReturn(true);
+        when(chestData.getChestDate()).thenReturn(new Date(System.currentTimeMillis() - 1_000));
+        when(chestData.isInfinity()).thenReturn(false);
+        when(chestData.getHolographicTimerId()).thenReturn(UUID.randomUUID());
+        when(chestData.getHolographicOwnerId()).thenReturn(UUID.randomUUID());
+        when(timerStand.getType()).thenReturn(EntityType.ARMOR_STAND);
+        when(timerStand.hasMetadata("deadchest")).thenReturn(true);
+        when(timerStand.getMetadata("deadchest")).thenReturn(List.of(new FixedMetadataValue(plugin, true)));
+        when(config.getInt(ConfigKey.DEADCHEST_DURATION)).thenReturn(300);
+        when(chestWorld.getNearbyEntities(any(Location.class), eq(1.0), eq(1.0), eq(1.0)))
+                .thenReturn(new ArrayList<>(List.of(timerStand)));
+
+        DeadChestManager.updateTimer(chestData, new Date());
+
+        verify(chestWorld).getNearbyEntities(argThat(location -> location != null && location.getWorld() == chestWorld), eq(1.0), eq(1.0), eq(1.0));
+        verify(hologramWorld, never()).getNearbyEntities(any(Location.class), anyDouble(), anyDouble(), anyDouble());
+        verify(timerStand).setCustomName(anyString());
     }
 
     @Test

@@ -95,37 +95,31 @@ public class DeadChestManager {
     }
 
     /**
-     * Regeneration of metaData for holos
+     * Regeneration of metadata for the holograms linked to a single chest.
      */
-    static void reloadMetaData() {
+    static void reloadMetaData(ChestData chestData, Collection<Entity> nearbyEntities) {
+        if (chestData == null || nearbyEntities == null) {
+            return;
+        }
 
-        final Map<Location, ChestData> chestDataList = getChestDataCache().getAllChestData();
-        for (ChestData cdata : chestDataList.values()) {
-            World world = cdata.getChestLocation().getWorld();
-
-            if (world != null) {
-                Collection<Entity> nearbyEntities =
-                        world.getNearbyEntities(cdata.getHolographicTimer(), 1, 1, 1);
-
-                for (Entity ne : nearbyEntities) {
-                    if (ne.getUniqueId().equals(cdata.getHolographicOwnerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, false));
-                    } else if (ne.getUniqueId().equals(cdata.getHolographicTimerId())) {
-                        ne.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, true));
-                    }
-                }
+        for (Entity nearbyEntity : nearbyEntities) {
+            if (nearbyEntity.getUniqueId().equals(chestData.getHolographicOwnerId())) {
+                nearbyEntity.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, false));
+            } else if (nearbyEntity.getUniqueId().equals(chestData.getHolographicTimerId())) {
+                nearbyEntity.setMetadata("deadchest", new FixedMetadataValue(DeadChestLoader.plugin, true));
             }
         }
     }
 
     public static boolean replaceDeadChestIfItDisappears(ChestData chestData) {
         World world = chestData.getChestLocation().getWorld();
+        Location hologramSearchLocation = getHologramSearchLocation(chestData);
 
-        if (world == null) {
+        if (world == null || hologramSearchLocation == null) {
             return false;
         }
 
-        Collection<Entity> entityList = world.getNearbyEntities(chestData.getHolographicTimer(), 1.0, 1.0, 1.0);
+        Collection<Entity> entityList = world.getNearbyEntities(hologramSearchLocation, 1.0, 1.0, 1.0);
         boolean isLinkedToDeadchest = entityList.stream().anyMatch(entity ->
                 entity.getUniqueId().equals(chestData.getHolographicOwnerId()) ||
                         entity.getUniqueId().equals(chestData.getHolographicTimerId())
@@ -186,15 +180,15 @@ public class DeadChestManager {
     }
 
     public static void updateTimer(ChestData chestData, Date date) {
-        Location chestTimer = chestData.getHolographicTimer();
+        Location chestTimer = getHologramSearchLocation(chestData);
 
-        if (chestTimer.getWorld() != null && chestData.isChunkLoaded()) {
+        if (chestTimer != null && chestTimer.getWorld() != null && chestData.isChunkLoaded()) {
 
-            ArrayList<Entity> entityList = (ArrayList<Entity>) chestTimer.getWorld().getNearbyEntities(chestTimer, 1.0, 1.0, 1.0);
+            Collection<Entity> entityList = chestTimer.getWorld().getNearbyEntities(chestTimer, 1.0, 1.0, 1.0);
             for (Entity entity : entityList) {
                 if (entity.getType().equals(EntityType.ARMOR_STAND)) {
                     if (!entity.hasMetadata("deadchest")) {
-                        reloadMetaData();
+                        reloadMetaData(chestData, entityList);
                     }
                     if (entity.getMetadata("deadchest").size() > 0 && entity.getMetadata("deadchest").get(0).asBoolean()) {
                         long diff = date.getTime() - (chestData.getChestDate().getTime() + config.getInt(ConfigKey.DEADCHEST_DURATION) * 1000L);
@@ -330,5 +324,38 @@ public class DeadChestManager {
 
     private static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private static Location getHologramSearchLocation(ChestData chestData) {
+        if (chestData == null) {
+            return null;
+        }
+
+        Location holographicTimer = chestData.getHolographicTimer();
+        Location chestLocation = chestData.getChestLocation();
+        if (holographicTimer == null) {
+            return null;
+        }
+        if (chestLocation == null) {
+            return holographicTimer;
+        }
+
+        World chestWorld = chestLocation.getWorld();
+        if (chestWorld == null) {
+            return holographicTimer;
+        }
+
+        if (holographicTimer.getWorld() == chestWorld) {
+            return holographicTimer;
+        }
+
+        return new Location(
+                chestWorld,
+                holographicTimer.getX(),
+                holographicTimer.getY(),
+                holographicTimer.getZ(),
+                holographicTimer.getYaw(),
+                holographicTimer.getPitch()
+        );
     }
 }

@@ -6,6 +6,7 @@ import me.crylonz.deadchest.db.*;
 import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
 import me.crylonz.deadchest.legacy.OldChestData;
 import me.crylonz.deadchest.scheduler.SchedulerAdapter;
+import me.crylonz.deadchest.scheduler.SchedulerTaskHandle;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import me.crylonz.deadchest.utils.EffectAnimationStyle;
@@ -46,8 +47,8 @@ public class DeadChestLoader {
 
     public static SQLite db;
     public static SQLExecutor sqlExecutor = new SQLExecutor();
-    private Object maintenanceTask;
-    private Object animationTask;
+    private SchedulerTaskHandle maintenanceTask;
+    private SchedulerTaskHandle animationTask;
     private static SchedulerAdapter scheduler;
     private static Plugin schedulerPluginOwner;
 
