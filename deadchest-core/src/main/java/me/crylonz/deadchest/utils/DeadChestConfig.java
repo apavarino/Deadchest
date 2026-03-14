@@ -21,6 +21,10 @@ public class DeadChestConfig {
         this.plugin = plugin;
     }
 
+    public static void clearCache() {
+        configData.clear();
+    }
+
     public void register(String key, Object defaultValue) {
         configData.put(key, normalizeValue(resolveFromConfig(key), defaultValue, ConfigKey.fromCanonicalPath(key)));
 
@@ -54,6 +58,21 @@ public class DeadChestConfig {
         return value == null ? "" : String.valueOf(value);
     }
 
+    public List<Object> getIgnoredEntries() {
+        Object value = configData.get(ConfigKey.IGNORED_ITEMS.toString());
+        if (value instanceof List<?>) {
+            return new ArrayList<>((List<?>) value);
+        }
+        return new ArrayList<>();
+    }
+
+    public void setIgnoredEntries(Collection<?> entries) {
+        List<Object> normalizedEntries = IgnoreItemRules.normalizeEntries(entries);
+        plugin.getConfig().set(ConfigKey.IGNORED_ITEMS.toString(), normalizedEntries);
+        plugin.saveConfig();
+        configData.put(ConfigKey.IGNORED_ITEMS.toString(), normalizedEntries);
+    }
+
     private Object resolveFromConfig(String canonicalPath) {
         Object param = plugin.getConfig().get(canonicalPath);
         if (param != null) {
@@ -77,6 +96,10 @@ public class DeadChestConfig {
     private Object normalizeValue(Object value, Object defaultValue, ConfigKey key) {
         if (value == null) {
             return defaultValue;
+        }
+
+        if (key == ConfigKey.IGNORED_ITEMS) {
+            return IgnoreItemRules.normalizeEntries(value);
         }
 
         if (key == ConfigKey.DROP_MODE) {

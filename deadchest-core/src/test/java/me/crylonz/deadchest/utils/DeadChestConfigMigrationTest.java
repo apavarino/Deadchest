@@ -1,7 +1,10 @@
 package me.crylonz.deadchest.utils;
 
+import be.seeseemelk.mockbukkit.MockBukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ class DeadChestConfigMigrationTest {
 
     @BeforeEach
     void setUp() {
+        DeadChestConfig.clearCache();
         plugin = mock(Plugin.class);
         fileConfiguration = new YamlConfiguration();
         when(plugin.getConfig()).thenReturn(fileConfiguration);
@@ -82,6 +86,28 @@ class DeadChestConfigMigrationTest {
         config.register(ConfigKey.DROP_MODE.toString(), "inventory-then-ground");
 
         assertEquals(2, config.getInt(ConfigKey.DROP_MODE));
+    }
+
+    @Test
+    void ignoredItemsPreserveSerializedCustomItemStacks() {
+        MockBukkit.mock();
+        try {
+            ItemStack customItem = new ItemStack(Material.DIAMOND_SWORD, 1);
+            customItem.editMeta(meta -> meta.setDisplayName("Boss sword"));
+            fileConfiguration.set("filters.ignored-items", Arrays.asList("DIAMOND", customItem));
+
+            DeadChestConfig config = new DeadChestConfig(plugin);
+            config.register(ConfigKey.IGNORED_ITEMS.toString(), Arrays.asList());
+
+            assertEquals(2, config.getIgnoredEntries().size());
+            assertEquals("DIAMOND", config.getIgnoredEntries().get(0));
+            assertTrue(config.getIgnoredEntries().get(1) instanceof ItemStack);
+            ItemStack loadedItem = (ItemStack) config.getIgnoredEntries().get(1);
+            assertEquals(Material.DIAMOND_SWORD, loadedItem.getType());
+            assertEquals("Boss sword", loadedItem.getItemMeta().getDisplayName());
+        } finally {
+            MockBukkit.unmock();
+        }
     }
 
     @Test

@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
 
@@ -80,5 +82,31 @@ public class IgnoreItemListRepository {
                 log.severe("[DeadChest] Failed to save ignore list to SQLite: " + e.getMessage());
             }
         });
+    }
+
+    public static List<ItemStack> loadIgnoreItems() {
+        List<ItemStack> items = new ArrayList<>();
+
+        try (PreparedStatement request = db.connection().prepareStatement("SELECT data FROM ignore_items ORDER BY slot");
+             ResultSet result = request.executeQuery()) {
+            while (result.next()) {
+                ItemStack item = ItemBytes.fromBytes(result.getBytes("data"));
+                if (item != null && !item.getType().isAir()) {
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            log.severe("[DeadChest] Failed to read ignore list from SQLite: " + e.getMessage());
+        }
+
+        return items;
+    }
+
+    public static void clearIgnoreItems() {
+        try (Statement clear = db.connection().createStatement()) {
+            clear.executeUpdate("DELETE FROM ignore_items");
+        } catch (SQLException e) {
+            log.severe("[DeadChest] Failed to clear legacy ignore_items: " + e.getMessage());
+        }
     }
 }

@@ -20,7 +20,6 @@ import java.util.Map;
 import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests;
 import static me.crylonz.deadchest.DeadChestManager.removeDeadChest;
-import static me.crylonz.deadchest.db.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
 
@@ -30,10 +29,11 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
 
     public void registerReload() {
         registerCommand("dc reload", Permission.ADMIN.label, () -> {
-            loadIgnoreIntoInventory(ignoreList);
             DeadChestLoader.plugin.reloadConfig();
             plugin.registerConfig();
             local.reloadLanguage(config.getString(ConfigKey.LOCALIZATION_LANGUAGE));
+            ignoreList = Bukkit.createInventory(new me.crylonz.deadchest.IgnoreInventoryHolder(), 36, local.get("gui.ignore-list.title"));
+            loadIgnoreIntoInventoryFromConfig(ignoreList);
 
             sender.sendMessage(local.prefixed("commands.reload.success"));
         });

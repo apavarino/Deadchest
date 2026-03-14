@@ -4,6 +4,7 @@ import me.crylonz.deadchest.ChestData;
 import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.Permission;
 import me.crylonz.deadchest.utils.ConfigKey;
+import me.crylonz.deadchest.utils.IgnoreItemRules;
 import me.crylonz.deadchest.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -276,11 +277,11 @@ public class PlayerDeathListener implements Listener {
     private void sanitizeInventoryOnDeath(PlayerDeathEvent e, Player p) {
         // The order matters:
         // 1) remove vanishing items first,
-        // 2) then remove excluded/ignored items,
+        // 2) then remove excluded items,
         // 3) then apply durability loss on remaining,
         // 4) finally adjust XP drop if configured.
         removeVanishingItems(p.getInventory());
-        removeExcludedAndIgnored(p.getInventory());
+        removeExcludedItems(p.getInventory());
         applyDurabilityLoss(p.getInventory());
         if (config.getBoolean(ConfigKey.STORE_XP)) {
             e.setDroppedExp(0);
@@ -309,20 +310,12 @@ public class PlayerDeathListener implements Listener {
         return item != null && item.getEnchantments().containsKey(Enchantment.VANISHING_CURSE);
     }
 
-    private void removeExcludedAndIgnored(PlayerInventory inv) {
+    private void removeExcludedItems(PlayerInventory inv) {
         final List<String> excluded = config.getArray(ConfigKey.EXCLUDED_ITEMS);
         for (String item : excluded) {
             if (item != null) {
                 Material mat = Material.getMaterial(item.toUpperCase());
                 if (mat != null) inv.remove(mat);
-            }
-        }
-        // Guard against null ignoreList in unit tests / misconfigured envs
-        if (ignoreList != null) {
-            for (ItemStack itemStack : ignoreList.getContents()) {
-                if (itemStack != null) {
-                    inv.remove(itemStack);
-                }
             }
         }
     }
@@ -349,11 +342,10 @@ public class PlayerDeathListener implements Listener {
     }
 
     private ItemStack[] prepareItemsToStore(ItemStack[] playerInv) {
-        final List<String> ignored = config.getArray(ConfigKey.IGNORED_ITEMS);
         ItemStack[] itemsToStore = new ItemStack[playerInv.length];
         for (int i = 0; i < playerInv.length; i++) {
             ItemStack item = playerInv[i];
-            if (item != null && !ignored.contains(item.getType().toString())) {
+            if (item != null && !isIgnoredItem(item)) {
                 itemsToStore[i] = item;
             }
             // keep null to preserve slot positions
@@ -389,15 +381,28 @@ public class PlayerDeathListener implements Listener {
     }
 
     private void clearEventDropsAndPlayerInventory(PlayerDeathEvent e, Player p) {
-        final List<String> ignored = config.getArray(ConfigKey.IGNORED_ITEMS);
         // Direct removeIf: no intermediate list needed
-        e.getDrops().removeIf(drop -> drop != null && !ignored.contains(drop.getType().toString()));
+        e.getDrops().removeIf(drop -> drop != null && !isIgnoredItem(drop));
 
         for (ItemStack item : p.getInventory().getContents()) {
-            if (item != null && !ignored.contains(item.getType().toString())) {
+            if (item != null && !isIgnoredItem(item)) {
                 p.getInventory().removeItem(item);
             }
         }
+    }
+
+    private boolean isIgnoredItem(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+
+        for (Object ignoredEntry : config.getIgnoredEntries()) {
+            if (IgnoreItemRules.matches(ignoredEntry, item)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void maybeSendPosition(Player p, Block b) {

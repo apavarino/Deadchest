@@ -19,7 +19,7 @@ This page documents the current `/dc` commands and permission nodes.
 | `/dc list <player>`     | `deadchest.list.other`   | List DeadChests for a specific player.                                       |
 | `/dc list all`          | `deadchest.list.other`   | List all DeadChests on the server.                                           |
 | `/dc giveback <player>` | `deadchest.giveback`     | Give back a player's oldest DeadChest inventory.                             |
-| `/dc ignore`            | `deadchest.admin`        | Open the ignore-items GUI/list.                                              |
+| `/dc ignore`            | `deadchest.admin`        | Open the ignore-items GUI/list backed by `filters.ignored-items`.            |
 
 \* `deadchest.list.own` is only required when `permissions.require-list-own: true` in `config.yml`.
 
@@ -45,4 +45,11 @@ The following config flags control whether some actions require permissions:
 - `permissions.require-generate`: require `deadchest.generate` for chest generation.
 - `permissions.require-claim`: require `deadchest.get` for claiming chests.
 - `permissions.require-list-own`: require `deadchest.list.own` for `/dc list`.
+
+`/dc ignore` edits `filters.ignored-items` from `config.yml` directly:
+
+- `filters.ignored-items` ignores by `Material` name.
+- `/dc ignore` updates the same YAML list through a GUI.
+- Custom items are stored there as serialized `ItemStack` entries, including item meta.
+- Ignored items are skipped by DeadChest storage and keep their default death behavior.
 

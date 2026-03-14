@@ -10,10 +10,12 @@ import me.crylonz.deadchest.scheduler.SchedulerTaskHandle;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import me.crylonz.deadchest.utils.EffectAnimationStyle;
+import me.crylonz.deadchest.utils.IgnoreItemRules;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,7 +25,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static me.crylonz.deadchest.DeadChestManager.*;
-import static me.crylonz.deadchest.db.IgnoreItemListRepository.loadIgnoreIntoInventory;
+import static me.crylonz.deadchest.db.IgnoreItemListRepository.clearIgnoreItems;
+import static me.crylonz.deadchest.db.IgnoreItemListRepository.loadIgnoreItems;
 import static me.crylonz.deadchest.utils.Utils.generateLog;
 
 public class DeadChestLoader {
@@ -225,7 +228,43 @@ public class DeadChestLoader {
 
         // ignore list inventory title now follows selected language
         ignoreList = Bukkit.createInventory(new IgnoreInventoryHolder(), 36, local.get("gui.ignore-list.title"));
-        loadIgnoreIntoInventory(ignoreList);
+        migrateLegacyIgnoreItemsToConfig();
+        loadIgnoreIntoInventoryFromConfig(ignoreList);
+    }
+
+    public static void loadIgnoreIntoInventoryFromConfig(Inventory inventory) {
+        if (inventory == null) {
+            return;
+        }
+
+        inventory.clear();
+        for (Object ignoredEntry : config.getIgnoredEntries()) {
+            ItemStack displayItem = IgnoreItemRules.toDisplayItem(ignoredEntry);
+            if (displayItem != null) {
+                inventory.addItem(displayItem);
+            }
+        }
+    }
+
+    public static void saveIgnoreInventoryToConfig(Inventory inventory) {
+        config.setIgnoredEntries(IgnoreItemRules.fromInventory(inventory == null ? null : inventory.getContents()));
+        loadIgnoreIntoInventoryFromConfig(inventory);
+    }
+
+    private void migrateLegacyIgnoreItemsToConfig() {
+        if (!config.getIgnoredEntries().isEmpty()) {
+            return;
+        }
+
+        List<Object> migratedItems = IgnoreItemRules.fromInventory(loadIgnoreItems().toArray(new ItemStack[0]));
+
+        if (migratedItems.isEmpty()) {
+            return;
+        }
+
+        config.setIgnoredEntries(migratedItems);
+        clearIgnoreItems();
+        log.info("[DeadChest] Migrated legacy /dc ignore entries from SQLite to config.yml filters.ignored-items.");
     }
 
     public static void handleEvent() {

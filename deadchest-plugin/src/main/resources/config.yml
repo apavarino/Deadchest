@@ -204,9 +204,13 @@ filters:
     - HEROBRINE
 
   # Items ignored by DeadChest processing.
-  # Ignored items are not stored and not removed from player inventory.
+  # Ignored items are not stored inside the DeadChest and keep vanilla death behavior.
+  # In practice, DeadChest leaves them alone so they can be dropped/handled by Minecraft or another plugin.
+  # '/dc ignore' edits this same list directly, so config and GUI always stay synchronized.
+  # Supported entries:
+  # - a Bukkit Material name, for example: DIAMOND
+  # - a serialized ItemStack, including item meta, written automatically by '/dc ignore'
   # Useful for custom items managed by other plugins.
-  # Use Bukkit Material names.
   ignored-items:
     - IGNORED_ITEM_EXAMPLE
 

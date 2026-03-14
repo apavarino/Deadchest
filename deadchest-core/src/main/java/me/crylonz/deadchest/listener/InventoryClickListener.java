@@ -11,9 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import static me.crylonz.deadchest.DeadChestLoader.getSchedulerAdapter;
-import static me.crylonz.deadchest.DeadChestLoader.ignoreList;
-import static me.crylonz.deadchest.db.IgnoreItemListRepository.saveIgnoreIntoInventory;
+import static me.crylonz.deadchest.DeadChestLoader.*;
 
 public class InventoryClickListener implements Listener {
 
@@ -43,7 +41,7 @@ public class InventoryClickListener implements Listener {
                     newStack.setAmount(clicked.getAmount() - 1);
                     clickedInv.setItem(slot, newStack);
                 }
-                saveIgnoreIntoInventory(ignoreList);
+                saveIgnoreInventoryToConfig(ignoreList);
             });
             return;
         }
@@ -53,12 +51,12 @@ public class InventoryClickListener implements Listener {
             final ItemStack src = event.getCurrentItem();
             if (src == null || src.getType().isAir()) return;
 
-            if (!ignoreList.containsAtLeast(src, 1)) {
+            if (!containsSimilarIgnoreItem(src)) {
                 getSchedulerAdapter().runForEntity(event.getWhoClicked(), () -> {
                     ItemStack item = src.clone();
                     item.setAmount(1);
                     ignoreList.addItem(item);
-                    saveIgnoreIntoInventory(ignoreList);
+                    saveIgnoreInventoryToConfig(ignoreList);
                 });
             }
         }
@@ -67,5 +65,22 @@ public class InventoryClickListener implements Listener {
 
     private boolean isDeadchestGui(InventoryView view) {
         return view.getTopInventory().getHolder() instanceof IgnoreInventoryHolder;
+    }
+
+    private boolean containsSimilarIgnoreItem(ItemStack candidate) {
+        if (ignoreList == null || candidate == null || candidate.getType().isAir()) {
+            return false;
+        }
+
+        final ItemStack normalizedCandidate = candidate.clone();
+        normalizedCandidate.setAmount(1);
+
+        for (ItemStack ignoredItem : ignoreList.getContents()) {
+            if (ignoredItem != null && ignoredItem.isSimilar(normalizedCandidate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

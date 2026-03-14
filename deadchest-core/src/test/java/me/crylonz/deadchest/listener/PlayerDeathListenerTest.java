@@ -105,6 +105,7 @@ class PlayerDeathListenerTest {
         when(cfg.getArray(ConfigKey.EXCLUDED_WORLDS)).thenReturn(new ArrayList<>());
         when(cfg.getArray(ConfigKey.EXCLUDED_ITEMS)).thenReturn(new ArrayList<>());
         when(cfg.getArray(ConfigKey.IGNORED_ITEMS)).thenReturn(new ArrayList<>());
+        when(cfg.getIgnoredEntries()).thenReturn(new ArrayList<>());
 
         DeadChestLoader.config = cfg;
 
@@ -357,6 +358,55 @@ class PlayerDeathListenerTest {
         listener.onPlayerDeathEvent(evt);
 
         assertFalse(player.nextMessage().isEmpty(), "Player should receive position message");
+    }
+
+    @Test
+    void ignoredItemsFromConfigUseVanillaDropBehavior() {
+        ItemStack ignored = new ItemStack(Material.DIAMOND, 1);
+        ItemStack stored = new ItemStack(Material.EMERALD, 1);
+
+        when(cfg.getIgnoredEntries()).thenReturn(new ArrayList<>(Collections.singletonList("DIAMOND")));
+        player.getInventory().setItem(0, ignored.clone());
+        player.getInventory().setItem(1, stored.clone());
+
+        PlayerDeathEvent evt = deathEvent();
+        evt.getDrops().add(ignored.clone());
+        evt.getDrops().add(stored.clone());
+
+        listener.onPlayerDeathEvent(evt);
+
+        final ArrayList<ChestData> allChestData = new ArrayList<>(DeadChestLoader.getChestDataCache().getAllChestData().values());
+        assertEquals(1, allChestData.size(), "One ChestData should be created");
+
+        assertEquals(1, evt.getDrops().size(), "Only ignored items should remain in vanilla drops");
+        assertEquals(Material.DIAMOND, evt.getDrops().get(0).getType(), "Ignored item should remain in drops");
+        assertFalse(player.getInventory().contains(Material.EMERALD), "Stored items should be removed from player inventory");
+    }
+
+    @Test
+    void customIgnoredItemFromConfigUsesExactMetaMatch() {
+        ItemStack ignored = new ItemStack(Material.DIAMOND, 1);
+        ignored.editMeta(meta -> meta.setDisplayName("custom"));
+
+        ItemStack sameMaterialDifferentMeta = new ItemStack(Material.DIAMOND, 1);
+        ItemStack stored = new ItemStack(Material.EMERALD, 1);
+
+        when(cfg.getIgnoredEntries()).thenReturn(new ArrayList<>(Collections.singletonList(ignored.clone())));
+        player.getInventory().setItem(0, ignored.clone());
+        player.getInventory().setItem(1, sameMaterialDifferentMeta);
+        player.getInventory().setItem(2, stored.clone());
+
+        PlayerDeathEvent evt = deathEvent();
+        evt.getDrops().add(ignored.clone());
+        evt.getDrops().add(sameMaterialDifferentMeta.clone());
+        evt.getDrops().add(stored.clone());
+
+        listener.onPlayerDeathEvent(evt);
+
+        assertEquals(1, evt.getDrops().size(), "Only the exact custom ignored item should remain in vanilla drops");
+        assertEquals("custom", evt.getDrops().get(0).getItemMeta().getDisplayName());
+        assertFalse(player.getInventory().contains(Material.EMERALD), "Stored items should be removed from player inventory");
+        assertFalse(player.getInventory().containsAtLeast(sameMaterialDifferentMeta, 1), "Non-ignored same-material items should be consumed by DeadChest");
     }
 
     @Test

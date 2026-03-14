@@ -133,11 +133,19 @@ After any change, run `/dc reload`.
 
 ### Filters
 
-| Key                       | Type         | Default        | Description                                                         |
-|---------------------------|--------------|----------------|---------------------------------------------------------------------|
-| `filters.excluded-worlds` | list<string> | Example values | Worlds where DeadChest generation is disabled.                      |
-| `filters.excluded-items`  | list<string> | Example values | Items that are not stored in DeadChest.                             |
-| `filters.ignored-items`   | list<string> | Example values | Items ignored by DeadChest processing (not stored and not removed). |
+| Key                       | Type         | Default        | Description                                                           |
+|---------------------------|--------------|----------------|-----------------------------------------------------------------------|
+| `filters.excluded-worlds` | list<string> | Example values | Worlds where DeadChest generation is disabled.                        |
+| `filters.excluded-items`  | list<string> | Example values | Items that are not stored in DeadChest.                               |
+| `filters.ignored-items`   | list<string> | Example values | Items ignored by DeadChest storage; they keep vanilla death behavior. |
+
+`filters.ignored-items` and `/dc ignore` use the same source of truth:
+
+- `filters.ignored-items` is the canonical list in `config.yml`.
+- `/dc ignore` edits that same list through a GUI.
+- A rule can be either a Bukkit `Material` name or a serialized `ItemStack`.
+- Serialized `ItemStack` rules preserve custom meta and are written automatically by `/dc ignore`.
+- Ignored items are not saved in a DeadChest and are left to vanilla death handling or other plugins.
 
 ### Permission reference
 
