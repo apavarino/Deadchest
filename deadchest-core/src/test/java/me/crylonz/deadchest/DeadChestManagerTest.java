@@ -29,10 +29,7 @@ import org.mockito.MockedStatic;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -241,14 +238,42 @@ class DeadChestManagerTest {
         when(chestData.getHolographicTimer()).thenReturn(holoLoc);
         when(chestData.getHolographicOwnerId()).thenReturn(ownerId);
         when(chestData.getHolographicTimerId()).thenReturn(timerId);
-        when(mockedWorld.getNearbyEntities(holoLoc, 1, 1, 1)).thenReturn(new ArrayList<>(List.of(owner, timer)));
+        Collection<Entity> nearbyEntities = new ArrayList<>(List.of(owner, timer));
 
-        DeadChestLoader.getChestDataCache().addChestData(chestData);
-
-        DeadChestManager.reloadMetaData();
+        DeadChestManager.reloadMetaData(chestData, nearbyEntities);
 
         verify(owner).setMetadata(eq("deadchest"), any(FixedMetadataValue.class));
         verify(timer).setMetadata(eq("deadchest"), any(FixedMetadataValue.class));
+    }
+
+    @Test
+    void updateTimerUsesChestWorldWhenHologramWorldIsInconsistent() {
+        World chestWorld = mock(World.class);
+        World hologramWorld = mock(World.class);
+        Entity timerStand = mock(Entity.class);
+        Location chestLoc = new Location(chestWorld, 10, 64, -25);
+        Location holoLoc = new Location(hologramWorld, 11, 46.8, -25);
+
+        ChestData chestData = mock(ChestData.class);
+        when(chestData.getChestLocation()).thenReturn(chestLoc);
+        when(chestData.getHolographicTimer()).thenReturn(holoLoc);
+        when(chestData.isChunkLoaded()).thenReturn(true);
+        when(chestData.getChestDate()).thenReturn(new Date(System.currentTimeMillis() - 1_000));
+        when(chestData.isInfinity()).thenReturn(false);
+        when(chestData.getHolographicTimerId()).thenReturn(UUID.randomUUID());
+        when(chestData.getHolographicOwnerId()).thenReturn(UUID.randomUUID());
+        when(timerStand.getType()).thenReturn(EntityType.ARMOR_STAND);
+        when(timerStand.hasMetadata("deadchest")).thenReturn(true);
+        when(timerStand.getMetadata("deadchest")).thenReturn(List.of(new FixedMetadataValue(plugin, true)));
+        when(config.getInt(ConfigKey.DEADCHEST_DURATION)).thenReturn(300);
+        when(chestWorld.getNearbyEntities(any(Location.class), eq(1.0), eq(1.0), eq(1.0)))
+                .thenReturn(new ArrayList<>(List.of(timerStand)));
+
+        DeadChestManager.updateTimer(chestData, new Date());
+
+        verify(chestWorld).getNearbyEntities(argThat(location -> location != null && location.getWorld() == chestWorld), eq(1.0), eq(1.0), eq(1.0));
+        verify(hologramWorld, never()).getNearbyEntities(any(Location.class), anyDouble(), anyDouble(), anyDouble());
+        verify(timerStand).setCustomName(anyString());
     }
 
     @Test
@@ -330,6 +355,33 @@ class DeadChestManagerTest {
         DeadChestManager.updateTimer(chestData, new Date());
 
         verify(timerStand).setCustomName(DeadChestLoader.local.get("chest.infinity"));
+    }
+
+    @Test
+    void handleChestTickKeepsChestTrackedWhenArmorStandRemovalFails() {
+        Location loc = new Location(world, 62, 64, 62);
+        world.getBlockAt(loc).setType(Material.CHEST);
+
+        ChestData chestData = mock(ChestData.class);
+        when(config.getInt(ConfigKey.DEADCHEST_DURATION)).thenReturn(1);
+        when(config.getBoolean(ConfigKey.ITEMS_DROPPED_AFTER_TIMEOUT)).thenReturn(false);
+        when(chestData.getChestLocation()).thenReturn(loc);
+        when(chestData.getHolographicTimer()).thenReturn(new Location(world, 62, 65, 62));
+        when(chestData.getChestDate()).thenReturn(new Date(0L));
+        when(chestData.isInfinity()).thenReturn(false);
+        when(chestData.isRemovedBlock()).thenReturn(false);
+        when(chestData.isChunkLoaded()).thenReturn(false);
+        when(chestData.removeArmorStand()).thenReturn(false);
+        when(chestData.getPlayerName()).thenReturn("Steve");
+        when(chestData.getPlayerUUID()).thenReturn(UUID.randomUUID());
+
+        DeadChestLoader.getChestDataCache().addChestData(chestData);
+
+        DeadChestManager.handleChestTick(chestData, new Date(10_000L));
+
+        assertFalse(DeadChestLoader.getChestDataCache().isEmpty());
+        verify(chestData, times(1)).update(any());
+        verify(chestData, never()).remove();
     }
 
     private ChestData chestDataAt(int x, String playerName, UUID playerId, boolean infinity) {

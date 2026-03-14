@@ -1,6 +1,7 @@
 package me.crylonz.deadchest.db;
 
 import me.crylonz.deadchest.ChestData;
+import me.crylonz.deadchest.DeadChestLoader;
 import me.crylonz.deadchest.utils.ItemBytes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -104,7 +105,7 @@ public class ChestDataRepository {
         sqlExecutor.runAsync(() -> {
             List<ChestData> result = findAll();
 
-            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(result));
+            DeadChestLoader.getSchedulerAdapter().runGlobal(() -> callback.accept(result));
         });
     }
 

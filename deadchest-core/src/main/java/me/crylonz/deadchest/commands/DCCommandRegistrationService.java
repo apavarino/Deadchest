@@ -7,18 +7,19 @@ import me.crylonz.deadchest.db.InMemoryChestStore;
 import me.crylonz.deadchest.utils.ConfigKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
 import static me.crylonz.deadchest.DeadChestLoader.*;
 import static me.crylonz.deadchest.DeadChestManager.cleanAllDeadChests;
+import static me.crylonz.deadchest.DeadChestManager.removeDeadChest;
 import static me.crylonz.deadchest.db.IgnoreItemListRepository.loadIgnoreIntoInventory;
 
 public class DCCommandRegistrationService extends DCCommandRegistration {
@@ -52,26 +53,24 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             return;
         }
 
-        Collection<Entity> entities = player.getWorld().getNearbyEntities(player.getLocation(), 100.0D, 25.0D, 100.0D);
-        int holoRemoved = 0;
+        getSchedulerAdapter().executeForEntity(player, () -> {
+            Collection<Entity> entities = player.getWorld().getNearbyEntities(player.getLocation(), 100.0D, 25.0D, 100.0D);
+            int holoRemoved = 0;
 
-        for (Entity entity : entities) {
-            if (entity.getType() != EntityType.ARMOR_STAND) {
-                continue;
+            for (Entity entity : entities) {
+                if (entity.getType() != EntityType.ARMOR_STAND) {
+                    continue;
+                }
+
+                ArmorStand armorStand = (ArmorStand) entity;
+                if (armorStand.hasMetadata("deadchest") || forced) {
+                    holoRemoved++;
+                    entity.remove();
+                }
             }
 
-            ArmorStand as = (ArmorStand) entity;
-            if (as.hasMetadata("deadchest") || forced) {
-                holoRemoved++;
-                entity.remove();
-            } else if (as.getCustomName() != null && as.getCustomName().contains("�")) {
-                // Deprecated support for deadchest 3.x and lower.
-                holoRemoved++;
-                entity.remove();
-            }
-        }
-
-        player.sendMessage(local.prefixed("commands.operation.holograms-removed", holoRemoved));
+            player.sendMessage(local.prefixed("commands.operation.holograms-removed", holoRemoved));
+        });
     }
 
     public void registerRemoveInfinite() {
@@ -79,21 +78,15 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
             int count = 0;
             final InMemoryChestStore inMemoryChestStore = DeadChestLoader.getChestDataCache();
             final Map<Location, ChestData> chestDataMap = inMemoryChestStore.getAllChestData();
-            final List<ChestData> chestDataRemove = new ArrayList<>();
 
             if (chestDataMap != null && !chestDataMap.isEmpty()) {
                 for (final ChestData chestData : chestDataMap.values()) {
                     if (chestData.getChestLocation().getWorld() != null &&
                             (chestData.isInfinity() || config.getInt(ConfigKey.DEADCHEST_DURATION) == 0)) {
-
-                        Location loc = chestData.getChestLocation();
-                        loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-                        chestData.removeArmorStand();
-                        chestDataRemove.add(chestData);
+                        getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
                         count++;
                     }
                 }
-                inMemoryChestStore.removeChestDataList(chestDataRemove);
             }
 
             sender.sendMessage(local.prefixed("commands.operation.deadchests-removed", count));
@@ -122,22 +115,38 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
     }
 
     private void removeAllDeadChestOfPlayer(String playerName) {
-        final AtomicInteger count = new AtomicInteger();
+        int count = 0;
         final InMemoryChestStore chestDataCache = getChestDataCache();
         final Map<Location, ChestData> chestDataList = chestDataCache.getAllChestData();
+        final Player targetPlayer = Bukkit.getPlayer(playerName);
 
         if (chestDataList != null && !chestDataList.isEmpty()) {
-            final List<ChestData> chestDataRemove = new ArrayList<>();
-            chestDataCache.getPlayerLinkedDeadChestData(Bukkit.getPlayer(playerName), cd -> {
-                Location loc = cd.getChestLocation();
-                loc.getWorld().getBlockAt(loc).setType(Material.AIR);
-                chestDataRemove.add(cd);
-                count.getAndIncrement();
-            });
-            chestDataCache.removeChestDataList(chestDataRemove);
+            if (targetPlayer != null) {
+                final Collection<Location> playerChestLocations = chestDataCache.getPlayerLinkedData(targetPlayer);
+                if (playerChestLocations != null) {
+                    for (Location chestLocation : playerChestLocations) {
+                        ChestData chestData = chestDataCache.getChestData(chestLocation);
+                        if (chestData == null) {
+                            continue;
+                        }
+
+                        getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
+                        count++;
+                    }
+                }
+            } else {
+                for (ChestData chestData : chestDataList.values()) {
+                    if (chestData == null || !chestData.getPlayerName().equalsIgnoreCase(playerName)) {
+                        continue;
+                    }
+
+                    getSchedulerAdapter().executeAtLocation(chestData.getChestLocation(), () -> removeDeadChest(chestData));
+                    count++;
+                }
+            }
         }
 
-        sender.sendMessage(local.prefixed("commands.operation.deadchests-removed-player", count.get(), playerName));
+        sender.sendMessage(local.prefixed("commands.operation.deadchests-removed-player", count, playerName));
     }
 
     public void registerListOwn() {
@@ -239,15 +248,19 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
                 }
 
                 targetPlayer = Bukkit.getPlayer(data.getPlayerUUID());
+                if (targetPlayer == null) {
+                    targetPlayer = Bukkit.getPlayerExact(data.getPlayerName());
+                }
                 if (targetPlayer != null && player != null && player.isOnline()) {
-                    for (ItemStack itemStack : data.getInventory()) {
-                        if (itemStack != null) {
-                            targetPlayer.getWorld().dropItemNaturally(targetPlayer.getLocation(), itemStack);
+                    final Player finalTargetPlayer = targetPlayer;
+                    getSchedulerAdapter().executeForEntity(finalTargetPlayer, () -> {
+                        for (ItemStack itemStack : data.getInventory()) {
+                            if (itemStack != null) {
+                                finalTargetPlayer.getWorld().dropItemNaturally(finalTargetPlayer.getLocation(), itemStack);
+                            }
                         }
-                    }
-
-                    targetPlayer.getWorld().getBlockAt(data.getChestLocation()).setType(Material.AIR);
-                    inMemoryChestStore.removeChestData(data);
+                    });
+                    getSchedulerAdapter().executeAtLocation(data.getChestLocation(), () -> removeDeadChest(data));
                 }
                 break;
             }
@@ -262,6 +275,8 @@ public class DCCommandRegistrationService extends DCCommandRegistration {
     }
 
     public void registerIgnoreList() {
-        registerCommand("dc ignore ", Permission.ADMIN.label, () -> player.openInventory(ignoreList));
+        registerCommand("dc ignore ", Permission.ADMIN.label, () ->
+                getSchedulerAdapter().executeForEntity(player, () -> player.openInventory(ignoreList))
+        );
     }
 }

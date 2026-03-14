@@ -5,14 +5,14 @@ import me.crylonz.deadchest.commands.DCTabCompletion;
 import me.crylonz.deadchest.db.*;
 import me.crylonz.deadchest.deps.worldguard.WorldGuardSoftDependenciesChecker;
 import me.crylonz.deadchest.legacy.OldChestData;
+import me.crylonz.deadchest.scheduler.SchedulerAdapter;
+import me.crylonz.deadchest.scheduler.SchedulerTaskHandle;
 import me.crylonz.deadchest.utils.ConfigKey;
 import me.crylonz.deadchest.utils.DeadChestConfig;
 import me.crylonz.deadchest.utils.EffectAnimationStyle;
-import me.crylonz.deadchest.utils.ExpiredActionType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,15 +47,17 @@ public class DeadChestLoader {
 
     public static SQLite db;
     public static SQLExecutor sqlExecutor = new SQLExecutor();
-
-//    static {
-//        ConfigurationSerialization.registerClass(ChestData.class, "ChestData");
-//    }
+    private SchedulerTaskHandle maintenanceTask;
+    private SchedulerTaskHandle animationTask;
+    private static SchedulerAdapter scheduler;
+    private static Plugin schedulerPluginOwner;
 
     public DeadChestLoader(Plugin dcPlugin, JavaPlugin dcjavaPlugin) {
         super();
         javaPlugin = dcjavaPlugin;
         plugin = dcPlugin;
+        scheduler = new SchedulerAdapter(dcPlugin);
+        schedulerPluginOwner = dcPlugin;
     }
 
     public void enable() {
@@ -134,6 +136,8 @@ public class DeadChestLoader {
     }
 
     public void disable() {
+        scheduler.cancelTask(maintenanceTask);
+        scheduler.cancelTask(animationTask);
 
         ChestDataRepository.saveAllAsync(getChestDataCache().getAllChestData().values());
         sqlExecutor.shutdown();
@@ -147,6 +151,14 @@ public class DeadChestLoader {
     @Nullable
     public static ChestData getChestData(@Nonnull Location location) {
         return chestData.getChestData(location);
+    }
+
+    public static SchedulerAdapter getSchedulerAdapter() {
+        if (scheduler == null || plugin != schedulerPluginOwner) {
+            scheduler = new SchedulerAdapter(plugin);
+            schedulerPluginOwner = plugin;
+        }
+        return scheduler;
     }
 
     public void registerConfig() {
@@ -217,58 +229,23 @@ public class DeadChestLoader {
     }
 
     public static void handleEvent() {
-        final InMemoryChestStore inMemoryChestStore = getChestDataCache();
-        final Map<Location, ChestData> allChestData = inMemoryChestStore.getAllChestData();
+        final Map<Location, ChestData> allChestData = getChestDataCache().getAllChestData();
         if (!allChestData.isEmpty()) {
             final Date now = new Date();
-            final Set<ChestData> needUpdate = new HashSet<>();
-            final Set<ChestData> remove = new HashSet<>();
-            final Set<ChestData> update = new HashSet<>();
-
-            for (Map.Entry<Location, ChestData> chestEntry : allChestData.entrySet()) {
-                final ChestData chestData = chestEntry.getValue();
-
+            for (ChestData chestData : allChestData.values()) {
                 if (chestData == null) {
                     generateLog("Deadchest of [null] has invalid data set.");
                     continue;
                 }
-                World world = chestData.getChestLocation().getWorld();
 
-                if (world != null) {
-                    updateTimer(chestData, now);
-
-                    final ExpiredActionType expiredActionType = handleExpirateDeadChest(chestData, now);
-                    if (expiredActionType != ExpiredActionType.NOT_EXPIRED) {
-                        if (expiredActionType == ExpiredActionType.FAIL_REMOVE_ARMORSTAND) {
-                            needUpdate.add(chestData);
-                        } else {
-                            remove.add(chestData);
-                        }
-                        generateLog("Deadchest of [" + chestData.getPlayerName() + "] has expired in " + Objects.requireNonNull(chestData.getChestLocation().getWorld()).getName());
-                    } else {
-                        if (chestData.isChunkLoaded()) {
-                            isChangesNeedToBeSave = replaceDeadChestIfItDisappears(chestData);
-                            update.add(chestData);
-                        }
-                    }
-                }
-            }
-            if (!needUpdate.isEmpty()) {
-                inMemoryChestStore.addListOfChestData(needUpdate);
-            }
-            if (!remove.isEmpty()) {
-                inMemoryChestStore.removeChestDataList(remove);
-            }
-            if (isChangesNeedToBeSave && !update.isEmpty()) {
-                inMemoryChestStore.addListOfChestData(update);
-                isChangesNeedToBeSave = false;
+                scheduler.executeAtLocation(chestData.getChestLocation(), () -> handleChestTick(chestData, now));
             }
         }
     }
 
     private void launchRepeatingTask() {
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleEvent, 20, 20);
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, DeadChestLoader::handleAnimationEvent, 20, 4);
+        maintenanceTask = scheduler.runGlobalRepeating(DeadChestLoader::handleEvent, 20L, 20L);
+        animationTask = scheduler.runGlobalRepeating(DeadChestLoader::handleAnimationEvent, 20L, 4L);
     }
 
     public static void handleAnimationEvent() {
@@ -283,8 +260,8 @@ public class DeadChestLoader {
 
         final long nowMs = System.currentTimeMillis();
         for (ChestData chestData : allChestData.values()) {
-            if (chestData != null && chestData.isChunkLoaded()) {
-                animateSoulOrbit(chestData, nowMs);
+            if (chestData != null) {
+                scheduler.executeAtLocation(chestData.getChestLocation(), () -> animateSoulOrbit(chestData, nowMs));
             }
         }
     }
